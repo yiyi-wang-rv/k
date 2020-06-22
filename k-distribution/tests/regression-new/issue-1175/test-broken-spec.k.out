@@ -1,4 +1,0 @@
-[Error] Compiler: Had 1 parsing errors.
-[Error] Inner Parser: Scanner error: unexpected character sequence '<'.
-	Source(test-broken-spec.k)
-	Location(3,10,3,11)
