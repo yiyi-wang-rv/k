@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+<meta charset="utf-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+/>
+<meta
+  name="description"
+  content="Design and implement your programming language and software analysis tools with mathematical rigor."
+/>
+<meta name="keywords" content="runtime, verification, rv, k" />
+<meta name="author" content="K | Runtime Verification Inc" />
+<meta name="robots" content="index, follow" />
+
+<!--favicon icon-->
+<link rel="icon" type="image/png" href="../../../../../assets/img/favicon.ico" />
+
+<title>
+  K | Runtime Verification Inc
+</title>
+
+<!-- <base href="/k/" /> -->
+
+<!--web fonts-->
+<link
+  href="https://fonts.googleapis.com/css?family=Nunito:300,400,600,700,800"
+  rel="stylesheet"
+/>
+<link
+  href="https://fonts.googleapis.com/css?family=Lora:400i"
+  rel="stylesheet"
+/>
+
+<link
+  href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.14.0/css/all.min.css"
+  rel="stylesheet"
+/>
+
+<link href="../../../../../assets/css/index.css" rel="stylesheet" />
+
+<!--[if (gt IE 9) |!(IE)]><!-->
+<!--<link rel="stylesheet" href="/assets/vendor/custom-nav/css/effects/fade-menu.css"/>-->
+<!-- <link rel="stylesheet" href="../../../../../assets/k/vl-nav/css/effects/slide-menu.css" /> -->
+<!--<![endif]-->
+
+  </head>
+
+  <body>
+<header
+  class="navbar navbar-expand navbar-dark flex-column flex-md-row bd-navbar"
+>
+  <a class="logo-link" href="../../../../../index.html">
+    <img
+      class="logo-dark"
+      srcset="../../../../../assets/img/k-logo.png"
+      alt="K"
+      style="height: 48px;"
+    />
+    Semantic Framework
+  </a>
+  <ul class="navbar-nav ml-md-auto">
+    <li class="nav-item">
+      <a
+        class="nav-link pl-2 pr-1 mx-1 py-3 my-n2"
+        href="https://github.com/kframework/k"
+        target="_blank"
+        rel="noopener"
+        aria-label="GitHub"
+      >
+        <i class="fab fa-github"></i>
+      </a>
+    </li>
+  </ul>
+  <a
+    class="btn btn-rv-blue d-none d-lg-inline-block mb-3 mb-md-0 ml-md-3"
+    href="../../../../../downloads"
+    >Download</a
+  >
+</header>
+
+
+    <div class="container-fluid">
+      <div class="row flex-xl-nowrap">
+<div class="col-12 col-md-3 col-xl-2 bd-sidebar mb-3">
+  <form
+    role="search"
+    class="bd-search d-flex align-items-center justify-content-between"
+  >
+    <input
+      type="search"
+      class="form-control"
+      placeholder="Search..."
+      aria-label="Search for..."
+      autocomplete="false"
+      id="search-box"
+    />
+    <button
+      class="btn bd-search-docs-toggle d-md-none p-0 ml-3 collapsed"
+      type="button"
+      aria-label="Toggle docs navigation"
+      style="font-size: 1.4rem;"
+    >
+      <i class="fas fa-bars"></i>
+    </button>
+  </form>
+  <nav class="collapse bd-links" aria-label="Main navigation">
+    <div class="bd-toc-item">
+      <a class="bd-toc-link" href="../../../../../">Homepage</a>
+      <a class="bd-toc-link" href="../../../../../downloads">Downloads</a>
+      <a class="bd-toc-link" href="../../../../../k-distribution/tutorial"
+        >K Tutorial</a
+      >
+      <a class="bd-toc-link" href="../../../../../pending-documentation/"
+        >User documentation</a
+      >
+      <a
+        class="bd-toc-link"
+        href="../../../../../k-distribution/include/kframework/builtin/"
+        >Builtins</a
+      >
+    </div>
+  </nav>
+</div>
+
+        <main
+          class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 bd-content"
+          role="main"
+        >
+          <div class="introduction markdown-preview">
+            <html><head></head><body><h1>Rational Numbers in K</h1>
+<p>K provides support for arbitrary-precision rational numbers represented as a
+quotient between two integers. The sort representing these values is <code>Rat</code>.
+<code>Int</code> is a subsort of <code>Rat</code>, and it is guaranteed that any integer will be
+represented as an <code>Int</code> and can be matched as such on the left hand side
+of rules. K also supports the usual arithmetic operators over rational numbers.</p>
+<pre class="hljs"><code><span class="hljs-keyword">module</span> RAT-SYNTAX<span class="hljs-keyword">
+  imports</span> INT-SYNTAX<span class="hljs-keyword">
+  imports</span> BOOL<span class="hljs-keyword">
+
+  syntax</span> Rat<span class="hljs-keyword">
+
+  syntax</span> Rat ::=<span class="hljs-keyword"> Int</span>
+</code></pre>
+<h2>Arithmetic</h2>
+<p>You can:</p>
+<ul>
+<li>Raise a rational number to any negative or nonnegative integer.</li>
+<li>Multiply or divide two rational numbers to obtain a product or quotient.</li>
+<li>Add or subtract two rational numbers to obtain a sum or difference.</li>
+</ul>
+<pre class="hljs"><code><span class="hljs-keyword">  syntax</span> Rat ::= <span class="hljs-literal">left</span>:
+                 Rat <span class="hljs-string">&quot;^Rat&quot;</span><span class="hljs-keyword"> Int</span> [function, functional, klabel(_^Rat_), symbol, <span class="hljs-literal">left</span>, smtlib(ratpow), hook(RAT.pow)]
+               &gt; <span class="hljs-literal">left</span>:
+                 Rat <span class="hljs-string">&quot;*Rat&quot;</span> Rat [function, functional, klabel(_*Rat_), symbol, <span class="hljs-literal">left</span>, smtlib(ratmul), hook(RAT.mul)]
+               | Rat <span class="hljs-string">&quot;/Rat&quot;</span> Rat [function,             klabel(_/Rat_), symbol, <span class="hljs-literal">left</span>, smtlib(ratdiv), hook(RAT.div)]
+               &gt; <span class="hljs-literal">left</span>:
+                 Rat <span class="hljs-string">&quot;+Rat&quot;</span> Rat [function, functional, klabel(_+Rat_), symbol, <span class="hljs-literal">left</span>, smtlib(ratadd), hook(RAT.add)]
+               | Rat <span class="hljs-string">&quot;-Rat&quot;</span> Rat [function, functional, klabel(_-Rat_), symbol, <span class="hljs-literal">left</span>, smtlib(ratsub), hook(RAT.sub)]
+</code></pre>
+<h2>Comparison</h2>
+<p>You can determine whether two rational numbers are equal, unequal, or compare
+one of less than, less than or equalto, greater than, or greater than or equal
+to the other:</p>
+<pre class="hljs"><code><span class="hljs-keyword">  syntax</span><span class="hljs-keyword"> Bool</span> ::= Rat  <span class="hljs-string">&quot;==Rat&quot;</span> Rat [function, functional, klabel(_==Rat_),  symbol, smtlib(rateq), hook(RAT.eq)]
+                | Rat <span class="hljs-string">&quot;=/=Rat&quot;</span> Rat [function, functional, klabel(_=/=Rat_), symbol, smtlib(ratne), hook(RAT.ne)]
+                | Rat   <span class="hljs-string">&quot;&gt;Rat&quot;</span> Rat [function, functional, klabel(_&gt;Rat_),   symbol, smtlib(ratgt), hook(RAT.gt)]
+                | Rat  <span class="hljs-string">&quot;&gt;=Rat&quot;</span> Rat [function, functional, klabel(_&gt;=Rat_),  symbol, smtlib(ratge), hook(RAT.ge)]
+                | Rat   <span class="hljs-string">&quot;&lt;Rat&quot;</span> Rat [function, functional, klabel(_&lt;Rat_),   symbol, smtlib(ratlt), hook(RAT.lt)]
+                | Rat  <span class="hljs-string">&quot;&lt;=Rat&quot;</span> Rat [function, functional, klabel(_&lt;=Rat_),  symbol, smtlib(ratle), hook(RAT.le)]
+</code></pre>
+<h2>Min/Max</h2>
+<p>You can compute the minimum and maximum of two rational numbers:</p>
+<pre class="hljs"><code><span class="hljs-keyword">  syntax</span> Rat ::= minRat(Rat, Rat) [function, functional, klabel(minRat), symbol, smtlib(ratmin), hook(RAT.min)]
+               | maxRat(Rat, Rat) [function, functional, klabel(maxRat), symbol, smtlib(ratmax), hook(RAT.max)]
+</code></pre>
+<h2>Conversion to Floating Point</h2>
+<p>You can convert a rational number to the nearest floating point number that
+is representable in a <code>Float</code> of a specified number of precision and exponent
+bits:</p>
+<pre class="hljs"><code><span class="hljs-keyword">  syntax</span><span class="hljs-keyword"> Float</span> ::= Rat2Float(Rat, precision:<span class="hljs-keyword"> Int</span>, exponentBits:<span class="hljs-keyword"> Int</span>) [function]<span class="hljs-keyword">
+endmodule</span>
+</code></pre>
+<h2>Implementation of Rational Numbers</h2>
+<p>The remainder of this file consists of an implementation in K of the
+operations listed above. Users of the RAT module should not use any of the
+syntax defined in any of these modules.</p>
+<p>As a point of reference for users, it is worth noting that rational numbers
+are normalized to a canonical form by this module,. with the canonical form
+bearing the property that it is either an <code>Int</code>, or a pair of integers
+<code>I /Rat J</code> such that
+<code>I =/=Int 0 andBool J &gt;=Int 2 andBool gcdInt(I, J) ==Int 1</code> is always true.</p>
+<pre class="hljs"><code><span class="hljs-keyword">module</span> RAT-COMMON<span class="hljs-keyword">
+  imports</span> RAT-SYNTAX
+
+  <span class="hljs-comment">// invariant of &lt; I , J &gt;Rat : I =/= 0, J &gt;= 2, and I and J are coprime</span><span class="hljs-keyword">
+  syntax</span> Rat ::= <span class="hljs-string">&quot;&lt;&quot;</span><span class="hljs-keyword"> Int</span> <span class="hljs-string">&quot;,&quot;</span><span class="hljs-keyword"> Int</span> <span class="hljs-string">&quot;&gt;Rat&quot;</span> [format(%<span class="hljs-number">2</span> /Rat %<span class="hljs-number">4</span>)]<span class="hljs-keyword">
+endmodule</span><span class="hljs-keyword">
+
+module</span> RAT-SYMBOLIC [symbolic, kore]<span class="hljs-keyword">
+  imports</span> RAT-COMMON<span class="hljs-keyword">
+  imports</span> ML-SYNTAX<span class="hljs-keyword">
+
+  rule</span>
+    #Ceil(@R1:Rat /Rat @R2:Rat)
+  =&gt;
+    {(@R2 =/=Rat <span class="hljs-number">0</span>) #Equals true} #And #Ceil(@R1) #And #Ceil(@R2)
+  [anywhere]<span class="hljs-keyword">
+endmodule</span><span class="hljs-keyword">
+
+module</span> RAT-KORE [kore]<span class="hljs-keyword">
+  imports</span> RAT-COMMON<span class="hljs-keyword">
+  imports</span> K-EQUAL
+
+  <span class="hljs-comment">/*
+   * equalities
+   */</span>
+
+  <span class="hljs-comment">// <span class="hljs-doctag">NOTE:</span> the two rules below may not work correctly in non-kore backends</span><span class="hljs-keyword">
+
+  rule</span> R ==Rat S =&gt; R ==K S<span class="hljs-keyword">
+
+  rule</span> R =/=Rat S =&gt; R =/=K S<span class="hljs-keyword">
+endmodule</span><span class="hljs-keyword">
+
+module</span> RAT-KAST [kast]<span class="hljs-keyword">
+  imports</span> RAT-COMMON<span class="hljs-keyword">
+  imports</span> INT
+
+  <span class="hljs-comment">/*
+   * equalities for non-kore backends such as the java backend
+   */</span><span class="hljs-keyword">
+
+  rule</span> &lt; I , I&apos; &gt;Rat ==Rat &lt; J , J&apos; &gt;Rat =&gt; I ==<span class="hljs-keyword">Int</span> J andBool I&apos; ==<span class="hljs-keyword">Int</span> J&apos;<span class="hljs-keyword">
+  rule</span> _:<span class="hljs-keyword">Int</span>         ==Rat &lt; _ , _  &gt;Rat =&gt; false<span class="hljs-keyword">
+  rule</span> &lt; _ , _  &gt;Rat ==Rat _:<span class="hljs-keyword">Int</span>         =&gt; false<span class="hljs-keyword">
+  rule</span> I:<span class="hljs-keyword">Int</span>         ==Rat J:<span class="hljs-keyword">Int</span>         =&gt; I ==<span class="hljs-keyword">Int</span> J<span class="hljs-keyword">
+
+  rule</span> R =/=Rat S =&gt; notBool (R ==Rat S)<span class="hljs-keyword">
+endmodule</span><span class="hljs-keyword">
+
+module</span> RAT<span class="hljs-keyword">
+  imports</span> RAT-COMMON<span class="hljs-keyword">
+  imports</span> RAT-SYMBOLIC<span class="hljs-keyword">
+  imports</span> RAT-KORE<span class="hljs-keyword">
+  imports</span> RAT-KAST<span class="hljs-keyword">
+  imports</span> INT
+
+  <span class="hljs-comment">/*
+   * arithmetic
+   */</span><span class="hljs-keyword">
+
+  rule</span> &lt; I , I&apos; &gt;Rat +Rat &lt; J , J&apos; &gt;Rat =&gt; ((I *<span class="hljs-keyword">Int</span> J&apos;) +<span class="hljs-keyword">Int</span> (I&apos; *<span class="hljs-keyword">Int</span> J)) /Rat (I&apos; *<span class="hljs-keyword">Int</span> J&apos;)<span class="hljs-keyword">
+  rule</span> I:<span class="hljs-keyword">Int</span>         +Rat &lt; J , J&apos; &gt;Rat =&gt; ((I *<span class="hljs-keyword">Int</span> J&apos;) +<span class="hljs-keyword">Int</span> J) /Rat J&apos;<span class="hljs-keyword">
+  rule</span> &lt; J , J&apos; &gt;Rat +Rat I:<span class="hljs-keyword">Int</span>         =&gt; I +Rat &lt; J , J&apos; &gt;Rat<span class="hljs-keyword">
+  rule</span> I:<span class="hljs-keyword">Int</span>         +Rat J:<span class="hljs-keyword">Int</span>         =&gt; I +<span class="hljs-keyword">Int</span> J<span class="hljs-keyword">
+
+  rule</span> &lt; I , I&apos; &gt;Rat *Rat &lt; J , J&apos; &gt;Rat =&gt; (I *<span class="hljs-keyword">Int</span> J) /Rat (I&apos; *<span class="hljs-keyword">Int</span> J&apos;)<span class="hljs-keyword">
+  rule</span> I:<span class="hljs-keyword">Int</span>         *Rat &lt; J , J&apos; &gt;Rat =&gt; (I *<span class="hljs-keyword">Int</span> J) /Rat J&apos;<span class="hljs-keyword">
+  rule</span> &lt; J , J&apos; &gt;Rat *Rat I:<span class="hljs-keyword">Int</span>         =&gt; I *Rat &lt; J , J&apos; &gt;Rat<span class="hljs-keyword">
+  rule</span> I:<span class="hljs-keyword">Int</span>         *Rat J:<span class="hljs-keyword">Int</span>         =&gt; I *<span class="hljs-keyword">Int</span> J<span class="hljs-keyword">
+
+  rule</span> &lt; I , I&apos; &gt;Rat /Rat &lt; J , J&apos; &gt;Rat =&gt; (I *<span class="hljs-keyword">Int</span> J&apos;) /Rat (I&apos; *<span class="hljs-keyword">Int</span> J)<span class="hljs-keyword">
+  rule</span> I:<span class="hljs-keyword">Int</span>         /Rat &lt; J , J&apos; &gt;Rat =&gt; (I *<span class="hljs-keyword">Int</span> J&apos;) /Rat J<span class="hljs-keyword">
+  rule</span> &lt; I , I&apos; &gt;Rat /Rat J:<span class="hljs-keyword">Int</span>         =&gt; I /Rat (I&apos; *<span class="hljs-keyword">Int</span> J)<span class="hljs-keyword"> requires</span> J =/=<span class="hljs-keyword">Int</span> <span class="hljs-number">0</span><span class="hljs-keyword">
+  rule</span> I:<span class="hljs-keyword">Int</span>         /Rat J:<span class="hljs-keyword">Int</span>         =&gt; makeRat(I, J)<span class="hljs-keyword">      requires</span> J =/=<span class="hljs-keyword">Int</span> <span class="hljs-number">0</span>
+
+  <span class="hljs-comment">// derived</span><span class="hljs-keyword">
+
+  rule</span> R -Rat S =&gt; R +Rat (<span class="hljs-number">-1</span> *Rat S)
+
+  <span class="hljs-comment">// normalize</span><span class="hljs-keyword">
+
+  syntax</span> Rat ::= makeRat(<span class="hljs-keyword">Int</span>,<span class="hljs-keyword"> Int</span>)      [function]
+               | makeRat(<span class="hljs-keyword">Int</span>,<span class="hljs-keyword"> Int</span>,<span class="hljs-keyword"> Int</span>) [function]<span class="hljs-keyword">
+
+  rule</span> makeRat(<span class="hljs-number">0</span>, J) =&gt; <span class="hljs-number">0</span><span class="hljs-keyword"> requires</span> J =/=<span class="hljs-keyword">Int</span> <span class="hljs-number">0</span><span class="hljs-keyword">
+
+  rule</span> makeRat(I, J) =&gt; makeRat(I, J, gcdInt(I,J))<span class="hljs-keyword"> requires</span> I =/=<span class="hljs-keyword">Int</span> <span class="hljs-number">0</span> andBool J =/=<span class="hljs-keyword">Int</span> <span class="hljs-number">0</span>
+
+  <span class="hljs-comment">// makeRat(I, J, D) is defined when I =/= 0, J =/= 0, D &gt; 0, and D = gcd(I,J)</span><span class="hljs-keyword">
+  rule</span> makeRat(I, J, D) =&gt; I /<span class="hljs-keyword">Int</span> D<span class="hljs-keyword">                       requires</span> J ==<span class="hljs-keyword">Int</span> D <span class="hljs-comment">// implies J &gt; 0 since D &gt; 0</span><span class="hljs-keyword">
+  rule</span> makeRat(I, J, D) =&gt; &lt; I /<span class="hljs-keyword">Int</span> D , J /<span class="hljs-keyword">Int</span> D &gt;Rat<span class="hljs-keyword">     requires</span> J &gt;<span class="hljs-keyword">Int</span> <span class="hljs-number">0</span> andBool J =/=<span class="hljs-keyword">Int</span> D<span class="hljs-keyword">
+  rule</span> makeRat(I, J, D) =&gt; makeRat(<span class="hljs-number">0</span> -<span class="hljs-keyword">Int</span> I, <span class="hljs-number">0</span> -<span class="hljs-keyword">Int</span> J, D)<span class="hljs-keyword"> requires</span> J &lt;<span class="hljs-keyword">Int</span> <span class="hljs-number">0</span>
+
+  <span class="hljs-comment">// gcdInt(a,b) computes the gcd of |a| and |b|, which is positive.</span><span class="hljs-keyword">
+  syntax</span><span class="hljs-keyword"> Int</span> ::= gcdInt(<span class="hljs-keyword">Int</span>,<span class="hljs-keyword"> Int</span>) [function]<span class="hljs-keyword">
+
+  rule</span> gcdInt(A, <span class="hljs-number">0</span>) =&gt; A<span class="hljs-keyword">        requires</span> A &gt;<span class="hljs-keyword">Int</span> <span class="hljs-number">0</span><span class="hljs-keyword">
+  rule</span> gcdInt(A, <span class="hljs-number">0</span>) =&gt; <span class="hljs-number">0</span> -<span class="hljs-keyword">Int</span> A<span class="hljs-keyword"> requires</span> A &lt;<span class="hljs-keyword">Int</span> <span class="hljs-number">0</span><span class="hljs-keyword">
+  rule</span> gcdInt(A, B) =&gt; gcdInt(B, A %<span class="hljs-keyword">Int</span> B)<span class="hljs-keyword"> requires</span> B =/=<span class="hljs-keyword">Int</span> <span class="hljs-number">0</span> <span class="hljs-comment">// since |A %Int B| = |A| %Int |B|</span>
+
+  <span class="hljs-comment">/*
+   * exponentiation
+   */</span><span class="hljs-keyword">
+
+  rule</span> _ ^Rat <span class="hljs-number">0</span> =&gt; <span class="hljs-number">1</span><span class="hljs-keyword">
+  rule</span> <span class="hljs-number">0</span> ^Rat N =&gt; <span class="hljs-number">0</span><span class="hljs-keyword"> requires</span> N =/=<span class="hljs-keyword">Int</span> <span class="hljs-number">0</span><span class="hljs-keyword">
+
+  rule</span> &lt; I , J &gt;Rat ^Rat N =&gt; powRat(&lt; I , J &gt;Rat, N)<span class="hljs-keyword"> requires</span> N &gt;<span class="hljs-keyword">Int</span> <span class="hljs-number">0</span><span class="hljs-keyword">
+  rule</span> X:<span class="hljs-keyword">Int</span>        ^Rat N =&gt; X ^<span class="hljs-keyword">Int</span> N<span class="hljs-keyword">                requires</span> N &gt;<span class="hljs-keyword">Int</span> <span class="hljs-number">0</span><span class="hljs-keyword">
+
+  rule</span> X ^Rat N =&gt; (<span class="hljs-number">1</span> /Rat X) ^Rat (<span class="hljs-number">0</span> -<span class="hljs-keyword">Int</span> N)<span class="hljs-keyword"> requires</span> X =/=Rat <span class="hljs-number">0</span> andBool N &lt;<span class="hljs-keyword">Int</span> <span class="hljs-number">0</span>
+
+  <span class="hljs-comment">// exponentiation by squaring</span><span class="hljs-keyword">
+
+  syntax</span> Rat ::= powRat(Rat,<span class="hljs-keyword"> Int</span>) [function]
+
+  <span class="hljs-comment">// powRat(X, N) is defined when X =/= 0 and N &gt; 0</span><span class="hljs-keyword">
+  rule</span> powRat(X, <span class="hljs-number">1</span>) =&gt; X<span class="hljs-keyword">
+  rule</span> powRat(X, N) =&gt; powRat(X *Rat X, N /<span class="hljs-keyword">Int</span> <span class="hljs-number">2</span>)<span class="hljs-keyword"> requires</span> N &gt;<span class="hljs-keyword">Int</span> <span class="hljs-number">1</span> andBool N %<span class="hljs-keyword">Int</span> <span class="hljs-number">2</span>  ==<span class="hljs-keyword">Int</span> <span class="hljs-number">0</span><span class="hljs-keyword">
+  rule</span> powRat(X, N) =&gt; powRat(X, N -<span class="hljs-keyword">Int</span> <span class="hljs-number">1</span>) *Rat X<span class="hljs-keyword"> requires</span> N &gt;<span class="hljs-keyword">Int</span> <span class="hljs-number">1</span> andBool N %<span class="hljs-keyword">Int</span> <span class="hljs-number">2</span> =/=<span class="hljs-keyword">Int</span> <span class="hljs-number">0</span>
+
+  <span class="hljs-comment">/*
+   * inequalities
+   */</span><span class="hljs-keyword">
+
+  rule</span> R &gt;Rat S =&gt; R -Rat S &gt;Rat <span class="hljs-number">0</span><span class="hljs-keyword"> requires</span> S =/=Rat <span class="hljs-number">0</span><span class="hljs-keyword">
+
+  rule</span> &lt; I , _ &gt;Rat &gt;Rat <span class="hljs-number">0</span> =&gt; I &gt;<span class="hljs-keyword">Int</span> <span class="hljs-number">0</span><span class="hljs-keyword">
+  rule</span> I:<span class="hljs-keyword">Int</span>        &gt;Rat <span class="hljs-number">0</span> =&gt; I &gt;<span class="hljs-keyword">Int</span> <span class="hljs-number">0</span>
+
+  <span class="hljs-comment">// derived</span><span class="hljs-keyword">
+
+  rule</span> R &gt;=Rat S =&gt; notBool R &lt;Rat S<span class="hljs-keyword">
+
+  rule</span> R &lt;Rat S =&gt; S &gt;Rat R<span class="hljs-keyword">
+
+  rule</span> R &lt;=Rat S =&gt; S &gt;=Rat R<span class="hljs-keyword">
+
+  rule</span> minRat(R, S) =&gt; R<span class="hljs-keyword"> requires</span> R &lt;=Rat S<span class="hljs-keyword">
+  rule</span> minRat(R, S) =&gt; S<span class="hljs-keyword"> requires</span> S &lt;=Rat R<span class="hljs-keyword">
+
+  rule</span> maxRat(R, S) =&gt; R<span class="hljs-keyword"> requires</span> R &gt;=Rat S<span class="hljs-keyword">
+  rule</span> maxRat(R, S) =&gt; S<span class="hljs-keyword"> requires</span> S &gt;=Rat R<span class="hljs-keyword">
+
+  syntax</span><span class="hljs-keyword"> Float</span> ::= #Rat2Float(<span class="hljs-keyword">Int</span>,<span class="hljs-keyword"> Int</span>,<span class="hljs-keyword"> Int</span>,<span class="hljs-keyword"> Int</span>) [function, hook(FLOAT.rat2float)]<span class="hljs-keyword">
+  rule</span> Rat2Float(Num:<span class="hljs-keyword">Int</span>, Prec:<span class="hljs-keyword">Int</span>, Exp:<span class="hljs-keyword">Int</span>) =&gt; #Rat2Float(Num, <span class="hljs-number">1</span>, Prec, Exp)<span class="hljs-keyword">
+  rule</span> Rat2Float(&lt; Num, Dem &gt;Rat, Prec, Exp) =&gt; #Rat2Float(Num, Dem, Prec, Exp)<span class="hljs-keyword">
+
+endmodule</span>
+</code></pre>
+</body></html>
+          </div>
+        </main>
+      </div>
+    </div>
+<footer class="app-footer text-md-left text-center">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-md-2 mb-md-0 mb-4">
+        <span class="pr-md-5 pr-0 py-3">
+          <a href="https://runtimeverification.com" target="_blank">
+            <picture>
+              <source
+                srcset="../../../../../assets/img/rv-logo-dark.png"
+                media="(prefers-color-scheme: dark)"
+              />
+              <img
+                class="pr-3 footer-logo"
+                src="../../../../../assets/img/rv-logo.png"
+                alt="Runtime Verification Inc logo"
+              />
+            </picture>
+          </a>
+        </span>
+      </div>
+      <div class="col-md-6 mb-md-0 mb-4"></div>
+      <div class="col-md-4 text-md-right">
+        <p class="copyright">
+          &copy; 2020 Runtime Verification Inc. All right reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script
+  async
+  src="https://www.googletagmanager.com/gtag/js?id=UA-163311512-1"
+></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag() {
+    dataLayer.push(arguments);
+  }
+  gtag("js", new Date());
+  gtag("config", "UA-163311512-1");
+</script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Typist/1.2/typist.min.js"></script>
+    <script src="../../../../../assets/js/index.js"></script>
+    <script>
+      $(function () {
+        // Render youtube video
+        const anchorElements = document.querySelectorAll(".markdown-preview a");
+        for (let i = anchorElements.length - 1; i >= 0; i--) {
+          if (anchorElements.length - 1 - i > 3) {
+            break;
+          }
+          const anchorElement = anchorElements[i];
+          const href = anchorElement.getAttribute("href");
+          if (href.match(/^https?:\/\/youtu.be\//)) {
+            const match = href.match(/^https?:\/\/youtu.be\/(.+?)$/);
+            if (match && match[1]) {
+              const youtubeId = match[1];
+              const $iframe = $(`
+<div style="text-align:center;">
+  <iframe
+    width="560"
+    height="315"
+    src="https://www.youtube.com/embed/${youtubeId}"
+    frameborder="0"
+    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+    allowfullscreen
+    style="max-width: 100%;"
+  ></iframe>
+  <p>The video is out of date</p>
+</div>
+`);
+              $(anchorElement).replaceWith($iframe[0]);
+            }
+          }
+        }
+      });
+    </script>
+  </body>
+</html>
