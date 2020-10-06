@@ -1,0 +1,2223 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+<meta charset="utf-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+/>
+<meta
+  name="description"
+  content="Design and implement your programming language and software analysis tools with mathematical rigor."
+/>
+<meta name="keywords" content="runtime, verification, rv, k" />
+<meta name="author" content="K | Runtime Verification Inc" />
+<meta name="robots" content="index, follow" />
+
+<!--favicon icon-->
+<link rel="icon" type="image/png" href="../assets/img/favicon.ico" />
+
+<title>
+  K | Runtime Verification Inc
+</title>
+
+<!-- <base href="/k/" /> -->
+
+<!--web fonts-->
+<link
+  href="https://fonts.googleapis.com/css?family=Nunito:300,400,600,700,800"
+  rel="stylesheet"
+/>
+<link
+  href="https://fonts.googleapis.com/css?family=Lora:400i"
+  rel="stylesheet"
+/>
+
+<link
+  href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.14.0/css/all.min.css"
+  rel="stylesheet"
+/>
+
+<link href="../assets/css/index.css" rel="stylesheet" />
+
+<!--[if (gt IE 9) |!(IE)]><!-->
+<!--<link rel="stylesheet" href="/assets/vendor/custom-nav/css/effects/fade-menu.css"/>-->
+<!-- <link rel="stylesheet" href="../assets/k/vl-nav/css/effects/slide-menu.css" /> -->
+<!--<![endif]-->
+
+  </head>
+
+  <body>
+<header
+  class="navbar navbar-expand navbar-dark flex-column flex-md-row bd-navbar"
+>
+  <a class="logo-link" href="../index.html">
+    <img
+      class="logo-dark"
+      srcset="../assets/img/k-logo.png"
+      alt="K"
+      style="height: 48px;"
+    />
+    Semantic Framework
+  </a>
+  <ul class="navbar-nav ml-md-auto">
+    <li class="nav-item">
+      <a
+        class="nav-link pl-2 pr-1 mx-1 py-3 my-n2"
+        href="https://github.com/kframework/k"
+        target="_blank"
+        rel="noopener"
+        aria-label="GitHub"
+      >
+        <i class="fab fa-github"></i>
+      </a>
+    </li>
+  </ul>
+  <a
+    class="btn btn-rv-blue d-none d-lg-inline-block mb-3 mb-md-0 ml-md-3"
+    href="../downloads"
+    >Download</a
+  >
+</header>
+
+
+    <div class="container-fluid">
+      <div class="row flex-xl-nowrap">
+<div class="col-12 col-md-3 col-xl-2 bd-sidebar mb-3">
+  <form
+    role="search"
+    class="bd-search d-flex align-items-center justify-content-between"
+  >
+    <input
+      type="search"
+      class="form-control"
+      placeholder="Search..."
+      aria-label="Search for..."
+      autocomplete="false"
+      id="search-box"
+    />
+    <button
+      class="btn bd-search-docs-toggle d-md-none p-0 ml-3 collapsed"
+      type="button"
+      aria-label="Toggle docs navigation"
+      style="font-size: 1.4rem;"
+    >
+      <i class="fas fa-bars"></i>
+    </button>
+  </form>
+  <nav class="collapse bd-links" aria-label="Main navigation">
+    <div class="bd-toc-item">
+      <a class="bd-toc-link" href="../">Homepage</a>
+      <a class="bd-toc-link" href="../downloads">Downloads</a>
+      <a class="bd-toc-link" href="../k-distribution/tutorial"
+        >K Tutorial</a
+      >
+      <a class="bd-toc-link" href="../pending-documentation/"
+        >User documentation</a
+      >
+      <a
+        class="bd-toc-link"
+        href="../k-distribution/include/kframework/builtin/"
+        >Builtins</a
+      >
+    </div>
+  </nav>
+</div>
+
+        <main
+          class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 bd-content"
+          role="main"
+        >
+          <div class="markdown-preview"><html><head></head><body><h1>K Manual</h1>
+<p><strong>Under Construction</strong></p>
+<p>This document contains documentation that has been written up to some extent
+but still needs to be ultimately included in the K manual which has not been
+written yet. New features of K that affect the surface language should be added
+to this document.</p>
+<h2>Syntax Declaration</h2>
+<h3>Named Non-Terminals</h3>
+<p>We have added a syntax to Productions which allows non-terminals to be given a
+name in productions. This significantly improves the ability to document K, by
+providing a way to explicitly explain what a field in a production corresponds
+to instead of having to infer it from a comment or from the rule body.</p>
+<p>The syntax is:</p>
+<pre class="hljs"><code>name: Sort
+</code></pre>
+<p>This syntax can be used anywhere in a K definition that expects a non-terminal.</p>
+<h3><code>klabel(_)</code> and <code>symbol</code> attributes</h3>
+<p>By default K generates for each syntax definition a long and obfuscated klabel
+string, which serves as internal identifier and also is used in kast format of
+that syntax. If we need to reference a certain syntax production externally, we
+have to manually define the klabels.</p>
+<p>For example:</p>
+<pre class="hljs"><code>syntax Foo ::= #Foo( Int, Int ) [klabel(#Foo), symbol]
+</code></pre>
+<p>Now a kast term for <code>Foo</code> will look like <code>#Foo(1,  1)</code>.
+Without <code>symbol</code>, the klabel defined for this syntax will still be a long
+obfuscated string. <code>[symbol]</code> also ensures that this attribute is unique to
+the definition. Uniqueness is not enforced by default for backwards
+compatibility. In some circumstances in Java and Ocaml backend we need multiple
+syntax definition with the same klabel. Otherwise it is recommended to use
+<code>klabel</code> and <code>symbol</code> together. One application is loading a config through
+JSON backend.</p>
+<p>KLabels are also used when terms are logged in Java Backend, when using
+logging/debugging options, or in error messages.</p>
+<h3>Parametric productions and <code>bracket</code> attributes</h3>
+<p>Some syntax productions, like the rewrite operator, the bracket operator, and
+the #if #then #else #fi operator, cannot have their precise type system
+expressed using only concrete sorts.</p>
+<p>Prior versions of K solved this issue by using the K sort in this case, but
+this introduces inexactness in which poorly typed terms can be created even
+without having a cast operator present in the syntax, which is a design
+consideration we would prefer to avoid.</p>
+<p>It also introduces cases where terms cannot be placed in positions where they
+ought to be well sorted unless their return sort is made to be KBott, which in
+turn vastly complicates the grammar and makes parsing much slower.</p>
+<p>In order to introduce this, we provide a new syntax for parametric productions
+in K. This allows you to express syntax that has a sort signature based on
+parametric polymorphism. We do this by means of an optional curly-brace-
+enclosed list of parameters prior to the return sort of a production.</p>
+<p>Some examples:</p>
+<pre class="hljs"><code>syntax {Sort} Sort ::= &quot;(&quot; Sort &quot;)&quot; [bracket]
+syntax {Sort} KItem ::= Sort
+syntax {Sort} Sort ::= KBott
+syntax {Sort} Sort ::= Sort &quot;=&gt;&quot; Sort
+syntax {Sort} Sort ::= &quot;#if&quot; Bool &quot;#then&quot; Sort &quot;#else&quot; Sort &quot;#fi&quot;
+syntax {Sort1, Sort2} Sort1 ::= &quot;#fun&quot; &quot;(&quot; Sort2 &quot;=&gt;&quot; Sort1 &quot;)&quot; &quot;(&quot; Sort2 &quot;)&quot;
+</code></pre>
+<p>Here we have:</p>
+<ol>
+<li>Brackets, which can enclose any sort but should be of the same sort that was
+enclosed</li>
+<li>Every sort is a KItem.</li>
+<li>A KBott term can appear inside any sort</li>
+<li>Rewrites, which can rewrite a value of any sort to a value of the same sort,
+or to a different sort which is allowed in that context</li>
+<li>If then else, which can return any sort but which must contain that sort on
+both the true and false branches.</li>
+<li>lambda applications, in which the argument and parameter must be the same
+sort, and the return value of the application must be the same sort as the
+return value of the function.</li>
+</ol>
+<p>Note the last case, in which two different parameters are specified separated
+by a comma. This indicates that we have multiple independent parameters which
+must be the same each place they occur, but not the same as the other
+parameters.</p>
+<p>In practice, because every sort is a subsort of K, the <code>Sort2</code>
+parameter in #6 above does nothing during parsing. It cannot
+actually reject any parse, because it can always infer that the sort of the
+argument and parameter are K, and it has no effect on the resulting sort of
+the term. However, it will nevertheless affect the kore generated from the term
+by introducing an additional parameter to the symbol generated for the term.</p>
+<h3><code>function</code> and <code>functional</code> attributes</h3>
+<p>Many times it becomes easier to write a semantics if you have &quot;helper&quot;
+functions written which can be used in the RHS of rules. The <code>function</code>
+attribute tells K that a given symbol should be simplified immediately when it
+appears anywhere in the configuration. Semantically, it means that evaluation
+of that symbol will result in at most one return value (that is, the symbol is
+a <em>partial function</em>).</p>
+<p>The <code>functional</code> attribute indicates to the symbolic reasoning engine that a
+given symbol is a <em>total function</em>, that is it has <em>exactly</em> one return value
+for every possible input.</p>
+<p>For example, here we define the <code>_+Word_</code> total function and the <code>_/Word_</code>
+partial function, which can be used to do addition/division modulo
+<code>2 ^Int 256</code>. These functions can be used anywhere in the semantics where
+integers should not grow larger than <code>2 ^Int 256</code>. Notice how <code>_/Word_</code> is
+<em>not</em> defined when the denominator is <code>0</code>.</p>
+<pre class="hljs"><code><span class="hljs-keyword">syntax</span><span class="hljs-keyword"> Int</span> ::=<span class="hljs-keyword"> Int</span> <span class="hljs-string">&quot;+Word&quot;</span><span class="hljs-keyword"> Int</span> [function, functional]
+             |<span class="hljs-keyword"> Int</span> <span class="hljs-string">&quot;/Word&quot;</span><span class="hljs-keyword"> Int</span> [function]<span class="hljs-keyword">
+
+rule</span> I1 +Word I2 =&gt; (I1 +<span class="hljs-keyword">Int</span> I2) modInt (<span class="hljs-number">2</span> ^<span class="hljs-keyword">Int</span> <span class="hljs-number">256</span>)<span class="hljs-keyword">
+rule</span> I1 /Word I2 =&gt; (I1 /<span class="hljs-keyword">Int</span> I2) modInt (<span class="hljs-number">2</span> ^<span class="hljs-keyword">Int</span> <span class="hljs-number">256</span>)<span class="hljs-keyword"> requires</span> I2 =/=<span class="hljs-keyword">Int</span> <span class="hljs-number">0</span>
+</code></pre>
+<h3><code>freshGenerator</code> attribute</h3>
+<p>In K, you can access &quot;fresh&quot; values in a given domain using the syntax
+<code>!VARNAME:VarSort</code> (with the <code>!</code>-prefixed variable name). This is supported for
+builtin sorts <code>Int</code> and <code>Id</code> already. For example, you can generate fresh
+memory locations for declared identifiers as such:</p>
+<pre class="hljs"><code><span class="hljs-keyword">rule</span> &lt;k&gt; new var x ; =&gt; . ... &lt;/k&gt;
+     &lt;env&gt; ENV =&gt; ENV [ x &lt;- !I:<span class="hljs-keyword">Int</span> ] &lt;/env&gt;
+     &lt;mem&gt; MEM =&gt; MEM [ !I &lt;- <span class="hljs-number">0</span>     ] &lt;/mem&gt;
+</code></pre>
+<p>Each time a <code>!</code>-prefixed variable is encountered, a new integer will be used,
+so each variable declared with <code>new var _ ;</code> will get a unique position in the
+<code>&lt;mem&gt;</code>.</p>
+<p>Sometimes you want to have generation of fresh constants in a user-defined
+sort. For this, K will still generate a fresh <code>Int</code>, but can use a converter
+function you supply to turn it into the correct sort. For example, here we can
+generate fresh <code>Foo</code>s using the <code>freshFoo(_)</code> function annotated with
+<code>freshGenerator</code>.</p>
+<pre class="hljs"><code><span class="hljs-keyword">syntax</span> Foo ::= <span class="hljs-string">&quot;a&quot;</span> | <span class="hljs-string">&quot;b&quot;</span> | <span class="hljs-string">&quot;c&quot;</span> | d (<span class="hljs-keyword"> Int</span> )<span class="hljs-keyword">
+
+syntax</span> Foo ::= freshFoo (<span class="hljs-keyword"> Int</span> ) [freshGenerator, function, functional]<span class="hljs-keyword">
+
+rule</span> freshFoo(<span class="hljs-number">0</span>) =&gt; a<span class="hljs-keyword">
+rule</span> freshFoo(<span class="hljs-number">1</span>) =&gt; b<span class="hljs-keyword">
+rule</span> freshFoo(<span class="hljs-number">2</span>) =&gt; c<span class="hljs-keyword">
+rule</span> freshFoo(I) =&gt; d(I) [owise]<span class="hljs-keyword">
+
+rule</span> &lt;k&gt; new var x ; =&gt; . ... &lt;/k&gt;
+     &lt;env&gt; ENV =&gt; ENV [ x &lt;- !I:<span class="hljs-keyword">Int</span>  ] &lt;/env&gt;
+     &lt;mem&gt; MEM =&gt; MEM [ !I &lt;- !F:Foo ] &lt;/mem&gt;
+</code></pre>
+<p>Now each newly allocated memory slot will have a fresh <code>Foo</code> placed in it.</p>
+<h3><code>token</code> attribute</h3>
+<p>The <code>token</code> attribute signals to the Kore generator that the associated sort
+will be inhabited by domain values. Sorts inhabited by domain values must not
+have any constructors declared.</p>
+<pre class="hljs"><code><span class="hljs-keyword">syntax</span> Bytes [hook(BYTES.Bytes), <span class="hljs-literal">token</span>]
+</code></pre>
+<h3>Converting between <code>[token]</code> sorts</h3>
+<p>You can convert between tokens of one sort via <code>String</code>s by defining functions
+implemented by builtin hooks.
+The hook <code>STRING.token2string</code> allows conversion of any token to a string:</p>
+<pre class="hljs"><code><span class="hljs-keyword">syntax</span><span class="hljs-keyword"> String</span> ::= FooToString(Foo)  [function, functional, hook(STRING.<span class="hljs-literal">token</span>2string)]
+</code></pre>
+<p>Similarly, the hook <code>STRING.string2Token</code> allows the inverse:</p>
+<pre class="hljs"><code><span class="hljs-keyword">syntax</span> Bar ::= StringToBar(<span class="hljs-keyword">String</span>) [function, functional, hook(STRING.string2token)]
+</code></pre>
+<p>WARNING: This sort of conversion does <em>NOT</em> do any sort of parsing or validation.
+Thus, we can create arbitary tokens of any sort:</p>
+<pre class="hljs"><code>StringToBar(&quot;The sun rises in the west.&quot;)
+</code></pre>
+<p>Composing these two functions lets us convert from <code>Foo</code> to <code>Bar</code></p>
+<pre class="hljs"><code><span class="hljs-keyword">syntax</span> Bar ::= FooToBar(Foo) [function]<span class="hljs-keyword">
+rule</span> FooToBar(F) =&gt; StringToBar(FooToString(F))
+</code></pre>
+<h3>Parsing comments, and the <code>#Layout</code> sort</h3>
+<p>Productions for the <code>#Layout</code> sort are used to describe tokens that are
+considered &quot;whitespace&quot;. The scanner removes tokens matching these productions
+so they are not even seen by the parser. Below, we use it to define
+lines begining with <code>;</code> (semicolon) as comments.</p>
+<pre class="hljs"><code><span class="hljs-keyword">syntax</span> #Layout ::= r<span class="hljs-string">&quot;(;[^\\n\\r]*)&quot;</span>    <span class="hljs-comment">// Semi-colon comments</span>
+                 | r<span class="hljs-string">&quot;([\\ \\n\\r\\t])&quot;</span> <span class="hljs-comment">// Whitespace</span>
+</code></pre>
+<h3><code>prec</code> attribute</h3>
+<p>Consider the following naive attempt at creating a language what syntax that
+allows two types of variables: names that contain underbars, and names that
+contain sharps/hashes/pound-signs:</p>
+<pre class="hljs"><code><span class="hljs-keyword">syntax</span> NameWithUnderbar ::= r<span class="hljs-string">&quot;[a-zA-Z][A-Za-z0-9_]*&quot;</span>  [<span class="hljs-literal">token</span>]<span class="hljs-keyword">
+syntax</span> NameWithSharp    ::= r<span class="hljs-string">&quot;[a-zA-Z][A-Za-z0-9_#]*&quot;</span> [<span class="hljs-literal">token</span>]<span class="hljs-keyword">
+syntax</span> Pgm ::= underbar(NameWithUnderbar)
+             | sharp(NameWithSharp)
+</code></pre>
+<p>Although, it seems that K has enough information to parse the programs
+<code>underbar(foo)</code> and <code>sharp(foo)</code> with, the lexer does not take into account
+whether a token is being parsed for the <code>sharp</code> or for the <code>underbar</code>
+production. It chooses an arbitary sort for the token <code>foo</code> (perhaps
+<code>NameWithUnderbar</code>). Thus, during paring it is unable to construct a valid term
+for one of those programs (<code>sharp(foo)</code>) and produces the error message:
+<code>Inner Parser: Parse error: unexpected token &apos;foo&apos;.</code></p>
+<p>Since calculating inclusions and intersections between regular expressions is
+tricky, we must provide this information to K. We do this via the <code>prec(N)</code>
+attribute. The lexer will always prefer longer tokens to shorter tokens.
+However, when it has to choose between two different tokens of equal length,
+token productions with higher precedence are tried first.</p>
+<p>We also need to make sorts with more specific tokens subsorts of ones with more
+general tokens. We add the token attribute to this production so that all
+tokens of a particular sort are marked with the sort it is parsed as, and not a
+subsort thereof. e.g.&#xA0;we get <code>underbar(#token(&quot;foo&quot;, &quot;NameWithUnderbar&quot;))</code>
+instead of <code>underbar(#token(&quot;foo&quot;, &quot;#LowerId&quot;))</code></p>
+<p>The <code>BUILTIN-ID-TOKENS</code> module defines <code>#UpperId</code> and <code>#LowerId</code> with
+attributes <code>prec(2)</code>.</p>
+<pre class="hljs"><code><span class="hljs-keyword">imports</span> BUILTIN-ID-TOKENS<span class="hljs-keyword">
+syntax</span> NameWithUnderbar ::= r<span class="hljs-string">&quot;[a-zA-Z][A-Za-z0-9_]*&quot;</span> [prec(<span class="hljs-number">1</span>), <span class="hljs-literal">token</span>]
+                          | #UpperId                [<span class="hljs-literal">token</span>]
+                          | #LowerId                [<span class="hljs-literal">token</span>]<span class="hljs-keyword">
+syntax</span> NameWithSharp ::= r<span class="hljs-string">&quot;[a-zA-Z][A-Za-z0-9_#]*&quot;</span> [prec(<span class="hljs-number">1</span>), <span class="hljs-literal">token</span>]
+                       | #UpperId                 [<span class="hljs-literal">token</span>]
+                       | #LowerId                 [<span class="hljs-literal">token</span>]<span class="hljs-keyword">
+syntax</span> Pgm ::= underbar(NameWithUnderbar)
+             | sharp(NameWithSharp)
+</code></pre>
+<h3><code>unused</code> attribute</h3>
+<p>K will warn you if you declare a symbol that is not used in any of the rules of
+your definition. Sometimes this is intentional, however; in this case, you can
+suppress the warning by adding the <code>unused</code> attribute to the production or
+cell.</p>
+<pre class="hljs"><code>syntax Foo ::= foo() [unused]
+
+configuration &lt;foo unused=&quot;&quot;&gt; .K &lt;/foo&gt;
+</code></pre>
+<h3>Symbol priority and associativity</h3>
+<p>Unlike most other parser generators, K combines the task of parsing with AST
+generation. A production declared with the <code>syntax</code> keyword in K is both a
+piece of syntax used when parsing, and a symbol that is used when rewriting.
+As a result, it is generally convenient to describe expression grammars using
+priority and associativity declarations rather than explicitly transforming
+your grammar into a series of nonterminals, one for each level of operator
+precedence. Thus, for example, a simple grammar for addition and multiplication
+will look like this:</p>
+<pre class="hljs"><code><span class="hljs-keyword">syntax</span> Exp ::= Exp <span class="hljs-string">&quot;*&quot;</span> Exp
+             | Exp <span class="hljs-string">&quot;+&quot;</span> Exp
+</code></pre>
+<p>However, this grammar is ambiguous. The term <code>x+y*z</code> might refer to <code>x+(y*z)</code>
+or to <code>(x+y)*z</code>. In order to differentiate this, we introduce a partial
+ordering between productions known as priority. A symbol &quot;has tighter priority&quot;
+than another symbol if the first symbol can appear under the second, but the
+second cannot appear under the first without a bracket. For example, in
+traditional arithmetic, multiplication has tighter priority than addition,
+which means that <code>x+y*z</code> cannot parse as <code>(x+y)*z</code> because the addition
+operator would appear directly beneath the multiplication, which is forbidden
+by the priority filter.</p>
+<p>Priority is applied individually to each possible ambiguous parse of a term. It
+then either accepts or rejects that parse. If there is only a single remaining
+parse (after all the other disambiguation steps have happened), this is the
+parse that is chosen. If all the parses were rejected, it is a parse error. If
+multiple parses remain, they might be resolved by further disambiguation such
+as via the <code>prefer</code> and <code>avoid</code> attributes, but if multiple parses remain after
+disambiguation finishes, this is an ambiguous parse error, indicating there is
+not a unique parse for that term. In the vast majority of cases, this is
+an error and indicates that you ought to either change your grammar or add
+brackets to the term in question.</p>
+<p>Priority is specified in K grammars by means of one of two different
+mechanisms. The first, and simplest, simply replaces the <code>|</code> operator in a
+sequence of K productions with the <code>&gt;</code> operator. This operator indicates that
+everything prior to the <code>&gt;</code> operator (including transitively) binds tighter
+than what comes after. For example, a more complete grammar for simple
+arithmetic might be:</p>
+<pre class="hljs"><code><span class="hljs-keyword">syntax</span> Exp ::= Exp <span class="hljs-string">&quot;*&quot;</span> Exp
+             | Exp <span class="hljs-string">&quot;/&quot;</span> Exp
+             &gt; Exp <span class="hljs-string">&quot;+&quot;</span> Exp
+             | Exp <span class="hljs-string">&quot;-&quot;</span> Exp
+</code></pre>
+<p>This indicates that multiplication and division bind tigher than addition
+and subtraction, but that there is no relationship in priority between
+multiplication and division.</p>
+<p>As you may have noticed, this grammar is also ambiguous. <code>x*y/z</code> might refer to
+<code>x*(y/z)</code> or to <code>(x*y)/z</code>. Indeed, if we removed division and subtraction
+entirely, the grammar would still be ambiguous: <code>x*y*z</code> might parse as
+<code>x*(y*z)</code>, or as <code>(x*y)*z</code>. To resolve this, we introduce another feature:
+associativity. Roughly, asssociativity tells us how symbols are allowed to nest
+within other symbols with the same priority. If a set of symbols is left
+associative, then symbols in that set cannot appear as the rightmost child
+of other symbols in that set. If a set of symbols is right associative, then
+symbols in that set cannot appear as the leftmost child of other symbols in
+that set. Finally, if a set of symbols is non-associative, then symbols
+in that set cannot appear as the rightmost or leftmost child of other symbols
+in that set. For example, in the above example, if addition and subtraction
+are left associative, then <code>x+y+z</code> will parse as <code>(x+y)+</code>z and <code>x+y-z</code> will
+parse as <code>(x+y)-z</code> (because the other parse will have been rejected).</p>
+<p>You might notice that this seems to apply only to binary infix operators. In
+fact, the real behavior is slightly more complicated. Priority and
+associativity (for technical reasons that go beyond the scope of this document)
+really only apply when the rightmost or leftmost item in a production is a
+nonterminal. If the rightmost nonterminal is followed by a terminal (or
+respectively the leftmost preceded), priority and associativity do not apply.
+Thus we can generalize these concepts to arbitrary context-free grammars.</p>
+<p>Associativity is specified in K grammars by means of one of two different
+mechanisms. The first, and simplest, adds the associativity of a priority block
+of symbols prior to that block. For example, we can remove the remaining
+ambiguities in the above grammar like so:</p>
+<pre class="hljs"><code><span class="hljs-keyword">syntax</span> Exp ::= <span class="hljs-literal">left</span>:
+               Exp <span class="hljs-string">&quot;*&quot;</span> Exp
+             | Exp <span class="hljs-string">&quot;/&quot;</span> Exp
+             &gt; <span class="hljs-literal">right</span>:
+               Exp <span class="hljs-string">&quot;+&quot;</span> Exp
+             | Exp <span class="hljs-string">&quot;-&quot;</span> Exp
+</code></pre>
+<p>This indicates that multiplication and division are left-associative, ie, after
+symbols with higher priority are parsed as innermost, symbols are nested with
+the rightmost on top. Addition and subtraction are right associative, which
+is the opposite and indicates that symbols are nested with the leftmost on top.
+Note that this is similar but different from evaluation order, which also
+concerns itself with the ordering of symbols, which is described in the next
+section.</p>
+<p>You may note we have not yet introduced the second syntax for priority
+and associativity. In some cases, syntax for a grammar might be spread across
+multiple modules, sometimes for very good reasons with respect to code
+modularity. As a result, it becomes infeasible to declare priority and
+associativity inline within a set of productions, because the productions
+are not contiguous within a single file.</p>
+<p>For this purpose, we introduce the equivalent <code>syntax priorities</code>,
+<code>syntax left</code>, <code>syntax right</code>, and <code>syntax non-assoc</code> declarations. For
+example, the above grammar can be written equivalently as:</p>
+<pre class="hljs"><code><span class="hljs-keyword">syntax</span> Exp ::= Exp <span class="hljs-string">&quot;*&quot;</span> Exp [mult]
+             | Exp <span class="hljs-string">&quot;/&quot;</span> Exp [div]
+             | Exp <span class="hljs-string">&quot;+&quot;</span> Exp [add]
+             | Exp <span class="hljs-string">&quot;-&quot;</span> Exp [sub]<span class="hljs-keyword">
+
+syntax</span> priorities mult div &gt; add sub<span class="hljs-keyword">
+syntax</span> <span class="hljs-literal">left</span> mult div<span class="hljs-keyword">
+syntax</span> <span class="hljs-literal">right</span> add sub
+</code></pre>
+<p>Here we use user-defined attributes to refer to a group of sentences
+collectively. The sets are flattened together. We could equivalently have
+written:</p>
+<pre class="hljs"><code><span class="hljs-keyword">syntax</span> Exp ::= Exp <span class="hljs-string">&quot;*&quot;</span> Exp [mult]
+             | Exp <span class="hljs-string">&quot;/&quot;</span> Exp [mult]
+             | Exp <span class="hljs-string">&quot;+&quot;</span> Exp [add]
+             | Exp <span class="hljs-string">&quot;-&quot;</span> Exp [add]<span class="hljs-keyword">
+
+syntax</span> priorities mult &gt; add<span class="hljs-keyword">
+syntax</span> <span class="hljs-literal">left</span> mult<span class="hljs-keyword">
+syntax</span> <span class="hljs-literal">right</span> add
+</code></pre>
+<p>Note that there is one other way to describe associativity, but it is
+prone to a very common mistake. You can apply the attribute <code>left</code>, <code>right</code>,
+or <code>non-assoc</code> directly to a production to indicate that it is, by itself,
+left-, right-, or non-associative.</p>
+<p>However, this often does not mean what users think it means. In particular:</p>
+<pre class="hljs"><code><span class="hljs-keyword">syntax</span> Exp ::= Exp <span class="hljs-string">&quot;+&quot;</span> Exp [<span class="hljs-literal">left</span>]
+             | Exp <span class="hljs-string">&quot;-&quot;</span> Exp [<span class="hljs-literal">left</span>]
+</code></pre>
+<p>is not equivalent to:</p>
+<pre class="hljs"><code><span class="hljs-keyword">syntax</span> Exp ::= <span class="hljs-literal">left</span>:
+               Exp <span class="hljs-string">&quot;+&quot;</span> Exp
+             | Exp <span class="hljs-string">&quot;-&quot;</span> Exp
+</code></pre>
+<p>Under the first, each production is associative with itself, but not each
+other. Thus, <code>x+y+z</code> will parse unambiguously as <code>(x+y)+z</code>, but <code>x+y-z</code> will
+be ambiguous. However, in the second, <code>x+y-z</code> will parse unambiguously as
+<code>(x+y)-z</code>.</p>
+<p>Think carefully about how you want your grammar to parse. In general, if you&apos;re
+not sure, it&apos;s probably best to group associativity together into the same
+blocks you use for priority, rather than using <code>left</code>, <code>right</code>, or <code>non-assoc</code>
+attributes on the productions.</p>
+<h3><code>assoc</code>, <code>comm</code>, <code>idem</code>, and <code>unit</code> attributes</h3>
+<p>These attributes are used to indicate whether a collection or a production
+is associative, commutative, idempotent, and/or has a unit.
+In general, you should not need to apply these attributes to productions
+yourself, however, they do have certain special meaning to K. K will generate
+axioms related to each of these concepts into your definition for you
+automatically. It will also automatically sort associative-commutative
+collections, and flatten the indentation of associative collections, when
+unparsing.</p>
+<h2>Evaluation Strategy</h2>
+<h3><code>strict</code> and <code>seqstrict</code> attributes</h3>
+<p>The strictness attributes allow defining evaluation strategies without having
+to explicitely make rules which implement them. This is done by injecting
+<em>heating</em> and <em>cooling</em> rules for the subterms. For this to work, you need to
+define what a <em>result</em> is for K, by extending the  <code>KResult</code> sort.</p>
+<p>For example:</p>
+<pre class="hljs"><code><span class="hljs-keyword">syntax</span> AExp ::=<span class="hljs-keyword"> Int</span>
+              | AExp <span class="hljs-string">&quot;+&quot;</span> AExp [<span class="hljs-literal">strict</span>]
+</code></pre>
+<p>This generates two heating rules (where the hole syntaxes <code>&quot;[]&quot; &quot;+&quot; AExp</code> and
+<code>AExp &quot;+&quot; &quot;[]&quot;</code> is automatically added to create an evaluation context):</p>
+<pre class="hljs"><code><span class="hljs-keyword">rule</span> &lt;k&gt; HOLE:AExp +  AE2:AExp =&gt; HOLE ~&gt;  [] + AE2 ... &lt;/k&gt; [heat]<span class="hljs-keyword">
+rule</span> &lt;k&gt;  AE1:AExp + HOLE:AExp =&gt; HOLE ~&gt; AE1 +  [] ... &lt;/k&gt; [heat]
+</code></pre>
+<p>And two corresponding cooling rules:</p>
+<pre class="hljs"><code><span class="hljs-keyword">rule</span> &lt;k&gt; HOLE:AExp ~&gt;  [] + AE2 =&gt; HOLE +  AE2 ... &lt;/k&gt; [cool]<span class="hljs-keyword">
+rule</span> &lt;k&gt; HOLE:AExp ~&gt; AE1 +  [] =&gt;  AE1 + HOLE ... &lt;/k&gt; [cool]
+</code></pre>
+<p>You will note that these rules can apply one after another infinitely. In
+practice, the <code>KResult</code> sort is used to break this cycle by ensuring that only
+terms that are not part of the <code>KResult</code> sort will be heated. The <code>heat</code> and
+<code>cool</code> attributes are used to tell the compiler that these are heating and
+cooling rules and should be handled in the manner just described. Nothing stops
+the user from writing such heating and cooling rules directly if they wish,
+although we describe other more convenient syntax for most of the advanced
+cases below.</p>
+<p>One other thing to note is that in the above sentences, <code>HOLE</code> is just a
+variable, but it has special meaning in the context of sentences with the
+<code>heat</code> or <code>cool</code> attribute. In heating or cooling rules, the variable named
+<code>HOLE</code> is considered to be the term being heated or cooled and the compiler
+will generate <code>isKResult(HOLE)</code> and <code>notBool isKResult(HOLE)</code> side conditions
+appropriately to ensure that the backend does not loop infinitely.</p>
+<p>In order for this functionality to work, you need to define the <code>KResult</code> sort.
+For instance, we tell K that a term is fully evaluated once it becomes an <code>Int</code>
+here:</p>
+<pre class="hljs"><code><span class="hljs-keyword">syntax</span> KResult ::=<span class="hljs-keyword"> Int</span>
+</code></pre>
+<p>Note that you can also say that a given expression is only strict only in
+specific argument positions. Here we use this to define &quot;short-circuiting&quot;
+boolean operators.</p>
+<pre class="hljs"><code><span class="hljs-keyword">syntax</span> KResult ::=<span class="hljs-keyword"> Bool</span><span class="hljs-keyword">
+
+syntax</span> BExp ::=<span class="hljs-keyword"> Bool</span>
+              | BExp <span class="hljs-string">&quot;||&quot;</span> BExp [<span class="hljs-literal">strict</span>(<span class="hljs-number">1</span>)]
+              | BExp <span class="hljs-string">&quot;&amp;&amp;&quot;</span> BExp [<span class="hljs-literal">strict</span>(<span class="hljs-number">1</span>)]<span class="hljs-keyword">
+
+rule</span> &lt;k&gt; true  || _    =&gt; true ... &lt;/k&gt;<span class="hljs-keyword">
+rule</span> &lt;k&gt; false || REST =&gt; REST ... &lt;/k&gt;<span class="hljs-keyword">
+
+rule</span> &lt;k&gt; true  &amp;&amp; REST =&gt; REST  ... &lt;/k&gt;<span class="hljs-keyword">
+rule</span> &lt;k&gt; false &amp;&amp; _    =&gt; false ... &lt;/k&gt;
+</code></pre>
+<p>If you want to force a specific evaluation order of the arguments, you can use
+the variant <code>seqstrict</code> to do so. For example, this would make the boolean
+operators short-circuit in their <em>second</em> argument first:</p>
+<pre class="hljs"><code><span class="hljs-keyword">syntax</span> KResult ::=<span class="hljs-keyword"> Bool</span><span class="hljs-keyword">
+
+syntax</span> BExp ::=<span class="hljs-keyword"> Bool</span>
+              | BExp <span class="hljs-string">&quot;||&quot;</span> BExp [<span class="hljs-literal">seqstrict</span>(<span class="hljs-number">2</span>,<span class="hljs-number">1</span>)]
+              | BExp <span class="hljs-string">&quot;&amp;&amp;&quot;</span> BExp [<span class="hljs-literal">seqstrict</span>(<span class="hljs-number">2</span>,<span class="hljs-number">1</span>)]<span class="hljs-keyword">
+
+rule</span> &lt;k&gt; _    || true  =&gt; true ... &lt;/k&gt;<span class="hljs-keyword">
+rule</span> &lt;k&gt; REST || false =&gt; REST ... &lt;/k&gt;<span class="hljs-keyword">
+
+rule</span> &lt;k&gt; REST &amp;&amp; true  =&gt; REST  ... &lt;/k&gt;<span class="hljs-keyword">
+rule</span> &lt;k&gt; _    &amp;&amp; false =&gt; false ... &lt;/k&gt;
+</code></pre>
+<p>This will generate rules like this in the case of <code>_||_</code> (note that <code>BE1</code> will
+not be heated unless <code>isKResult(BE2)</code> is true, meaning that <code>BE2</code> must be
+evaluated first):</p>
+<pre class="hljs"><code><span class="hljs-keyword">rule</span> &lt;k&gt;  BE1:BExp || HOLE:BExp =&gt; HOLE ~&gt; BE1 ||  [] ... &lt;/k&gt; [heat]<span class="hljs-keyword">
+rule</span> &lt;k&gt; HOLE:BExp ||  BE2:BExp =&gt; HOLE ~&gt;  [] || BE2 ... &lt;/k&gt;<span class="hljs-keyword"> requires</span> isKResult(BE2) [heat]<span class="hljs-keyword">
+
+rule</span> &lt;k&gt; HOLE:BExp ~&gt;  [] || BE2 =&gt; HOLE ||  BE2 ... &lt;/k&gt; [cool]<span class="hljs-keyword">
+rule</span> &lt;k&gt; HOLE:BExp ~&gt; BE1 ||  [] =&gt;  BE1 || HOLE ... &lt;/k&gt; [cool]
+</code></pre>
+<h3>Context Declaration</h3>
+<p>Sometimes more advanced evaluation strategies are needed. By default, the
+<code>strict</code> and <code>seqstrict</code> attributes are limited in that they cannot describe
+the <em>context</em> in which heating or cooling should occur. When this type of
+control over the evaluation strategy is required, <code>context</code> sentences can be
+used to simplify the process of declaring heating and cooling when it would be
+unnecessarily verbose to write heating and cooling rules directly.</p>
+<p>For example, if the user wants to heat a term if it exists under a <code>foo</code>
+constructor if the term to be heated is of sort <code>bar</code>, one might write the
+following context:</p>
+<pre class="hljs"><code><span class="hljs-keyword">context</span> foo(HOLE:Bar)
+</code></pre>
+<p>Once again, note that <code>HOLE</code> is just a variable, but one that has special
+meaning to the compiler indicating the position in the context that should
+be heated or cooled.</p>
+<p>This will automatically generate the following sentences:</p>
+<pre class="hljs"><code><span class="hljs-keyword">rule</span> &lt;k&gt; foo(HOLE:Bar) =&gt; HOLE ~&gt; foo([]) ... &lt;/k&gt; [heat]<span class="hljs-keyword">
+rule</span> &lt;k&gt; HOLE:Bar ~&gt; foo([]) =&gt; foo(HOLE) ... &lt;/k&gt; [cool]
+</code></pre>
+<p>The user may also write the K cell explicitly in the context declaration
+if they want to match on another cell as well, for example:</p>
+<pre class="hljs"><code><span class="hljs-keyword">context</span> &lt;k&gt; foo(HOLE:Bar) ... &lt;/kl&gt; &lt;state&gt; .Map &lt;/state&gt;
+</code></pre>
+<p>This context will now only heat or cool if the <code>state</code> cell is empty.</p>
+<h3>Side conditions in context declarations</h3>
+<p>The user is allowed to write a side condition in a context declaration, like
+so:</p>
+<pre class="hljs"><code><span class="hljs-keyword">context</span> foo(HOLE:Bar)<span class="hljs-keyword"> requires</span> baz(HOLE)
+</code></pre>
+<p>This side condition will be appended verbatim to the heating rule that is
+generated, however, it will not affect the cooling rule that is generated:</p>
+<pre class="hljs"><code><span class="hljs-keyword">rule</span> &lt;k&gt; foo(HOLE:Bar) =&gt; HOLE ~&gt; foo([]) ... &lt;/k&gt; requirese baz(HOLE) [heat]<span class="hljs-keyword">
+rule</span> &lt;k&gt; HOLE:Bar ~&gt; foo([]) =&gt; foo(HOLE) ... &lt;/k&gt; [cool]
+</code></pre>
+<h3>Rewrites in context declarations</h3>
+<p>The user can also include exactly one rewrite operation in a context
+declaration if that rule rewrites the variable <code>HOLE</code> on the left hand side
+to a term containing <code>HOLE</code> on the right hand side. For exampl;e:</p>
+<pre class="hljs"><code><span class="hljs-keyword">context</span> foo(HOLE:Bar =&gt; bar(HOLE))
+</code></pre>
+<p>In this case, the code generated will be as follows:</p>
+<pre class="hljs"><code><span class="hljs-keyword">rule</span> &lt;k&gt; foo(HOLE:Bar) =&gt; bar(HOLE) ~&gt; foo([]) ... &lt;/k&gt; [heat]<span class="hljs-keyword">
+rule</span> &lt;k&gt; bar(HOLE:Bar) ~&gt; foo([]) =&gt; foo(HOLE) ... &lt;/k&gt; [cool]
+</code></pre>
+<p>This can be useful if the user wishes to evaluate a term using a different
+set of rules than normal.</p>
+<h3><code>result</code> attribute</h3>
+<p>Sometimes it is necessary to be able to evaluate a term to a different sort
+than <code>KResult</code>. This is done by means of adding the <code>result</code> attribute to
+a strict production, a context, or an explicit heating or cooling rule:</p>
+<pre class="hljs"><code><span class="hljs-keyword">syntax</span> BExp ::=<span class="hljs-keyword"> Bool</span>
+              | BExp <span class="hljs-string">&quot;||&quot;</span> BExp [<span class="hljs-literal">seqstrict</span>(<span class="hljs-number">2</span>,<span class="hljs-number">1</span>), result(<span class="hljs-keyword">Bool</span>)]
+</code></pre>
+<p>In this case, the sort check used by <code>seqstrict</code> and by the <code>heat</code> and <code>cool</code>
+attributes will be <code>isBool</code> instead of <code>isKResult</code>. This particular example
+does not really require use of the <code>result</code> attribute, but if the user wishes
+to evaluate a term of sort KResult further, the result attribute would be
+required.</p>
+<h3><code>hybrid</code> attribute</h3>
+<p>In certain situations, it is desirable to treat a particular production which
+has the <code>strict</code> attribute as a result if the term has had its arguments fully
+evaluated. This can be accomplished by means of the <code>hybrid</code> attribute:</p>
+<pre class="hljs"><code><span class="hljs-keyword">syntax</span> KResult ::=<span class="hljs-keyword"> Bool</span><span class="hljs-keyword">
+
+syntax</span> BExp ::=<span class="hljs-keyword"> Bool</span>
+              | BExp <span class="hljs-string">&quot;||&quot;</span> BExp [<span class="hljs-literal">strict</span>(<span class="hljs-number">1</span>), hybrid]
+</code></pre>
+<p>This attribute is equivalent in this case to the following additional axiom
+being added to the definition of <code>isKResult</code>:</p>
+<pre class="hljs"><code><span class="hljs-keyword">rule</span> isKResult(BE1:BExp || BE2:BExp) =&gt; true<span class="hljs-keyword"> requires</span> isKResult(BE1)
+</code></pre>
+<p>Sometimes you wish to declare a production hybrid with respect to a predicate
+other than <code>isKResult</code>. You can do this by specifying a sort as the body of the
+<code>hybrid</code> attribute, e.g.:</p>
+<pre class="hljs"><code><span class="hljs-keyword">syntax</span> BExp ::= BExp <span class="hljs-string">&quot;||&quot;</span> BExp [<span class="hljs-literal">strict</span>(<span class="hljs-number">1</span>), hybrid(Foo)]
+</code></pre>
+<p>generates the rule:</p>
+<pre class="hljs"><code><span class="hljs-keyword">rule</span> isFoo(BE1:BExp || BE2:BExp) =&gt; true<span class="hljs-keyword"> requires</span> isFoo(BE1)
+</code></pre>
+<p>Properly speaking, <code>hybrid</code> takes an optional comma-separated list of sort
+names. If the list is empty, the attribute is equivalent to <code>hybrid(KResult)</code>.
+Otherwise, it generates hybrid predicates for exactly the sorts named.</p>
+<h3>Context aliases</h3>
+<p>Sometimes it is necessary to define a fairly complicated evaluation strategy
+for a lot of different operators. In this case, the user <em>could</em> simply write
+a number of complex <code>context</code> declarations, however, this quickly becomes
+tedious. For this purpose, K has a concept called a <em>context alias</em>. A context
+alias is a bit like a template for describing contexts. The template can then
+be instantiated against particular productions using the <code>strict</code> and
+<code>seqstrict</code> attributes.</p>
+<p>Here is a (simplified) example taken from the K semantics of C++:</p>
+<pre class="hljs"><code><span class="hljs-keyword">context</span> alias [c]: &lt;k&gt; HERE:K ... &lt;/k&gt; &lt;evaluate&gt; false &lt;/evaluate&gt;<span class="hljs-keyword">
+context</span> alias [c]: &lt;k&gt; HERE:K ... &lt;/k&gt; &lt;evaluate&gt; true &lt;/evaluate&gt; [result(ExecResult)]<span class="hljs-keyword">
+
+syntax</span> Expr ::= Expr <span class="hljs-string">&quot;=&quot;</span> Init [<span class="hljs-literal">strict</span>(c; <span class="hljs-number">1</span>)]
+</code></pre>
+<p>This defines the evaluation strategy during the translation phase of a C++
+program for the assignment operator. It is equivalent to writing the following
+context declarations:</p>
+<pre class="hljs"><code><span class="hljs-keyword">context</span> &lt;k&gt; HOLE:Expr = I:Init =&gt; HOLE ~&gt; [] = I ... &lt;/k&gt; &lt;evaluate&gt; false &lt;/evaluate&gt;<span class="hljs-keyword">
+context</span> &lt;k&gt; HOLE:Expr = I:Init =&gt; HOLE ~&gt; [] = I ... &lt;/k&gt; &lt;evaluate&gt; true &lt;/evaluate&gt; [result(ExecResult)]
+</code></pre>
+<p>What this is saying is, if the <code>evaluate</code> cell is false, evaluate the term
+like normal to a <code>KResult</code>. But if the <code>evaluate</code> cell is true, instead
+evaluate it to the <code>ExecResult</code> sort.</p>
+<p>Essentially, we have given a name to this evaluation strategy in the form of
+the rule label on the context alias sentences (in this case, <code>c</code>). We can
+then say that we want to use this evaluation strategy to evaluate particular
+arguments of particular productions by referring to it by name in a <code>strict</code>
+attribute. For example, <code>strict(c)</code> will instantiate these contexts once for
+each argument of the production, whereas <code>strict(c; 1)</code> will instantiate it
+only for the first argument. The special variable <code>HERE</code> is used to tell the
+compiler where you want to place the production that is to be heated or cooled.</p>
+<p>You can also specify multiple context aliases for different parts of a production,
+for example:</p>
+<pre class="hljs"><code><span class="hljs-keyword">syntax</span> Exp ::= foo(Exp, Exp) [<span class="hljs-literal">strict</span>(<span class="hljs-literal">left</span>; <span class="hljs-number">1</span>; <span class="hljs-literal">right</span>; <span class="hljs-number">2</span>)]
+</code></pre>
+<p>This says that we can evaluate the left and right arguments in either order, but to evaluate
+the left using the <code>left</code> context alias and the right using the <code>right</code> context alias.</p>
+<p>We can also say <code>seqstrict(left; 1; right; 2)</code>, in which case we additionally must evaluate
+the left argument before the right argument. Note, all strict positions are considered collectively
+when determining the evaluation order of <code>seqstrict</code> or the <code>hybrid</code> predicates.</p>
+<p>A <code>strict</code> attribute with no rule label associated with it is equivalent to
+a <code>strict</code> attribute given with the following context alias:</p>
+<pre class="hljs"><code><span class="hljs-keyword">context</span> alias [default]: &lt;k&gt; HERE:K ... &lt;/k&gt;
+</code></pre>
+<p>One syntactic convenience that is provided is that if you wish to declare the following context:</p>
+<pre class="hljs"><code><span class="hljs-keyword">context</span> foo(HOLE =&gt; bar(HOLE))
+</code></pre>
+<p>you can simply write the following:</p>
+<pre class="hljs"><code><span class="hljs-keyword">syntax</span> Foo ::= foo(Bar) [<span class="hljs-literal">strict</span>(alias)]<span class="hljs-keyword">
+
+context</span> alias [alias]: HERE [<span class="hljs-keyword">context</span>(bar)]
+</code></pre>
+<h2>Configuration Declaration</h2>
+<h3><code>exit</code> attribute</h3>
+<p>A single configuration cell containing an integer may have the &quot;exit&quot;
+attribute. This integer will then be used as the return value on the console
+when executing the program.</p>
+<p>For example:</p>
+<pre class="hljs"><code><span class="hljs-keyword">configuration</span> &lt;k&gt; $PGM:Pgm &lt;/k&gt;
+              &lt;status-code exit=<span class="hljs-string">&quot;&quot;</span>&gt; <span class="hljs-number">1</span> &lt;/status-code&gt;
+</code></pre>
+<p>declares that the cell <code>status-code</code> should be used as the exit-code for
+invocations of <code>krun</code>. Additionally, we state that the default exit-code is <code>1</code>
+(an error state). One use of this is for writing testing harnesses which assume
+that the test fails until proven otherwise and only set the <code>&lt;status-code&gt;</code> cell
+to <code>0</code> if the test succeeds.</p>
+<h3>Collection Cells: <code>multiplicity</code> and <code>type</code> attributes</h3>
+<p>Sometimes a semantics needs to allow multiple copies of the same cell, for
+example if you are making a concurrent multi-threading programming language.
+For this purpose, K supports the <code>multiplicity</code> and <code>type</code> attributes on cells
+declared in the configuration.</p>
+<p><code>multiplicity</code> can take on values <code>*</code> and <code>?</code>. Declaring <code>multiplicity=&quot;*&quot;</code>
+indicates that the cell may appear any number of times in a runtime
+configuration. Setting <code>multiplicity=&quot;?&quot;</code> indicates that the cell may only
+appear exactly 0 or 1 times in a runtime configuration. If there are no
+configuration variables present in the cell collection, the initial
+configuration will start with exactly 0 instances of the cell collection. If
+there are configuration variables present in the cell collection, the initial
+configuration will start with exactly 1 instance of the cell collection.</p>
+<p><code>type</code> can take on values <code>Set</code>, <code>List</code>, and <code>Map</code>. For example, here we declare
+several collecion cells:</p>
+<pre class="hljs"><code><span class="hljs-keyword">configuration</span> &lt;k&gt; $PGM:Pgm &lt;/k&gt;
+              &lt;sets&gt;  &lt;set  multiplicity=<span class="hljs-string">&quot;?&quot;</span> type=<span class="hljs-string">&quot;Set&quot;</span>&gt;  <span class="hljs-number">0</span>:<span class="hljs-keyword">Int</span> &lt;/set&gt;  &lt;/sets&gt;
+              &lt;lists&gt; &lt;list multiplicity=<span class="hljs-string">&quot;*&quot;</span> type=<span class="hljs-string">&quot;List&quot;</span>&gt; <span class="hljs-number">0</span>:<span class="hljs-keyword">Int</span> &lt;/list&gt; &lt;/lists&gt;
+              &lt;maps&gt;
+                &lt;map multiplicity=<span class="hljs-string">&quot;*&quot;</span> type=<span class="hljs-string">&quot;Map&quot;</span>&gt;
+                  &lt;map-key&gt; <span class="hljs-number">0</span>:<span class="hljs-keyword">Int</span> &lt;/map-key&gt;
+                  &lt;map-value<span class="hljs-number">-1</span>&gt; <span class="hljs-string">&quot;&quot;</span>:<span class="hljs-keyword">String</span> &lt;/map-value<span class="hljs-number">-1</span>&gt;
+                  &lt;map-value<span class="hljs-number">-2</span>&gt; <span class="hljs-number">0</span>:<span class="hljs-keyword">Int</span>     &lt;/map-value<span class="hljs-number">-2</span>&gt;
+                &lt;/map&gt;
+              &lt;/maps&gt;
+</code></pre>
+<p>Declaring <code>type=&quot;Set&quot;</code> indicates that duplicate occurrences of the cell should
+be de-duplicated, and accesses to instances of the cell will be nondeterministic
+choices (constrained by any other parts of the match and side-conditions).
+Similarly, declaring <code>type=&quot;List&quot;</code> means that new instances of the cell can be
+added at the front or back, and elements can be accessed from the front or back,
+and the order of the cells will be maintained. The following are examples of
+introduction and elimination rules for these collections:</p>
+<pre class="hljs"><code><span class="hljs-keyword">rule</span> &lt;k&gt; introduce-set(I:<span class="hljs-keyword">Int</span>) =&gt; . ... &lt;/k&gt;
+     &lt;sets&gt; .Bag =&gt; &lt;set&gt; I &lt;/set&gt; &lt;/sets&gt;<span class="hljs-keyword">
+
+rule</span> &lt;k&gt; eliminate-set =&gt; I ... &lt;/k&gt;
+     &lt;sets&gt; &lt;set&gt; I &lt;/set&gt; =&gt; .Bag &lt;/sets&gt;<span class="hljs-keyword">
+
+rule</span> &lt;k&gt; introduce-list-start(I:<span class="hljs-keyword">Int</span>) =&gt; . ... &lt;/k&gt;
+     &lt;lists&gt; (.Bag =&gt; &lt;list&gt; I &lt;/list&gt;) ... &lt;/lists&gt;<span class="hljs-keyword">
+
+rule</span> &lt;k&gt; introduce-list-end(I:<span class="hljs-keyword">Int</span>) =&gt; . ... &lt;/k&gt;
+     &lt;lists&gt; ... (.Bag =&gt; &lt;list&gt; I &lt;/list&gt;) &lt;/lists&gt;<span class="hljs-keyword">
+
+rule</span> &lt;k&gt; eliminate-list-start =&gt; I ... &lt;/k&gt;
+     &lt;lists&gt; (&lt;list&gt; I &lt;/list&gt; =&gt; .Bag) ... &lt;/lists&gt;<span class="hljs-keyword">
+
+rule</span> &lt;k&gt; eliminate-list-end =&gt; I ... &lt;/k&gt;
+     &lt;lists&gt; ... (&lt;list&gt; I &lt;/list&gt; =&gt; .Bag) &lt;/lists&gt;
+</code></pre>
+<p>Notice that for <code>multiplicity=&quot;?&quot;</code>, we only admit a single <code>&lt;set&gt;</code> instance at
+a time. For the <code>type=List</code> cell, we can add/eliminate cells from the from or
+back of the <code>&lt;lists&gt;</code> cell. Also note that we use <code>.Bag</code> to indicate the empty
+cell collection in all cases.</p>
+<p>Declaring <code>type=&quot;Map&quot;</code> indicates that the first sub-cell will be used as a
+cell-key. This means that matching on those cells will be done as a map-lookup
+operation if the cell-key is mentioned in the rule (for performance). If the
+cell-key is not mentioned, it will fallback to normal nondeterministic
+constrained by other parts of the match and any side-conditions. Note that there
+is no special meaning to the name of the cells (in this case <code>&lt;map&gt;</code>,
+<code>&lt;map-key&gt;</code>, <code>&lt;map-value-1&gt;</code>, and <code>&lt;map-value-2&gt;</code>). Additionally, any number of
+sub-cells are allowed, and the <em>entire</em> instance of the cell collection is
+considered part of the cell-value, including the cell-key (<code>&lt;map-key&gt;</code> in this
+case) and the surrounding collection cell (<code>&lt;map&gt;</code> in this case).</p>
+<p>For example, the following rules introduce, set, retrieve from, and eliminate
+<code>type=&quot;Map&quot;</code> cells:</p>
+<pre class="hljs"><code><span class="hljs-keyword">rule</span> &lt;k&gt; introduce-map(I:<span class="hljs-keyword">Int</span>) =&gt; . ... &lt;/k&gt;
+     &lt;maps&gt; ... (.Bag =&gt; &lt;map&gt; &lt;map-key&gt; I &lt;/map-key&gt; ... &lt;/map&gt;) ... &lt;/maps&gt;<span class="hljs-keyword">
+
+rule</span> &lt;k&gt; set-map-value<span class="hljs-number">-1</span>(I:<span class="hljs-keyword">Int</span>, S:<span class="hljs-keyword">String</span>) =&gt; . ... &lt;/k&gt;
+     &lt;map&gt; &lt;map-key&gt; I &lt;/map-key&gt; &lt;map-value<span class="hljs-number">-1</span>&gt; _ =&gt; S &lt;/map-value<span class="hljs-number">-1</span>&gt; ... &lt;/map&gt;<span class="hljs-keyword">
+
+rule</span> &lt;k&gt; set-map-value<span class="hljs-number">-2</span>(I:<span class="hljs-keyword">Int</span>, V:<span class="hljs-keyword">Int</span>) =&gt; . ... &lt;/k&gt;
+     &lt;map&gt; &lt;map-key&gt; I &lt;/map-key&gt; &lt;map-value<span class="hljs-number">-2</span>&gt; _ =&gt; V &lt;/map-value<span class="hljs-number">-2</span>&gt; ... &lt;/map&gt;<span class="hljs-keyword">
+
+rule</span> &lt;k&gt; retrieve-map-value<span class="hljs-number">-1</span>(I:<span class="hljs-keyword">Int</span>) =&gt; S ... &lt;/k&gt;
+     &lt;map&gt; &lt;map-key&gt; I &lt;/map-key&gt; &lt;map-value<span class="hljs-number">-1</span>&gt; S &lt;/map-value<span class="hljs-number">-1</span>&gt; ... &lt;/map&gt;<span class="hljs-keyword">
+
+rule</span> &lt;k&gt; retrieve-map-value<span class="hljs-number">-2</span>(I:<span class="hljs-keyword">Int</span>) =&gt; V ... &lt;/k&gt;
+     &lt;map&gt; &lt;map-key&gt; I &lt;/map-key&gt; &lt;map-value<span class="hljs-number">-2</span>&gt; V &lt;/map-value<span class="hljs-number">-2</span>&gt; ... &lt;/map&gt;<span class="hljs-keyword">
+
+rule</span> &lt;k&gt; eliminate-map(I:<span class="hljs-keyword">Int</span>) =&gt; . ... &lt;/k&gt;
+     &lt;maps&gt; ... (&lt;map&gt; &lt;map-key&gt; I &lt;/map-key&gt; ... &lt;/map&gt; =&gt; .Bag) ... &lt;/maps&gt;
+</code></pre>
+<p>Note how each rule makes sure that <code>&lt;map-key&gt;</code> cell is mentioned, and we
+continue to use <code>.Bag</code> to indicate the empty collection. Also note that
+when introducing new map elements, you may omit any of the sub-cells which are
+not the cell-key. In case you do omit sub-cells, you must use structural
+framing <code>...</code> to indicate the missing cells, they will receive the default
+value given in the <code>configuration ...</code> declaration.</p>
+<h2>Rule Declaration</h2>
+<h3>Pattern Matching operator</h3>
+<p>Sometimes when you want to express a side condition, you want to say that a
+rule matches if a particular term matches a particular pattern, or if it
+instead does /not/ match a particular pattern.</p>
+<p>The syntax in K for this is :=K and :/=K. It has similar meaning to ==K and
+=/=K, except that where ==K and =/=K express equality, :=K and =/=K express
+model membership. That is to say, whether or not the rhs is a member of the set
+of terms expressed by the lhs pattern. Because the lhs of these operators is a
+pattern, the user can use variables in the lhs of the operator. However, due to
+current limitations, these variables are <em>NOT</em> bound in the rest of the term.
+The user is thus encouraged to use anonymous variables only, although this is
+not required.</p>
+<p>This is compiled by the K frontend down to an efficient pattern matching on a
+fresh function symbol.</p>
+<h3>Anonymous function applications</h3>
+<p>There are a number of cases in K where you would prefer to be able to take some
+term on the RHS, bind it to a variable, and refer to it in multiple different
+places in a rule.</p>
+<p>You might also prefer to take a variable for which you know some of its
+structure, and modify some of its internal structure without requiring you to
+match on every single field contained inside that structure.</p>
+<p>In order to do this, we introduce syntax to K that allows you to construct
+anonymous functions in the RHS of a rule and apply them to a term.</p>
+<p>The syntax for this is:</p>
+<pre class="hljs"><code>#fun(RuleBody)(Argument)
+</code></pre>
+<p>Note the limitations currently imposed by the implementation. These functions
+are not first-order: you cannot bind them to a variable and inject them like
+you can with a regular klabel for a function. You also cannot express multiple
+rules or multiple parameters, or side conditions. All of these are extensions
+we would like to support in the future, however.</p>
+<p>In the following, we use three examples to illustrate the behavior of <code>#fun</code>.
+We point out that the support for <code>#fun</code> is provided by the frontend, not the
+backends.</p>
+<p>The three examples are real examples borrowed or modified from existing language
+semantics.</p>
+<p><em>Example 1 (A Simple Self-Explained Example).</em></p>
+<pre class="hljs"><code>#fun(V:Val =&gt; isFoo(V) andBool isBar(V))(someFunctionReturningVal())
+</code></pre>
+<p><em>Example 2 (Nested #fun).</em></p>
+<pre class="hljs"><code>   #fun(C
+=&gt; #fun(R
+=&gt; #fun(E
+=&gt; foo1(E, R, C)
+  )(foo2(C))
+  )(foo3(0))
+  )(foo4(1))
+</code></pre>
+<p>This example is from the <code>beacon</code>
+semantics:<a href="https://github.com/runtimeverification/beacon-chain-spec/blob/master/b" target="_blank" rel="noopener">https://github.com/runtimeverification/beacon-chain-spec/blob/master/b</a>
+eacon-chain.k at line 302, with some modification for simplicity. Note how
+variables <code>C, R, E</code> are bound in the nested <code>#fun</code>.</p>
+<p><em>Example 3 (Matching a structure).</em></p>
+<pre class="hljs"><code>rule foo(K, RECORD) =&gt;
+  #fun(record(... field: _ =&gt; K))(RECORD)
+</code></pre>
+<p>Unlike previous examples, the LHS of <code>#fun</code> in this example is no longer a
+variable, but a structure. It has the same spirit as the first two examples,
+but we match the <code>RECORD</code> with a structure <code>record( DotVar, field: X)</code>, instead
+of a standalone variable. We also use K&apos;s local rewrite syntax (i.e., the
+rewriting symbol <code>=&gt;</code> does not occur at the top-level) to prevent writing
+duplicate expressions on the LHS and RHS of the rewriting.</p>
+<h3>Macros and Aliases</h3>
+<p>A rule can be tagged with the <code>macro</code>, <code>alias</code>, <code>macro-rec</code>, or <code>alias-rec</code>
+attributes. In all cases, what this signifies is that this is a macro rule.
+Macro rules are applied statically during compilation on all terms that they
+match, and statically before program execution on the initial configuration.
+Currently, macros are required to not have side conditions, although they can
+contain sort checks.</p>
+<p>When a rule is tagged with the <code>alias</code> attribute, it is also applied statically
+in reverse prior to unparsing on the final configuration. Note that a macro can
+have unbound variables in the right hand side. When such a macro exists, it
+should be used only on the left hand side of rules, unless the user is
+performing symbolic execution and expects to introduce symbolic terms into the
+subject being rewritten.</p>
+<p>However, when used on the left hand side of a rule, it functions similarly to a
+pattern alias, and allows the user to concisely express a reusable pattern that
+they wish to match on in multiple places.</p>
+<p>For example, consider the following semantics:</p>
+<pre class="hljs"><code>syntax KItem ::= &quot;foo&quot; | &quot;foobar&quot;
+syntax KItem ::= bar(KItem) | baz(Int, KItem)
+rule foo =&gt; foobar [alias]
+rule bar(I) =&gt; baz(?_, I) [macro]
+rule bar(I) =&gt; I
+</code></pre>
+<p>This will rewrite <code>baz(0, foo)</code> to <code>foo</code>. First <code>baz(0, foo)</code> will be rewritten
+statically to <code>baz(0, foobar)</code>. Then the non-<code>macro</code> rule will apply (because
+the rule will have been rewritten to <code>rule baz(_, I) =&gt; I</code>). Then <code>foobar</code> will
+be rewritten statically after rewriting finishes to <code>foo</code> via the reverse form
+of the alias.</p>
+<p>Note that macros do not apply recursively within their own expansion. This is
+done so as to ensure that macro expansion will always terminate. If the user
+genuinely desires a recursive macro, the <code>macro-rec</code> and <code>alias-rec</code> attributes
+can be used to provide this behavior.</p>
+<p>For example, consider the following semantics:</p>
+<pre class="hljs"><code>syntax Exp ::= &quot;int&quot; Exps &quot;;&quot; | Exp Exp | Id
+syntax Exps ::= List{Exp,&quot;,&quot;}
+
+rule int X:Id, X&apos;:Id, Xs:Exps ; =&gt; int X ; int X&apos;, Xs ; [macro]
+</code></pre>
+<p>This will expand <code>int x, y, z;</code> to <code>int x; int y, z;</code> because the macro does
+not apply the second time after applying the substitution of the first
+application. However, if the <code>macro</code> attribute were changed to the <code>macro-rec</code>
+attribute, it would instead expand (as the user likely intended) to
+<code>int x; int y; int z;</code>.</p>
+<p>The <code>alias-rec</code> attribute behaves with respect to the <code>alias</code> attribute the
+same way the <code>macro-rec</code> attribute behaves with respect to <code>macro</code>.</p>
+<h3><code>anywhere</code> rules</h3>
+<p>Some rules are not functional, but you want them to apply anywhere in the
+configuration (similar to functional rules). You can use the <code>anywhere</code>
+attribute on a rule to instruct the backends to make sure they apply anywhere
+they match in the entire configuration.</p>
+<p>For example, if you want to make sure that some associative operator is always
+right-associated anywhere in the configuration, you can do:</p>
+<pre class="hljs"><code><span class="hljs-keyword">syntax</span> Stmt ::= Stmt <span class="hljs-string">&quot;;&quot;</span> Stmt<span class="hljs-keyword">
+
+rule</span> (S1 ; S2) ; S3 =&gt; S1 ; (S2 ; S3) [anywhere]
+</code></pre>
+<p>Then after every step, all occurances of <code>_;_</code> will be re-associated. Note that
+this allows the symbol <code>_;_</code> to still be a constructor, even though it is
+simplified similarly to a <code>function</code>.</p>
+<h3><code>smt-lemma</code>, <code>lemma</code>, and <code>trusted</code> attributes</h3>
+<p>These attributes guide the prover when it tries to apply rules to discharge a
+proof obligation.</p>
+<ul>
+<li><code>smt-lemma</code> can be applied to a rule <em>without</em> side-conditions to encode
+that rule as an equality when sending queries to Z3.</li>
+<li><code>lemma</code> distinguishes normal rules from lemma rules in the semantics, but
+has no affect.</li>
+<li><code>trusted</code> instructs the prover that it should not attempt proving a given
+proof obligation, instead trusting that it is true.</li>
+</ul>
+<h3>Projection and Predicate functions</h3>
+<p>K automatically generates certain predicate and projection functions from the
+syntax you declare. For example, if you write:</p>
+<pre class="hljs"><code>syntax Foo ::= foo(bar: Bar)
+</code></pre>
+<p>It will automatically generate the following K code:</p>
+<pre class="hljs"><code>syntax Bool ::= isFoo(K) [function]
+syntax Foo ::= &quot;{&quot; K &quot;}&quot; &quot;:&gt;Foo&quot; [function]
+syntax Bar ::= bar(Foo) [function]
+
+rule isFoo(F:Foo) =&gt; true
+rule isFoo(_) =&gt; false [owise]
+
+rule { F:Foo }:&gt;Foo =&gt; F
+rule bar(foo(B:Bar)) =&gt; B
+</code></pre>
+<p>The first two types of functions are generated automatically for every sort in
+your K definition, and the third type of function is generated automatically
+for each named nonterminal in your definition. Essentially, <code>isFoo</code> for some
+sort <code>Foo</code> will tell you whether a particular term of sort <code>K</code> is a <code>Foo</code>,
+<code>{F}:&gt;Foo</code> will cast <code>F</code> to sort <code>Foo</code> if <code>F</code> is of sort <code>Foo</code> and will be
+undefined (i.e., theoretically defined as <code>#Bottom</code>, the bottom symbol in
+matching logic) otherwise. Finally, <code>bar</code> will project out the child of a <code>foo</code>
+named <code>bar</code> in its production declaration.</p>
+<p>Note that if another term of equal or smaller sort to <code>Foo</code> exists and has a
+child named <code>bar</code> of equal or smaller sort to <code>Bar</code>, this will generate an
+ambiguity during parsing, so care should be taken to ensure that named
+nonterminals are sufficiently unique from one another to prevent such
+ambiguities. Of course, the compiler will generate a warning in this case.</p>
+<h3><code>simplification</code> attribute (Haskell backend)</h3>
+<p>The simplification attribute identifies axioms that are useful for simplifying
+configurations, without being part of the main semantics. When a rule is tagged
+as <code>simplification</code>, the Haskell backend will only apply that rule if:</p>
+<ul>
+<li>the rule lhs <em>matches</em> the subterm of interest, and</li>
+<li>the side condition has no remainder given the current top-level predicate
+(that is, the current top-level predicate <em>implies</em> the side condition of
+the rule).</li>
+</ul>
+<p>Note that the <code>simplification</code> attribute can be applied to <em>any</em> rule, not just
+function rules, and that <code>simplification</code> rules are tried <em>before</em> rules from
+the semantic definition.</p>
+<p>For example, for the following definition:</p>
+<pre class="hljs"><code><span class="hljs-keyword">    syntax</span> WordStack ::=<span class="hljs-keyword"> Int</span> <span class="hljs-string">&quot;:&quot;</span> WordStack | <span class="hljs-string">&quot;.WordStack&quot;</span><span class="hljs-keyword">
+    syntax</span><span class="hljs-keyword"> Int</span> ::= sizeWordStack    ( WordStack       ) [function]
+                 | sizeWordStackAux ( WordStack ,<span class="hljs-keyword"> Int</span> ) [function]
+ <span class="hljs-comment">// --------------------------------------------------------------</span><span class="hljs-keyword">
+    rule</span> sizeWordStack(WS) =&gt; sizeWordStackAux(WS, <span class="hljs-number">0</span>)<span class="hljs-keyword">
+
+    rule</span> sizeWordStackAux(.WordStack, N) =&gt; N<span class="hljs-keyword">
+    rule</span> sizeWordStackAux(W : WS    , N) =&gt; sizeWordStackAux(WS, N +<span class="hljs-keyword">Int</span> <span class="hljs-number">1</span>)
+</code></pre>
+<p>We might add the following simplification lemma:</p>
+<pre class="hljs"><code><span class="hljs-keyword">    rule</span> sizeWordStackAux(WS, N) =&gt; N +<span class="hljs-keyword">Int</span> sizeWordStackAux(WS, <span class="hljs-number">0</span>)<span class="hljs-keyword">
+      requires</span> N =/=<span class="hljs-keyword">Int</span> <span class="hljs-number">0</span>
+      [simplification]
+</code></pre>
+<p>Then this simplification rule will only apply if the Haskell backend can prove
+that <code>notBool N =/=Int 0</code> is unsatisfiable. This avoids an infinite cycle of
+applying this simplification lemma.</p>
+<h3><code>concrete</code> attribute, <code>#isConcrete</code> and <code>#isVariable</code> function (Java backend)</h3>
+<p><strong>NOTE</strong>: The Haskell backend <em>does not</em> and <em>will not</em> support the
+meta-functions <code>#isConcrete</code> and <code>#isVariable</code>. See below for information about
+the <code>concrete</code> and <code>symbolic</code> attributes in the Haskell backend.</p>
+<p>Sometimes you only want a given function to simplify if all (or some) of the
+arguments are concrete (non-symbolic). To do so, you can use either the
+<code>concrete</code> attribute (if you want it to only apply when all arguments are
+concrete), or the <code>#isConcrete(_)</code> side-condition (when you only want it to
+apply if some arguments are concrete). Conversly, the function <code>#isVariable(_)</code>
+will only return true when the argument is a variable.</p>
+<p>For example, the following will only re-associate terms when all arguments
+are concrete:</p>
+<pre class="hljs"><code><span class="hljs-keyword">rule</span> X +<span class="hljs-keyword">Int</span> (Y +<span class="hljs-keyword">Int</span> Z) =&gt; (X +<span class="hljs-keyword">Int</span> Y) +<span class="hljs-keyword">Int</span> Z [concrete]
+</code></pre>
+<p>And the following rules will only re-associate terms when it will end up
+grouping concrete sub-terms:</p>
+<pre class="hljs"><code><span class="hljs-keyword">rule</span> X +<span class="hljs-keyword">Int</span> (Y +<span class="hljs-keyword">Int</span> Z) =&gt; (X +<span class="hljs-keyword">Int</span> Y) +<span class="hljs-keyword">Int</span> Z<span class="hljs-keyword">
+  requires</span> #isConcrete(X)
+   andBool #isConcrete(Y)
+   andBool #isVariable(Z)<span class="hljs-keyword">
+
+rule</span> X +<span class="hljs-keyword">Int</span> (Y +<span class="hljs-keyword">Int</span> Z) =&gt; (X +<span class="hljs-keyword">Int</span> Z) +<span class="hljs-keyword">Int</span> Y<span class="hljs-keyword">
+  requires</span> #isConcrete(X)
+   andBool #isConcrete(Z)
+   andBool #isVariable(Y)
+</code></pre>
+<h3><code>concrete</code> and <code>symbolic</code> attributes (Haskell backend)</h3>
+<p>Sometimes you only want a rule to apply if some or all arguments are concrete
+(not symbolic). This is done with the <code>concrete</code> attribute. Conversely, the
+<code>symbolic</code> attribute will allow a rule to apply only when some arguments are not
+concrete. These attributes should only be given with the <code>simplification</code>
+attribute.</p>
+<p>For example, the following will only re-associate terms when all arguments
+are concrete:</p>
+<pre class="hljs"><code><span class="hljs-keyword">rule</span> X +<span class="hljs-keyword">Int</span> (Y +<span class="hljs-keyword">Int</span> Z) =&gt; (X +<span class="hljs-keyword">Int</span> Y) +<span class="hljs-keyword">Int</span> Z [simplification, concrete]
+</code></pre>
+<p>These rules will re-associate and commute terms to combine concrete arguments:</p>
+<pre class="hljs"><code><span class="hljs-keyword">rule</span> (A +<span class="hljs-keyword">Int</span> Y) +<span class="hljs-keyword">Int</span> Z =&gt; A +<span class="hljs-keyword">Int</span> (Y +<span class="hljs-keyword">Int</span> Z)
+  [concrete(Y, Z), symbolic(A), simplification]<span class="hljs-keyword">
+
+rule</span> X +<span class="hljs-keyword">Int</span> (B +<span class="hljs-keyword">Int</span> Z) =&gt; B +<span class="hljs-keyword">Int</span> (X +<span class="hljs-keyword">Int</span> Z)
+  [concrete(X, Z), symbolic(B), simplification]
+</code></pre>
+<h3>The <code>unboundVariables</code> attribute</h3>
+<p>Normally, K rules are not allowed to contain regular (i.e., not fresh, not
+existential) variables in the RHS / <code>requires</code> / <code>ensures</code> clauses which are not
+bound in the LHS.</p>
+<p>However, in certain cases this behavior might be desired, like, for example,
+when specifying a macro rule which is to be used in the LHS of other rules.
+To allow for such cases, but still be useful and perform the unboundness checks
+in regular cases, the <code>unboundVariables</code> attributes allows the user to specify
+a comma-separated list of names of variables which can be unbound in the rule.</p>
+<p>For example, in the macro declaration</p>
+<pre class="hljs"><code>  rule cppEnumType =&gt; bar(_, scopedEnum() #Or unscopedEnum() ) [macro, unboundVariables(_)]
+</code></pre>
+<p>the declaration <code>unboundVariables(_)</code> allows the rule to pass the unbound
+variable checks, and this in turn allows for <code>cppEnumType</code> to be used in
+the LHS of a rule to mean the pattern above:</p>
+<pre class="hljs"><code>  rule inverseConvertType(cppEnumType, foo((cppEnumType #as T::CPPType =&gt; underlyingType(T))))
+</code></pre>
+<h3>The <code>memo</code> attribute</h3>
+<p>The <code>memo</code> attribute is a hint from the user to the backend to memoize a
+function. Not all backends support memoization, but when the attribute is used
+and the definition is compiled for a <code>memo</code>-supporting backend, then calls to
+the function may be cached. At the time of writing, the Haskell and OCaml
+backends support memoization.</p>
+<h4>Limitations of memoization with the Haskell backend</h4>
+<p>The Haskell backend will only cache a function call if all arguments are concrete.</p>
+<p>It is recommended not to memoize recursive functions, as each recursive call
+will be stored in the cache, but only the first iteration will be retrieved from
+the cache; that is, the cache will be filled with many unreachable
+entries. Instead, we recommend to perform a worker-wrapper transformation on
+recursive functions, and apply the <code>memo</code> attribute to the wrapper.</p>
+<p><strong>Warning:</strong> A function declared with the <code>memo</code> attribute must not use
+uninterpreted functions in the side-condition of any rule. Memoizing such an
+impure function is unsound. To see why, consider the following rules:</p>
+<pre class="hljs"><code>syntax Bool ::= impure( Int ) [function]
+
+syntax Int ::= unsound( Int ) [function, memo]
+rule unsound(X:Int) =&gt; X +Int 1 requires impure(X)
+rule unsound(X:Int) =&gt; X        requires notBool impure(X)
+</code></pre>
+<p>Because the function <code>impure</code> is not given rules to cover all inputs, <code>unsound</code>
+can be memoized incoherently. For example,</p>
+<pre class="hljs"><code>{unsound(0) #And {impure(0) #Equals true}} #Equals 1
+</code></pre>
+<p>but</p>
+<pre class="hljs"><code>{unsound(0) #And {impure(0) #Equals false}} #Equals 0
+</code></pre>
+<p>The memoized value of <code>unsound(0)</code> would be incoherently determined by which
+pattern the backend encounters first.</p>
+<h3>Variable Sort Inference</h3>
+<p>In K, it is not required that users declare the sorts of variables in rules or
+in the initial configuration. If the user does not explicitly declare the sort
+of a variable somewhere via a cast (see below), the sort of the variable is
+inferred from context based on the sort signature of every place the variable
+appears in the rule.</p>
+<p>As an example, consider the rule for addition in IMP:</p>
+<pre class="hljs"><code><span class="hljs-keyword">    syntax</span> Exp ::= Exp <span class="hljs-string">&quot;+&quot;</span> Exp |<span class="hljs-keyword"> Int</span><span class="hljs-keyword">
+
+    rule</span> I1 + I2 =&gt; I1 +<span class="hljs-keyword">Int</span> I2
+</code></pre>
+<p>Here <code>+Int</code> is defined in the INT module with the following signature:</p>
+<pre class="hljs"><code><span class="hljs-keyword">    syntax</span><span class="hljs-keyword"> Int</span> ::=<span class="hljs-keyword"> Int</span> <span class="hljs-string">&quot;+Int&quot;</span><span class="hljs-keyword"> Int</span> [function]
+</code></pre>
+<p>In the rule above, the sort of both <code>I1</code> and <code>I2</code> is inferred as <code>Int</code>. This is because
+a variable must have the same sort every place it appears within the same rule.
+While a variable appearing only on the left-hand-side of the rule could have
+sort <code>Exp</code> instead, the same variable appears as a child of <code>+Int</code>, which
+constriants the sorts of <code>I1</code> and <code>I2</code> more tightly. Since the sort must be a
+subsort of <code>Int</code> or equal to <code>Int</code>, and <code>Int</code> has no subsorts, we infer <code>Int</code>
+as the sorts of <code>I1</code> and <code>I2</code>. This means that the above rule will not match
+until <code>I1</code> and <code>I2</code> become integers (i.e., have already been evaluated).</p>
+<p>More complex examples are possible, however:</p>
+<pre class="hljs"><code><span class="hljs-keyword">    syntax</span> Exp ::= Exp <span class="hljs-string">&quot;+&quot;</span><span class="hljs-keyword"> Int</span> |<span class="hljs-keyword"> Int</span><span class="hljs-keyword">
+    rule</span> _ + _ =&gt; <span class="hljs-number">0</span>
+</code></pre>
+<p>Here we have two anonymous variables. They do not refer to the same variable
+as one another, so they can have different sorts. The right side is constrained
+by <code>+</code> to be of sort <code>Int</code>, but the left side could be either <code>Exp</code> or <code>Int</code>.
+When this occurs, we have multiple solutions to the sorts of the variables in
+the rule. K will only choose solutions which are <strong>maximal</strong>, however. To be
+precise, if two different solutions exist, but the sorts of one solution are
+all greater than or equal to the sorts of the other solution, K will discard
+the smaller solution. Thus, in the case above, the variable on the left side
+of the <code>+</code> is inferred of sort <code>Exp</code>, because the solution (<code>Exp</code>, <code>Int</code>) is
+strictly greater than the solution (<code>Int</code>, <code>Int</code>).</p>
+<p>It is possible, however, for terms to have multiple maximal solutions:</p>
+<pre class="hljs"><code><span class="hljs-keyword">    syntax</span> Exp ::= Exp <span class="hljs-string">&quot;+&quot;</span><span class="hljs-keyword"> Int</span> |<span class="hljs-keyword"> Int</span> <span class="hljs-string">&quot;+&quot;</span> Exp |<span class="hljs-keyword"> Int</span><span class="hljs-keyword">
+    rule</span> I1 + I2 =&gt; <span class="hljs-number">0</span>
+</code></pre>
+<p>In this example, there is an ambiguous parse. This could parse as either
+the first <code>+</code> or the second. In the first case, the maximal solution chosen is
+(<code>Exp</code>, <code>Int</code>). In the second, it is (<code>Int</code>, <code>Exp</code>). Neither of these solutions is
+greater than the other, so both are allowed by K. As a result, this program
+will emit an error because the parse is ambiguous. To pick one solution over
+the other, a cast or a <code>prefer</code> or <code>avoid</code> attribute can be used.</p>
+<h3>Casting</h3>
+<p>There are three main types of casts in K: the semantic cast, the strict cast,
+and the projection cast.</p>
+<h3>Semantic casts</h3>
+<p>For every sort <code>S</code> declared in your grammar, K will define the following
+production for you for use in rules:</p>
+<pre class="hljs"><code><span class="hljs-keyword">    syntax</span> S ::= S <span class="hljs-string">&quot;:S&quot;</span>
+</code></pre>
+<p>The meaning of this cast is that the term inside the cast must be less than
+or equal to <code>Sort</code>. This can be used to resolve ambiguities, but its principle
+purpose is to guide execution by telling K what sort variables must match in
+order for the rule to apply. When compiled, it will generate a pattern that
+matches on an injection into <code>Sort</code>.</p>
+<h3>Strict casts</h3>
+<p>K also introduces the strict cast:</p>
+<pre class="hljs"><code><span class="hljs-keyword">    syntax</span> S ::= S <span class="hljs-string">&quot;::S&quot;</span>
+</code></pre>
+<p>The meaning at runtime is exactly the same as the semantic cast (except in the
+ocaml backend, where it will match a term of any sort at runtime); however,
+it restricts the sort of the term inside the cast to <strong>exactly</strong> <code>Sort</code>. That
+is to say, if you use it on something that is a strictly smaller sort, it will
+generate a type error. This is useful in certain circumstances to help
+disambiguate terms, when a semantic cast would not have resolved the ambiguity.
+As such, it is primarily used to solve ambiguities rather than to guide
+execution.</p>
+<h3>Projection casts</h3>
+<p>K also introduces the projection cast:</p>
+<pre class="hljs"><code><span class="hljs-keyword">    syntax</span> {S2} S ::= <span class="hljs-string">&quot;{&quot;</span> S2 <span class="hljs-string">&quot;}&quot;</span> <span class="hljs-string">&quot;:&gt;S&quot;</span>
+</code></pre>
+<p>The meaning of this cast at runtime is that if the term inside is of sort
+<code>Sort</code>, it should have it injection stripped away and the value inside is
+returned as a term of static sort <code>Sort</code>. However, if the term is of a
+different sort, it is an error and execution will get stuck. Thus the primary
+usefulness of this cast is to cast the return value of a function with a
+greater sort down to a strictly smaller sort that you expect the return value
+of the function to have. For example:</p>
+<pre class="hljs"><code>    syntax Exp ::= foo(Exp) [function] | bar(Int) | Int
+    rule foo(I:Int) =&gt; I
+    rule bar(I) =&gt; bar({foo(I +Int 1)}:&gt;Int)
+</code></pre>
+<p>Here we know that <code>foo(I +Int 1)</code> will return an Int, but the return sort of
+<code>foo</code> is <code>Exp</code>. So we project the result into the <code>Int</code> sort so that it can
+be placed as the child of a <code>bar</code>.</p>
+<h3><code>owise</code> and <code>priority</code> attributes.</h3>
+<p>Sometimes, it is simply not convenient to explicitly describe every
+single negative case under which a rule should <strong>not</strong> apply. Instead,
+we simply wish to say that a rule should only apply after some other set of
+rules have been tried. K introduces two different attributes that can be
+added to rules which will automatically generate the necessary matching
+conditions in a manner which is performant for concrete execution (indeed,
+it generally outperforms during concrete execution code where the conditions
+are written explicitly).</p>
+<p>The first is the <code>owise</code> attribute. Very roughly, rules without an attribute
+indicating their priority apply first, followed by rules with the <code>owise</code>
+attribute only if all the other rules have been tried and failed. For example,
+consider the following function:</p>
+<pre class="hljs"><code><span class="hljs-keyword">syntax</span><span class="hljs-keyword"> Int</span> ::= foo(<span class="hljs-keyword">Int</span>) [function]<span class="hljs-keyword">
+rule</span> foo(<span class="hljs-number">0</span>) =&gt; <span class="hljs-number">0</span><span class="hljs-keyword">
+rule</span> foo(_) =&gt; <span class="hljs-number">1</span> [owise]
+</code></pre>
+<p>Here <code>foo(0)</code> is defined explicitly as <code>0</code>. Any other integer yields the
+integer <code>1</code>. In particular, the second rule above will only be tried after the
+first rule has been shown not to apply.</p>
+<p>This is because the first rule has a lower number assigned for its priority
+than the second rule. In practice, each rule in your semantics is implicitly
+or explicitly assigned a numerical priority. Rules are tried in increasing
+order of priority, starting at zero and trying each increasing numerical value
+successively.</p>
+<p>You can specify the priority of a rule with the <code>priority</code> attribute. For
+example, I could equivalently write the second rule above as:</p>
+<pre class="hljs"><code><span class="hljs-keyword">rule</span> foo(_) =&gt; <span class="hljs-number">1</span> [priority(<span class="hljs-number">200</span>)]
+</code></pre>
+<p>The number <code>200</code> is not chosen at random. In fact, when you use the <code>owise</code>
+attribute, what you are doing is implicitly setting the priority of the rule
+to <code>200</code>. This has a couple of implications:</p>
+<ol>
+<li>Multiple rules with the owise attribute all have the same priority and thus
+can apply in any order.</li>
+<li>Rules with priority higher than <code>200</code> apply <strong>after</strong> all rules with the
+<code>owise</code> attribute have been tried.</li>
+</ol>
+<p>There is one more rule by which priorities are assigned: a rule with no
+attributes indicating its priority is assigned the priority 50. Thus,
+with each priority explicitly declared, the above example looks like:</p>
+<pre class="hljs"><code><span class="hljs-keyword">syntax</span><span class="hljs-keyword"> Int</span> ::= foo(<span class="hljs-keyword">Int</span>) [function]<span class="hljs-keyword">
+rule</span> foo(<span class="hljs-number">0</span>) =&gt; <span class="hljs-number">0</span> [priority(<span class="hljs-number">50</span>)]<span class="hljs-keyword">
+rule</span> foo(_) =&gt; <span class="hljs-number">1</span> [owise]
+</code></pre>
+<p>One final note: the llvm backend reserves priorities between 50 and 150
+inclusive for certain specific purposes. Because of this, explicit
+priorities which are given within this region may not behave precisely as
+described above. This is primarily in order that it be possible where necessary
+to provide guidance to the pattern matching algorithm when it would otherwise
+make bad choices about which rules to try first. You generally should not
+give any rule a priority within this region unless you know exactly what the
+implications are with respect to how the llvm backend orders matches.</p>
+<h2>Pattern Matching</h2>
+<h3>As Patterns</h3>
+<p>New syntax has been added to K for matching a pattern and binding the resulting
+match in its entirety to a variable.</p>
+<p>The syntax is:</p>
+<pre class="hljs"><code>Pattern #as V::Var
+</code></pre>
+<p>In this case, Pattern, including any variables, is matched and the resulting
+variables are added to the substitution if matching succeeds. Furthermore, the
+term matched by Pattern is added to the substitution as V.</p>
+<p>This code can also be used outside of any rewrite, in which case matching
+occurs as if it appeared on the left hand side, and the right hand side becomes
+a variable corresponding to the alias.</p>
+<p>It is an error to use an as pattern on the right hand side of a rule.</p>
+<h3>Record-like KApply Patterns</h3>
+<p>We have added a syntax for matching on KApply terms which mimics the record
+syntax in functional languages. This allows us to more easily express patterns
+involving a KApply term in which we don&apos;t care about some or most of the
+children, without introducing a dependency into the code on the number of
+arguments which could be changed by a future refactoring.</p>
+<p>The syntax is:</p>
+<pre class="hljs"><code>record(... field1: Pattern1, field2: Pattern2)
+</code></pre>
+<p>Note that this only applies to productions that are prefix productions.
+A prefix production is considered by the implementation to be any production
+whose production items match the following regular expression:</p>
+<pre class="hljs"><code>(Terminal(_)*) Terminal(&quot;(&quot;)
+(NonTerminal (Terminal(&quot;,&quot;) NonTerminal)* )?
+Terminal(&quot;)&quot;)
+</code></pre>
+<p>In other words, any sequence of terminals followed by an open parenthesis, an
+optional comma separated list of non-terminals, and a close parenthesis.</p>
+<p>If a prefix production has no named nonterminals, a <code>record(...)</code> syntax is
+allowed, but in order to reference specific fields, it is necessary to give one
+or more of the non-terminals in the production names.</p>
+<p>Note: because the implementation currently creates one production per possible
+set of fields to match on, and because all possible permutations of all
+possible subsets of a list of n elements is a number that scales factorially
+and reaches over 100 thousand productions at n=8, we currently do not allow
+fields to be matched in any order like a true record, but only in the same
+order as appears in the production itself.</p>
+<p>Given that this only reduces the number of productions to the size of the power
+set, this will still explode the parsing time if we create large productions of
+10 or more fields that all have names. This is something that should probably
+be improved, however, productions with that large of an arity are rare, and
+thus it has not been viewed as a priority.</p>
+<h3>Or Patterns</h3>
+<p>Sometimes you wish to express that a rule should match if one out of multiple
+patterns should match the same subterm. We can now express this in K by means
+of using the <code>#Or</code> ML connective on the left hand side of a rule.</p>
+<p>For example:</p>
+<pre class="hljs"><code>rule foo #Or bar #Or baz =&gt; qux
+</code></pre>
+<p>Here any of foo, bar, or baz will match this rule. Note that the behavior is
+ill-defined if it is not the case that all the clauses of the or have the same
+bound variables.</p>
+<h3>Matching global context in function rules</h3>
+<p>On occasion it is highly desirable to be able to look up information from the
+global configuration and match against it when evaluating a function. For this
+purpose, we introduce a new syntax for function rules.</p>
+<p>This syntax allows the user to match on <em>function context</em> from within a
+function rule:</p>
+<pre class="hljs"><code>syntax Int ::= foo(Int) [function]
+
+rule [[ foo(0) =&gt; I ]]
+     &lt;bar&gt; I &lt;/bar&gt;
+
+rule something =&gt; foo(0)
+</code></pre>
+<p>This is completely desugared by the K frontend and does not require any special
+support in the backend. It is an error to have a rewrite inside function
+context, as we do not currently support propagating such changes back into the
+global configuration. It is also an error if the context is not at the top
+level of a rule body.</p>
+<p>Desugared code:</p>
+<pre class="hljs"><code>syntax Int ::= foo(Int, GeneratedTopCell) [function]
+
+rule foo(0, &lt;generatedTop&gt;
+              &lt;bar&gt; I &lt;/bar&gt;
+              ...
+            &lt;/generatedTop&gt; #as Configuration) =&gt; I
+rule &lt;generatedTop&gt;
+       &lt;k&gt; something ... &lt;/k&gt;
+       ...
+     &lt;/generatedTop&gt; #as Configuration
+  =&gt; &lt;generatedTop&gt;
+       &lt;k&gt; foo(0, Configuration&gt; ... &lt;/k&gt;
+       ...
+     &lt;/generatedTop&gt;
+</code></pre>
+<h3>Collection patterns</h3>
+<p>It is allowed to write patterns on the left hand side of rules which refer to
+complex terms of sort Map, List, and Set, despite these patterns ostensibly
+breaking the rule that terms which are functions should not appear on the left
+hand side of rules. Such terms are destructured into pattern matching
+operations.</p>
+<p>The following forms are allowed:</p>
+<pre class="hljs"><code>// 0 or more elements followed by 0 or 1 variables of sort List followed by
+// 0 or more elements
+ListItem(E1) ListItem(E2) L:List ListItem(E3) ListItem(E4)
+
+// the empty list
+.List
+
+// 0 or more elements in any order plus 0 or 1 variables of sort Set
+// in any order
+SetItem(K1) SetItem(K2) S::Set SetItem(K3) SetItem(K4)
+
+// the empty set
+.Set
+
+// 0 or more elements in any order plus by 0 or 1 variables of sort Map
+// in any order
+K1 |-&gt; E1 K2 |-&gt; E2 M::Map K3 |-&gt; E3 K4 |-&gt; E4
+
+// the empty map
+.Map
+</code></pre>
+<p>Here K1, K2, K3, K4 etc can be any pattern except a pattern containing both
+function symbols and unbound variables. An unbound variable is a variable whose
+binding cannot be determined by means of decomposing non-set-or-map patterns or
+map elements whose keys contain no unbound variables.</p>
+<p>This is determined recursively, ie, the term <code>K1 |-&gt; E2 E2 |-&gt; E3 E3 |-&gt; E4</code> is
+considered to contain no unbound variables.</p>
+<p>Note that in the pattern <code>K1 |-&gt; E2 K3 |-&gt; E4 E4 |-&gt; E5</code>, K1 and K3 are
+unbound, but E4 is bound because it is bound by deconstructing the key E3, even
+though E3 is itself unbound.</p>
+<p>In the above examples, E1, E2, E3, and E4 can be any pattern that is normally
+allowed on the lhs of a rule.</p>
+<p>When a map or set key contains function symbols, we know that the variables in
+that key are bound (because of the above restriction), so it is possible to
+evaluate the function to a concrete term prior to performing the lookup.</p>
+<p>Indeed, this is the precise semantics which occurs; the function is evaluated
+and the result is looked up in the collection.</p>
+<p>For example:</p>
+<pre class="hljs"><code>syntax Int ::= f(Int) [function]
+rule f(I:Int) =&gt; I +Int 1
+rule &lt;k&gt; I:Int =&gt; . ... &lt;/k&gt; &lt;state&gt; ... SetItem(f(I)) ... &lt;/state&gt;
+</code></pre>
+<p>This will rewrite <code>I</code> to <code>.</code> if and only if the state cell contains
+<code>I +Int 1</code>.</p>
+<p>Note that in the case of Set and Map, one guarantee is that K1, K2, K3, and K4
+represent /distinct/ elements. Pattern matching fails if the correct number of
+distinct elements cannot be found.</p>
+<h3>Matching on cell fragments</h3>
+<p>K allows matching fragments of the configuration and using them to construct
+terms and use as function parameters.</p>
+<pre class="hljs"><code><span class="hljs-keyword">configuration</span> &lt;t&gt;
+                &lt;k&gt; #init ~&gt; #collectOdd ~&gt; $PGM &lt;/k&gt;
+                &lt;fs&gt;
+                  &lt;f multiplicity=<span class="hljs-string">&quot;*&quot;</span> type=<span class="hljs-string">&quot;Set&quot;</span>&gt; <span class="hljs-number">1</span> &lt;/f&gt;
+                &lt;/fs&gt;
+              &lt;/t&gt;
+</code></pre>
+<p>The <code>#collectOdd</code> construct grabs the entire content of the <code>&lt;fs&gt;</code> cell.
+We may also match on only a portion of its content. Note that the fragment
+must be wrapped in a <code>&lt;f&gt;</code> cell at the call site.</p>
+<pre class="hljs"><code><span class="hljs-keyword">syntax</span> KItem ::= <span class="hljs-string">&quot;#collectOdd&quot;</span><span class="hljs-keyword">
+rule</span> &lt;k&gt; #collectOdd =&gt; collectOdd(&lt;fs&gt; Fs &lt;/fs&gt;) ... &lt;/k&gt;
+     &lt;fs&gt; Fs &lt;/fs&gt;
+</code></pre>
+<p>The <code>collectOdd</code> function collects the items it needs</p>
+<pre class="hljs"><code><span class="hljs-keyword">syntax</span> Set ::= collectOdd(FsCell) [function]<span class="hljs-keyword">
+rule</span> collectOdd(&lt;fs&gt; &lt;f&gt; I &lt;/f&gt; REST &lt;/fs&gt;) =&gt; SetItem(I) collectOdd(&lt;fs&gt; REST &lt;/fs&gt;)<span class="hljs-keyword"> requires</span> I %<span class="hljs-keyword">Int</span> <span class="hljs-number">2</span> ==<span class="hljs-keyword">Int</span> <span class="hljs-number">1</span><span class="hljs-keyword">
+rule</span> collectOdd(&lt;fs&gt; &lt;f&gt; I &lt;/f&gt; REST &lt;/fs&gt;) =&gt;            collectOdd(&lt;fs&gt; REST &lt;/fs&gt;)<span class="hljs-keyword"> requires</span> I %<span class="hljs-keyword">Int</span> <span class="hljs-number">2</span> ==<span class="hljs-keyword">Int</span> <span class="hljs-number">0</span><span class="hljs-keyword">
+rule</span> collectOdd(&lt;fs&gt; .Bag &lt;/fs&gt;) =&gt; .Set
+</code></pre>
+<h3><code>all-path</code> and <code>one-path</code> attributes to distinguish reachability claims</h3>
+<p>As the Haskell backend can handle both one-path and all-path reachability
+claims, but both these are encoded as rewrite rules in K, these attributes can
+be used to clarify what kind of claim a rule is.</p>
+<p>In addition of being able to annotate a rule with one of them
+(if annotating with more at the same time, only one of them would be chosen),
+one can also annotate whole modules, to give a default claim type for all rules
+in that module.</p>
+<p>Additionally, the Haskell backend introduces an extra command line option
+for the K frontend, <code>--default-claim-type</code>, with possible values
+<code>all-path</code> and <code>one-path</code> to allow choosing a default type for all
+claims.</p>
+<h3>Set Variables</h3>
+<h4>Motivation</h4>
+<p>Set variables were introduced as part of Matching Mu Logic, the mathematical
+foundations for K. In Matching Mu Logic, terms evaluate to sets of values.
+This is useful for both capturing partiality (as in <code>3/0</code>) and capturing
+non-determinism (as in <code>3 #Or 5</code>). Consequently, symbol interpretation is
+extended to have a collective interpretation over sets of input values.</p>
+<p>Usually, K rules are given using regular variables, which expect that the term
+they match is both defined and has a unique interpretation.</p>
+<p>However, it is sometimes useful to have simplification rules which work over
+any kind of pattern, be it undefined or non-deterministic. This behavior can be
+achieved by using set variables to stand for any kind of pattern.</p>
+<h4>Syntax</h4>
+<p>Any variable prefixed by <code>@</code> will be considered a set variable.</p>
+<h4>Example</h4>
+<p>Below is a simplification rule which motivated this extension:</p>
+<pre class="hljs"><code>  rule #Ceil(@I1:Int /Int @I2:Int) =&gt;
+    {(@I2 =/=Int 0) #Equals true} #And #Ceil(@I1) #And #Ceil(@I2)
+    [anywhere]
+</code></pre>
+<p>This rule basically says that <code>@I1:Int /Int @I2:Int</code> is defined if <code>@I1</code> and
+<code>@I2</code> are defined and <code>@I2</code> is not 0. Using sets variables here is important as
+it allows the simplification rule to apply <em>any</em> symbolic patterns, without
+caring whether they are defined or not.</p>
+<p>This allows simplifying the expression <code>#Ceil((A:Int /Int B:Int) / C:Int)</code> to:</p>
+<pre class="hljs"><code>{(C =/=Int 0) #Equals true} #And #Ceil(C) #And ({(B =/=Int 0) #Equals true}
+#And #Ceil(B) #And #Ceil(A)`
+</code></pre>
+<p>See <a href="https://github.com/kframework/kore/issues/729" target="_blank" rel="noopener">kframework/kore#729</a> for
+more details.</p>
+<h4>SMT Translation</h4>
+<p>K makes queries to an SMT solver (Z3) to discharge proof obligations when doing
+symbolic execution. You can control how these queries are made using the
+attributes <code>smtlib</code> and <code>smt-hook</code> on declared productions.</p>
+<ul>
+<li><code>smt-hook(...)</code> allows you to specify a term in SMTLIB2 format which should
+be used to encode that production, and assumes that all symbols appearing in
+the term are already declared by the SMT solver.</li>
+<li><code>smtlib(...)</code> allows you to declare a new SMT symbol to be used when that
+production is sent to Z3, and gives it <em>uninterpreted function</em> semantics.</li>
+</ul>
+<pre class="hljs"><code><span class="hljs-keyword">syntax</span><span class="hljs-keyword"> Int</span> ::= <span class="hljs-string">&quot;~Int&quot;</span><span class="hljs-keyword"> Int</span>          [function, klabel(~Int_), symbol,
+                                    smtlib(notInt)]
+             |<span class="hljs-keyword"> Int</span> <span class="hljs-string">&quot;^%Int&quot;</span><span class="hljs-keyword"> Int</span><span class="hljs-keyword"> Int</span> [function, klabel(_^%Int__), symbol,
+                                    smt-hook((mod (^ #<span class="hljs-number">1</span> #<span class="hljs-number">2</span>) #<span class="hljs-number">3</span>))]
+</code></pre>
+<p>In the example above, we declare two productions <code>~Int_</code> and <code>_^%Int__</code>, and
+tell the SMT solver to:</p>
+<ul>
+<li>use uninterpreted function semantics for <code>~Int_</code> via SMTLIB2 symbol
+<code>notInt</code>, and</li>
+<li>use the SMTLIB2 term <code>(mod (^ #1 #2) #3)</code> (where <code>#N</code> marks the <code>N</code>th
+production non-terminal argument positions) for <code>_^%Int__</code>, where <code>mod</code> and
+<code>^</code> already are declared by the SMT solver.</li>
+</ul>
+<h4>Caution</h4>
+<p>Set variables are currently only supported by the Haskell backend.
+The use of rules with set variables should be sound for all other backends
+which just execute by rewriting, however it might not be safe for backends
+which want to guarantee coverage.</p>
+<h3>Variables occurring only in the RHS of a rule</h3>
+<p>This section presents possible scenarios requiring variables to only appear in
+the RHS of a rule.</p>
+<h4>Summary</h4>
+<p>Except for <code>?</code> variables and <code>!</code> (fresh) variables, which are
+<strong>required</strong> to only appear in the RHS of a rule, all other variables <strong>must</strong>
+also appear in the LHS of a rule.  This restriction also applies to anonymous
+variables; in particular, for claims, <code>?_</code> (not <code>_</code>) should be used in the RHS
+to indicate that something changes but we don&apos;t care to what value.</p>
+<p>To support specifying random-like behavior, the above restriction can be relaxed
+by annotating a rule with the <code>unboundVariables</code> attribute whenever the rule
+intentionally contains regular variables only occurring in the RHS.</p>
+<h4>Introduction</h4>
+<p>K uses question mark variables of the form <code>?X</code> to refer to
+existential variables, and uses <code>ensures</code> to specify logical constraints on
+those variables.
+These variables are only allowed to appear in the RHS of a K rule.</p>
+<p>If the rules represent rewrite (semantic) steps or verification claims,
+then the <code>?</code> variables are existentially quantified at the top of the RHS;
+otherwise, if they represent equations, the <code>?</code> variables are quantified at the
+top of the entire rule.</p>
+<p>Note that when both <code>?</code>-variables and regular variables are present,
+regular variables are (implicitly) universally quantified on top of the rule
+(already containing the existential quantifications).
+This essentially makes all <code>?</code> variables depend on all regular variables.</p>
+<p>All examples below are intended more for program verification /
+symbolic execution, and thus concrete implementations might choose to ignore
+them altogether or to provide ad-hoc implementations for them.</p>
+<h4>Example: Verification claims</h4>
+<p>Consider the following definition of a (transition) system:</p>
+<pre class="hljs"><code>module A
+  rule foo =&gt; true
+  rule bar =&gt; true
+  rule bar =&gt; false
+endmodule
+</code></pre>
+<p>Consider also, the following specification of claims about the definition above:</p>
+<pre class="hljs"><code>module A-SPEC
+  rule [s1]: foo =&gt; ?X:Bool
+  rule [s2]: foo =&gt;  X:Bool  [unboundVariables(X)]
+  rule [s3]: bar =&gt; ?X:Bool
+  rule [s4]: bar =&gt;  X:Bool  [unboundVariables(X)]
+endmodule
+</code></pre>
+<h5>One-path interpretation</h5>
+<ul>
+<li>(s1) says that there exists a path from <code>foo</code> to some boolean, which is
+satisfied easily using the <code>foo =&gt; true</code> rule</li>
+<li>(s3) says the same thing about <code>bar</code> and can be satisfied by either of
+<code>bar =&gt; true</code> and <code>bar =&gt; false</code> rules</li>
+<li>(s2) and (s4) can be better understood by replacing them with instances for
+<strong>each</strong> element of type <code>Bool</code>, which can be interpreted that
+both <code>true</code> and <code>false</code> are reachable from <code>foo</code> for (s2), or <code>bar</code> for (s4),
+respectively.
+<ul>
+<li>(s2) cannot be verified as we cannot find a path from <code>foo</code> to <code>false</code>.</li>
+<li>(s4) can be verified by using <code>bar =&gt; true</code> to show <code>true</code> is reachable and
+<code>bar =&gt; false</code> to achieve the same thing for <code>false</code></li>
+</ul>
+</li>
+</ul>
+<h5>All-path interpretation</h5>
+<ul>
+<li>
+<p>(s1) says that all paths from <code>foo</code> will reach some boolean, which is
+satisfied by the <code>foo =&gt; true</code> rule and the lack of other rules for <code>foo</code></p>
+</li>
+<li>
+<p>(s3) says the same thing about <code>bar</code> and can be satisfied by checking that
+both <code>bar =&gt; true</code> and <code>bar =&gt; false</code> end in a boolean, and there are no
+other rules for <code>bar</code></p>
+</li>
+<li>
+<p>(s2) and (s4) can be better understood by replacing them with instances for
+<strong>each</strong> element of type <code>Bool</code>, which can be interpreted that
+both <code>true</code> and <code>false</code> are reachable <strong>in all paths</strong> originating in
+<code>foo</code> for (s2), or <code>bar</code> for (s4), respectively.
+This is a very strong claim, requiring that all paths originating in
+<code>foo</code> (<code>bar</code>) pass through <strong>both</strong> <code>true</code> and <code>false</code>,
+so neither (s2) nor (s4) can be verified.</p>
+<p>Interestingly enough, adding a rule like <code>false =&gt; true</code> would make both
+(s2) and (s4) hold.</p>
+</li>
+</ul>
+<h4>Example: Random Number Construct <code>rand()</code></h4>
+<p>The random number construct <code>rand()</code> is a language construct which could be
+easily conceived to be part of the syntax of a programming language:</p>
+<pre class="hljs"><code>Exp ::= &quot;rand&quot; &quot;(&quot; &quot;)&quot;
+</code></pre>
+<p>The intended semantics of <code>rand()</code> is that it can rewrite to any integer in
+a single step. This could be expressed as the following following infinitely
+many rules.</p>
+<pre class="hljs"><code>rule  rand() =&gt; 0
+rule  rand() =&gt; 1
+rule  rand() =&gt; 2
+  ...    ...
+rule rand() =&gt; (-1)
+rule rand() =&gt; (-2)
+  ...    ...
+</code></pre>
+<p>Since we need an instance of the rule for <strong>every</strong> integer, one could summarize
+the above infinitely many rules with the rule</p>
+<pre class="hljs"><code>rule rand() =&gt; I:Int [unboundVariables(I)]
+</code></pre>
+<p>Note that <code>I</code> occurs only in the RHS in the rule above, and thus the rule
+needs the <code>unboundVariables(I)</code> attribute to signal that this is intentionally.</p>
+<p>One can define variants of <code>rand()</code> by further constraining the output variable
+as a precondition to the rule.</p>
+<h5>Rand-like examples</h5>
+<ol>
+<li>
+<p><code>randBounded(M,N)</code> can rewrite to any integer between <code>M</code> and <code>N</code></p>
+<pre class="hljs"><code>syntax Exp ::= randBounded(Int, Int)
+rule randBounded(M, N) =&gt; I
+  requires M &lt;=Int I andBool I &lt;=Int N
+  [unboundVariables(I)]
+</code></pre>
+</li>
+<li>
+<p><code>randInList(Is)</code> takes a list <code>Is</code> of items
+and can rewrite in one step to any item in <code>Is</code>.</p>
+<pre class="hljs"><code>syntax Exp ::= randInList (List)
+rule randInList(Is) =&gt; I
+  requires I inList Is
+  [unboundVariables(I)]
+</code></pre>
+</li>
+<li>
+<p><code>randNotInList(Is)</code> takes a list <code>Is</code> of items
+and can rewrite in one step to any item <em>not</em> in <code>Is</code>.</p>
+<pre class="hljs"><code>syntax Exp ::= randNotInList (List)
+rule randNotInList(Is) =&gt; I
+  requires notBool(I inList Is)
+  [unboundVariables(I)]
+</code></pre>
+</li>
+<li>
+<p><code>randPrime()</code>, can rewrite to any <em>prime number</em>.</p>
+<pre class="hljs"><code>syntax Exp ::= randPrime ()
+rule randPrime() =&gt; X:Int
+  requires isPrime(X)
+  [unboundVariables(X)]
+</code></pre>
+<p>where <code>isPrime(_)</code> is a predicate that can be defined in the usual way.</p>
+</li>
+</ol>
+<p>Note 1: all above are not function symbols, but language constructs.</p>
+<p>Note 2: Currently the frontend does not allow rules with universally quantified
+variables in the RHS which are not bound in the LHS.</p>
+<p>Note 3. Allowing these rules in a concrete execution engine would require an
+algorithm for generating concrete instances for such variables, satisfying the
+given constraints; thus the <code>unboundVariables</code> attribute serves two purposes:</p>
+<ul>
+<li>to allow such rules to pass the variable checks, and</li>
+<li>to signal (concrete execution) backends that specialized algorithm would be
+needed to instantiate these variables.</li>
+</ul>
+<h4>Example: Fresh Integer Construct <code>fresh(Is)</code></h4>
+<p>The fresh integer construct <code>fresh(Is)</code> is a language construct.</p>
+<pre class="hljs"><code>Exp ::= ... | &quot;fresh&quot; &quot;(&quot; List{Int} &quot;)&quot;
+</code></pre>
+<p>The intended semantics of <code>fresh(Is)</code> is that it can always rewrite to an
+integer that in not in <code>Is</code>.</p>
+<p>Note that <code>fresh(Is)</code> and <code>randNotInList(Is)</code> are different; the former
+does not <em>need</em> to be able to rewrite to every integers not in <code>Is</code>,
+while the latter requires so.</p>
+<p>For example, it is <em>correct</em> to implement <code>fresh(Is)</code> so it always returns the
+smallest positive integer that is not in <code>Is</code>, but same implementation for
+<code>randNotInList(Is)</code> might be considered <em>inadequate</em>.
+In other words, there exist multiple correct implementations of <code>fresh(Is)</code>,
+some of which may be deterministic, but there only exists a unique
+implementation of <code>randNotInList(Is)</code>.
+Finally, note that <code>randNotInList(Is)</code> is a <em>correct</em> implementation
+for <code>fresh(Is)</code>; Hence, concrete execution engines can choose to handle
+such rules accordingly.</p>
+<p>We use the following K syntax to define <code>fresh(Is)</code></p>
+<pre class="hljs"><code>syntax Exp ::= fresh (List{Int})
+rule fresh(Is:List{Int}) =&gt; ?I:Int
+  ensures notBool (?I inList{Int} Is)
+</code></pre>
+<p>A variant of this would be a <code>choiceInList(Is)</code> language construct which would
+choose some number from a list:</p>
+<pre class="hljs"><code>syntax Exp ::= choiceInList (List{Int})
+rule choiceInList(Is:List{Int}) =&gt; ?I:Int
+  ensures ?I inList{Int} Is
+</code></pre>
+<p>Note: This definition is different from one using a <code>!</code> variable to indicate
+freshness because using <code>!</code> is just syntactic sugar for generating globally
+unique instances and relies on a special configuration cell, and cannot be
+constrained, while the <code>fresh</code> described here is local and can be constrained.
+While the first is more appropriate for concrete execution, this might be
+better for symbolic execution / program verification.</p>
+<h4>Example: Arbitrary Number (Unspecific Function) <code>arb()</code></h4>
+<p>The function <code>arb()</code> is not a PL construct, but a mathematical function.
+Therefore, its definition should not be interpreted as an execution step, but
+rather as an equality.</p>
+<p>The intended semantics of <code>arb()</code> is that it is an unspecified nullary function.
+The exact return value of <code>arb()</code> is unspecified in the semantics but up to the
+implementations.
+However, being a mathematical function, <code>arb()</code> must return the same value in
+any one implementation.</p>
+<p>We do not need special frontend syntax to define <code>arb()</code>.
+We only need to define it in the usual way as a function
+(instead of a language construct), and provide no axioms for it.
+The <code>functional</code> attribute ensures that the function is total, i.e.,
+that it evaluates to precisely one value for each input.</p>
+<h5>Variants</h5>
+<p>There are many variants of <code>arb()</code>. For example, <code>arbInList(Is)</code> is
+an unspecified function whose return value must be an element from <code>Is</code>.</p>
+<p>Note that <code>arbInList(Is)</code> is different from <code>choiceInList(Is)</code>, because
+<code>choiceInList(Is)</code> <em>transitions</em> to an integer in <code>Is</code> (could be a different one
+each time it is used), while <code>arbInList(Is)</code> <em>is equal to</em> a (fixed)
+integer not in <code>Is</code>.</p>
+<p>W.r.t. the <code>arb</code> variants, we can use <code>?</code> variables and the <code>function</code>
+annotation to signal that we&apos;re defining a function and the value of the
+function is fixed, but non-determinate.</p>
+<pre class="hljs"><code>syntax Int ::= arbInList(List{Int}) [function]
+rule arbInList(Is:List{Int}) =&gt; ?I:Int
+  ensures ?I inList{Int} Is
+</code></pre>
+<p>If elimination of existentials in equational rules is needed, one possible
+approach would be through <a href="https://en.wikipedia.org/wiki/Skolem_normal_form" target="_blank" rel="noopener">Skolemization</a>,
+i.e., replacing the <code>?</code> variable with a new uninterpreted function depending
+on the regular variables present in the function.</p>
+<h4>Example: Interval (Non-function Symbols) <code>interval()</code></h4>
+<p>The symbol <code>interval(M,N)</code> is not a PL construct, nor a function in the
+first-order sense, but a proper matching-logic symbol, whose interpretation is
+in the powerset of its domain.
+Its axioms will not use rewrites but equalities.</p>
+<p>The intended semantics of <code>interval(M,N)</code> is that it equals the <em>set</em> of
+integers that are larger than or equal to <code>M</code> and smaller than or equal to <code>N</code>.</p>
+<p>Since expressing the axiom for <code>interval</code> requires an an existential
+quantification on the right-hand-side, thus making it a non-functional symbol
+defined through an equation, using <code>?</code> variables might be confusing since their
+usage would be different from that presented in the previous sections.</p>
+<p>Hence, the proposal to support this would be to write this as a proper ML rule.
+A possible syntax for this purpose would be:</p>
+<pre class="hljs"><code>eq  interval(M,N)
+    ==
+    #Exists X:Int .
+        (X:Int #And { X &gt;=Int M #Equals true } #And { X &lt;=Int N #Equals true })
+</code></pre>
+<p>Additionally, the symbol declaration would require a special attribute to
+signal the fact that it is not a constructor but a <em>defined</em> symbol.</p>
+<p>Since this feature is not clearly needed by K users at the moment, it is only
+presented here as an example; its implementation will be postponed for such time
+when its usefulness becomes apparent.</p>
+<h2>Parser Generation</h2>
+<p>In addition to on-the-fly parser generation using <code>kast</code>, K is capable of
+ahead-of-time parser generation of LR(1) or GLR parsers using Flex and Bison.
+This can be done one of two different ways.</p>
+<ol>
+<li>You can explicitly request for a particular parser to be generated by
+invoking <code>kast --gen-parser &lt;outputFile&gt;</code> or
+<code>kast --gen-glr-parser &lt;outputFile&gt;</code> respectively. <code>kast</code> will then create a
+parser based on the same command line flags that govern on-the-fly parsing,
+like <code>-s</code> to specify the starting sort, and <code>-m</code> to specify the module to
+parse under. By default, this generates a parser for the sort of the <code>$PGM</code>
+configuration variable in the main syntax module of the definition.</li>
+<li>You can request that a specific set of parsers be generated for all the
+configuration variables of your definition by passing the
+<code>--gen-bison-parser</code> or <code>--gen-glr-bison-parser</code> flags to <code>kompile</code>.
+<code>kompile</code> will decide the sorts to use as start symbols based on the sorts
+in the configuration declaration for the configuration variables. The <code>$PGM</code>
+configuration variable will be generated based on the main syntax module
+of the definition. The user must explicitly annotate the configuration
+declaration with the other modules to use to parse the other configuration
+variables as attributes. For example, if I have the following cell in the
+configuration declaration: <code>&lt;cell&gt; foo($FOO:Foo, $BAR:Bar) &lt;/cell&gt;</code>,
+One might annotate it with the attribute pair <code>parser=&quot;FOO, TEST; BAR, TEST2&quot;</code>
+to indicate that configuration variable <code>$FOO</code> should be parsed in the
+<code>TEST</code> module, and configuration variable <code>$BAR</code> should be parsed in the
+<code>TEST2</code> module. If the user forgets to annotate the declaration with the
+parser attribute, only the <code>$PGM</code> parser will be generated.</li>
+</ol>
+<p>Bison-generated parsers are extremely fast compared to <code>kast</code>, but they have
+some important limitations:</p>
+<ul>
+<li>Bison parsers will always output Kore. You can then pass the resulting AST
+directly to <code>llvm-krun</code> or <code>kore-exec</code> and bypass the <code>krun</code> frontend, making
+them very fast, but lower-level.</li>
+<li>Bison parsers do not yet support macros. This may change in a future release.
+Note that you can use anywhere rules instead of macros in most cases to get
+around this limitation, although they will not benefit from unparsing via the
+<code>alias</code> attribute.</li>
+<li>Obligation falls on the user to ensure that the grammar they write is LR(1)
+if they choose to use LR(1) parsing. If this does not happen, the parser
+generated will have shift/reduce or reduce/reduce conflicts and the parser
+may behave differently than <code>kast</code> would (<code>kast</code> is a GLL parser, ie, it
+is based on LL parsers and parses all unambiguous context-free grammars).
+K provides an attribute, <code>not-lr1</code>, which can be applied to modules known to
+not be LR(1), and will trigger a warning if the user attempts to generate an
+LR(1) parser which recursively imports that module.</li>
+<li>If you are using LR(1) based parsing, the <code>prefer</code> and <code>avoid</code> attributes are
+ignored. It is only possible to implement these attributes by means of
+generalized LL or LR parsing and a postprocessing on the AST to remove the
+undesirable ambiguity.</li>
+<li>Obligation falls on the user to ensure that the grammar they write has as
+few conflicts as possible if they are using GLR parsing. Bison&apos;s GLR support
+is quite primitive, and in the worst case it can use exponential space and
+time to parse a program, which generally leads the generated parser to report
+&quot;memory exhausted&quot;, indicating that the parse could not be completed within
+the stack space allocated by Bison. It&apos;s best to ensure that the grammar is
+as close to LR(1) as possible and only utilizes conflicts where absolutely
+necessary. One tool that can be used to facilitate this is to pass
+<code>--bison-lists</code> to kompile. This will disable support for the <code>List{Sort}</code>
+syntax production, and it will make <code>NeList{Sort}</code> left associative, but the
+resulting productions generated for <code>NeList{Sort}</code> will be LR(1) and use bounded
+stack space.</li>
+<li>If the grammar you are parsing is context-sensitive (for example, because
+it requires a symbol table to parse), one thing you can do to make this
+language parse in K is to implement the language as an ambiguous grammar.
+Bison&apos;s GLR parser will generate an <code>amb</code> production that is parametric in
+the sort of the ambiguity. You can then import the <code>K-AMBIGUITIES</code> module
+and use rewriting to resolve the ambiguities using whatever preprocessing
+mechanisms you prefer.</li>
+</ul>
+<h2>Location Information</h2>
+<p>K is able to insert file, line, and column metadata into the parse tree on a
+per-sort basis when parsing using a bison-generated parser. To enable this,
+mark the sort with the <code>locations</code> attribute.</p>
+<pre class="hljs"><code>  syntax Exp [locations]
+  syntax Exp ::= Exp &quot;/&quot; Exp | Int
+</code></pre>
+<p>K implicitly wraps productions of these sorts in a <code>#location</code> term (see the
+<code>K-LOCATIONS</code> module in <code>kast.md</code>). The metadata can thus be accessed with
+ordinary rewrite rules:</p>
+<pre class="hljs"><code>  rule #location(_ / 0, File, StartLine, _StartColumn, _EndLine, _EndColumn) =&gt;
+  &quot;Error: Division by zero at &quot; +String File +String &quot;:&quot; Int2String(StartLine) 
+</code></pre>
+<h2>Unparsing</h2>
+<p>A number of factors go into how terms are unparsed in K. Here we describe some
+of the features the user can use to control how unparsing happens.</p>
+<h3>Brackets</h3>
+<p>One of the phases that the unparser goes through is to insert productions
+tagged with the <code>bracket</code> attribute where it believes this is necessary
+in order to create a correct string that will be parsed back into the original
+AST. The most common case of this is in expression grammars. For example,
+consider the following grammar:</p>
+<pre class="hljs"><code>syntax Exp ::= Int
+             | Exp &quot;*&quot; Exp
+             &gt; Exp &quot;+&quot; Exp
+</code></pre>
+<p>Here we have declared that expressions can contain integer addition and
+multiplication, and that multiplication binds tighter than addition. As a
+result, when writing a program, if we want to write an expression that first
+applies addition, then multiplication, we must use brackets: <code>(1 + 2) * 3</code>.
+Similarly, if we have such an AST, we must <strong>insert</strong> brackets into the AST
+in order to faithfully unparse the term in a manner that will be parsed back
+into the same ast, because if we do not, we end up unparsing the term as
+<code>1 + 2 * 3</code>, which will be parsed back as <code>1 + (2 * 3)</code> because of the priority
+declaration in the grammar.</p>
+<p>You can control how the unparser will insert such brackets by adding a
+production with the <code>bracket</code> attribute and the correct sort. For example, if,
+instead of parentheses, you want to use curly braces, you could write:</p>
+<pre class="hljs"><code>syntax Exp ::= &quot;{&quot; Exp &quot;}&quot; [bracket]
+</code></pre>
+<p>This would signal to the unparser how brackets should look for terms of sort
+<code>Exp</code>, and it will use this syntax when unparsing terms of sort <code>Exp</code>.</p>
+<h3>Commutative collections</h3>
+<p>One thing that K will do (unless you pass the <code>--no-sort-collections</code> flag to
+krun) is to sort associative, commutative collections (such as <code>Set</code> and <code>Map</code>)
+alphanumerically. For example, if I have a collection whose keys are sort <code>Id</code>
+and they have the values a, b, c, and d, then unparsing will always print
+first the key a, then b, then c, then d, because this is the alphabetic order
+of these keys when unparsed.</p>
+<p>Furthermore, K will sort numeric keys numerically. For example, if I have a
+collection whose keys are <code>1, 2, 5, 10, 30</code>, it will first display 1, then 2,
+then 5, then 10, then 30, because it will sort these keys numerically. Note
+that this is different than an alphabetic sort, which would sort them as
+<code>1, 10, 2, 30, 5</code>. We believe the former is more intuitive to users.</p>
+<h3>Substitution filtering</h3>
+<p>K will remove substitution terms corresponding to anonymous variables when
+using the <code>--pattern</code> flag if those anonymous variables provide no information
+about the named variables in your serach pattern. You can disable this behavior
+by passing <code>--no-substitution-filtering</code> to krun. When this flag is not passed,
+and you are using the Haskell backend, any equality in a substitution (ie, an
+<code>#Equals</code> under an <code>#And</code> under an <code>#Or</code>), will be hidden from the user if the
+left hand side is a variable that was anonymous in the <code>--pattern</code> passed by
+the user, unless that variable appears elsewhere in the substitution. If you
+want to see that variable in the substitution, you can either disable this
+filtering, or give that variable a name in the original search pattern.</p>
+<h3>Variable alpha renaming</h3>
+<p>K will automatically rename variables that appear in the output configuration.
+Similar to commutative collections, this is done to <strong>normalize</strong> the resulting
+configuration so that equivalent configurations will be printed identically
+regardless of how they happen to be reached. This pass can be disabled by
+passing <code>--no-alpha-renaming</code> to krun.</p>
+<h3>Macro expansion</h3>
+<p>K will apply macros in reverse on the output configuration if the macro was
+created with the <code>alias</code> or <code>alias-rec</code> attribute. See the section on macro
+expansion for more details.</p>
+<h3>Formatting</h3>
+<h4><code>format</code> attribute</h4>
+<p>K allows you to control how terms are unparsed using the <code>format</code> attribute.
+By default, a domain value is unparsed by printing its string value verbatim,
+and an application pattern is unparsed by printing its terminals and children
+in the sequence implied by its concrete syntax, separated by spaces. However,
+K gives you complete control over how you want to unparse the symbol.</p>
+<p>A format attribute is a string containing zero or more escape sequences that
+tell K how to unparse the symbol. Escape sequences begin with a &apos;%&apos; and are
+followed by either an integer, or a single non-digit character. Below is a
+list of escape sequences recognized by the formatter:</p>
+<table>
+<thead>
+<tr>
+<th>Escape Sequence</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>n</td>
+<td>Insert &apos;\n&apos; followed by the current indentation level</td>
+</tr>
+<tr>
+<td>i</td>
+<td>Increase the current indentation level by 1</td>
+</tr>
+<tr>
+<td>d</td>
+<td>Decrease the current indentation level by 1</td>
+</tr>
+<tr>
+<td>c</td>
+<td>Move to the next color in the list of colors for this</td>
+</tr>
+</tbody>
+</table>
+<pre><code>                production                                                |
+</code></pre>
+<p>| r               | Reset color to the default foreground color for the
+terminal                                                  |
+| an integer      | Print a terminal or nonterminal from the production.
+The integer is treated as a 1-based index into the
+terminals and nonterminals of the production.</p>
+<pre><code>                If the offset refers to a terminal, move to the next color
+                in the list of colors for this production, print the value
+                of that terminal, then reset the color to the default
+                foreground color for the terminal.
+
+                If the offset refers to a regular expression terminal, it
+                is an error.
+
+                If the offset refers to a nonterminal, print the unparsed
+                representation of the corresponding child of the current
+                term.                                                     |
+</code></pre>
+<p>| any other char  | Print that character verbatim                             |</p>
+<p>For more information on how colors work, see below.</p>
+<h4><code>color</code> and <code>colors</code> attributes</h4>
+<p>K allows you to take advantage of ANSI terminal codes for foreground color
+in order to colorize output pretty-printed by the unparser. This is controlled
+via the <code>color</code> and <code>colors</code> attributes of productions. These attributes
+combine with the <code>format</code> attribute to control how a term is colorized.</p>
+<p>The first thing to understand about how colorization works is that the <code>color</code>
+and <code>colors</code> attributes are used to construct a <strong>list</strong> of colors associated
+with each production, and the format attribute then uses that list to choose
+the color for each part of the production. For more information on how the
+format attribute chooses a color from the list, see above, but essentially,
+each terminal or <code>%c</code> in the format attribute advances the pointer in the list
+by one element, and terminals and <code>%r</code> reset the current color to the default
+foreground color of the terminal afterwards.</p>
+<p>There are two ways you can construct a list of colors associated with a
+production:P</p>
+<ul>
+<li>
+<p>The <code>color</code> attribute creates the entire list all with the same color, as
+specified by the value of the attribute. When combined with the default format
+attribute, this will color all the terminals in that production that color, but
+more advanced techniques can be used as well.</p>
+</li>
+<li>
+<p>The <code>colors</code> attribute creates the list from a manual, comma-separated list
+of colors. The attribute is invalid if the length of the list is not equal to
+the number of terminals in the production plus the number of <code>%c</code> substrings in
+the <code>format</code> attribute.</p>
+</li>
+</ul>
+<h2>Debugging</h2>
+<p>The LLVM Backend has support for integration with GDB. You can run the debugger
+on a particular program by passing the <code>--debugger</code> flag to krun, or by
+invoking the llvm backend interpreter directly. Below we provide a simple
+tutorial to explain some of the basic commands supported by the LLVM backend.</p>
+<h3>The K Definition</h3>
+<p>Here is a sample K definition we will use to demonstrate debugging
+capabilities:</p>
+<pre class="hljs"><code>module TEST
+  imports INT
+
+  configuration &lt;k&gt; foo(5) &lt;/k&gt;
+  rule [test]: I:Int =&gt; I +Int 1 requires I &lt;Int 10
+
+  syntax Int ::= foo(Int) [function]
+  rule foo(I) =&gt; 0 -Int I
+
+endmodule
+</code></pre>
+<p>You should compile this definition with <code>--backend llvm -ccopt -g</code> and without
+<code>-ccopt -O2</code> in order to use the debugger most effectively.</p>
+<h3>Stepping</h3>
+<p><strong>Important:</strong> When you first run <code>krun</code> with option <code>--debugger</code>, GDB will
+instruct you on how to modify ~/.gdbinit to enable printing abstract syntax
+of K terms in the debugger. If you do not perform this step, you can still
+use all the other features, but K terms will be printed as their raw address
+in memory.</p>
+<p>You can break before every step of execution is taken by setting a breakpoint
+on the <code>step</code> function:</p>
+<pre class="hljs"><code>(gdb) break definition.kore:step
+Breakpoint 1 at 0x25e340
+(gdb) run
+Breakpoint 1, 0x000000000025e340 in step (subject=`&lt;generatedTop&gt;{}`(`&lt;k&gt;{}`(`kseq{}`(`inj{Int{}, KItem{}}`(#token(&quot;0&quot;, &quot;Int&quot;)),dotk{}(.KList))),`&lt;generatedCounter&gt;{}`(#token(&quot;0&quot;, &quot;Int&quot;))))
+(gdb) continue
+Continuing.
+
+Breakpoint 1, 0x000000000025e340 in step (subject=`&lt;generatedTop&gt;{}`(`&lt;k&gt;{}`(`kseq{}`(`inj{Int{}, KItem{}}`(#token(&quot;1&quot;, &quot;Int&quot;)),dotk{}(.KList))),`&lt;generatedCounter&gt;{}`(#token(&quot;0&quot;, &quot;Int&quot;))))
+(gdb) continue 2
+Will ignore next crossing of breakpoint 1.  Continuing.
+
+Breakpoint 1, 0x000000000025e340 in step (subject=`&lt;generatedTop&gt;{}`(`&lt;k&gt;{}`(`kseq{}`(`inj{Int{}, KItem{}}`(#token(&quot;3&quot;, &quot;Int&quot;)),dotk{}(.KList))),`&lt;generatedCounter&gt;{}`(#token(&quot;0&quot;, &quot;Int&quot;))))
+(gdb)
+</code></pre>
+<h3>Breaking on a specific rule</h3>
+<p>You can break when a rule is applied by giving the rule a rule label. If the
+module name is TEST and the rule label is test, you can break when the rule
+applies by setting a breakpoint on the <code>TEST.test.rhs</code> function:</p>
+<pre class="hljs"><code>(gdb) break TEST.test.rhs
+Breakpoint 1 at 0x25e250: file /home/dwightguth/test/./test.k, line 4.
+(gdb) run
+Breakpoint 1, TEST.test.rhs (VarDotVar0=`&lt;generatedCounter&gt;{}`(#token(&quot;0&quot;, &quot;Int&quot;)), VarDotVar1=dotk{}(.KList), VarI=#token(&quot;0&quot;, &quot;Int&quot;)) at /home/dwightguth/test/./test.k:4
+4         rule [test]: I:Int =&gt; I +Int 1 requires I &lt;Int 10
+(gdb)
+</code></pre>
+<p>Note that the substitution associated with that rule is visible in the
+description of the frame.</p>
+<p>You can also break when a side condition is applied using the <code>TEST.test.sc</code>
+function:</p>
+<pre class="hljs"><code>(gdb) break TEST.test.sc
+Breakpoint 1 at 0x25e230: file /home/dwightguth/test/./test.k, line 4.
+(gdb) run
+Breakpoint 1, TEST.test.sc (VarI=#token(&quot;0&quot;, &quot;Int&quot;)) at /home/dwightguth/test/./test.k:4
+4         rule [test]: I:Int =&gt; I +Int 1 requires I &lt;Int 10
+(gdb)
+</code></pre>
+<p>Note that every variable used in the side condition can have its value
+inspected when stopped at this breakpoint, but other variables are not visible.</p>
+<p>You can also break on a rule by its location:</p>
+<pre class="hljs"><code>(gdb) break test.k:4
+Breakpoint 1 at 0x25e230: test.k:4. (2 locations)
+(gdb) run
+Breakpoint 1, TEST.test.sc (VarI=#token(&quot;0&quot;, &quot;Int&quot;)) at /home/dwightguth/test/./test.k:4
+4         rule [test]: I:Int =&gt; I +Int 1 requires I &lt;Int 10
+(gdb) continue
+Continuing.
+
+Breakpoint 1, TEST.test.rhs (VarDotVar0=`&lt;generatedCounter&gt;{}`(#token(&quot;0&quot;, &quot;Int&quot;)), VarDotVar1=dotk{}(.KList), VarI=#token(&quot;0&quot;, &quot;Int&quot;)) at /home/dwightguth/test/./test.k:4
+4         rule [test]: I:Int =&gt; I +Int 1 requires I &lt;Int 10
+(gdb) continue
+Continuing.
+
+Breakpoint 1, TEST.test.sc (VarI=#token(&quot;1&quot;, &quot;Int&quot;)) at /home/dwightguth/test/./test.k:4
+4         rule [test]: I:Int =&gt; I +Int 1 requires I &lt;Int 10
+(gdb)
+</code></pre>
+<p>Note that this sets a breakpoint at two locations: one on the side condition
+and one on the right hand side. If the rule had no side condition, the first
+would not be set. You can also view the locations of the breakpoints and
+disable them individually:</p>
+<pre class="hljs"><code>(gdb) info breakpoint
+Num     Type           Disp Enb Address            What
+1       breakpoint     keep y   &lt;MULTIPLE&gt;
+        breakpoint already hit 3 times
+1.1                         y     0x000000000025e230 in TEST.test.sc at /home/dwightguth/test/./test.k:4
+1.2                         y     0x000000000025e250 in TEST.test.rhs at /home/dwightguth/test/./test.k:4
+(gdb) disable 1.1
+(gdb) continue
+Continuing.
+
+Breakpoint 1, TEST.test.rhs (VarDotVar0=`&lt;generatedCounter&gt;{}`(#token(&quot;0&quot;, &quot;Int&quot;)), VarDotVar1=dotk{}(.KList), VarI=#token(&quot;1&quot;, &quot;Int&quot;)) at /home/dwightguth/test/./test.k:4
+4         rule [test]: I:Int =&gt; I +Int 1 requires I &lt;Int 10
+(gdb) continue
+Continuing.
+
+Breakpoint 1, TEST.test.rhs (VarDotVar0=`&lt;generatedCounter&gt;{}`(#token(&quot;0&quot;, &quot;Int&quot;)), VarDotVar1=dotk{}(.KList), VarI=#token(&quot;2&quot;, &quot;Int&quot;)) at /home/dwightguth/test/./test.k:4
+4         rule [test]: I:Int =&gt; I +Int 1 requires I &lt;Int 10
+(gdb)
+</code></pre>
+<p>Now only the breakpoint when the rule applies is enabled.</p>
+<h3>Breaking on a function</h3>
+<p>You can also break when a particular function in your semantics is invoked:</p>
+<pre class="hljs"><code>(gdb) info functions foo
+All functions matching regular expression &quot;foo&quot;:
+
+File /home/dwightguth/test/./test.k:
+struct __mpz_struct *Lblfoo&apos;LParUndsRParUnds&apos;TEST&apos;UndsUnds&apos;Int(struct __mpz_struct *);
+(gdb) break Lblfoo&apos;LParUndsRParUnds&apos;TEST&apos;UndsUnds&apos;Int
+Breakpoint 1 at 0x25e640: file /home/dwightguth/test/./test.k, line 6.
+(gdb) run
+Breakpoint 1, Lblfoo&apos;LParUndsRParUnds&apos;TEST&apos;UndsUnds&apos;Int (_1=#token(&quot;1&quot;, &quot;Int&quot;)) at /home/dwightguth/test/./test.k:6
+6         syntax Int ::= foo(Int) [function]
+(gdb)
+</code></pre>
+<p>In this case, the variables have numbers instead of names because the names of
+arguments in functions in K come from rules, and we are stopped before any
+specific rule has applied. For example, <code>_1</code> is the first argument to the
+function.</p>
+<p>You can also set a breakpoint in this location by setting it on the line
+associated with its production:</p>
+<pre class="hljs"><code>(gdb) break test.k:6
+Breakpoint 1 at 0x25e640: file /home/dwightguth/test/./test.k, line 6.
+(gdb) run
+Breakpoint 1, Lblfoo&apos;LParUndsRParUnds&apos;TEST&apos;UndsUnds&apos;Int (_1=#token(&quot;1&quot;, &quot;Int&quot;)) at /home/dwightguth/test/./test.k:6
+6         syntax Int ::= foo(Int) [function]
+</code></pre>
+<p>These two syntaxes are equivalent; use whichever is easier for you.</p>
+<p>You can also view the stack of function applications:</p>
+<pre class="hljs"><code>(gdb) bt
+#0  Lblfoo&apos;LParUndsRParUnds&apos;TEST&apos;UndsUnds&apos;Int (_1=#token(&quot;1&quot;, &quot;Int&quot;)) at /home/dwightguth/test/./test.k:6
+#1  0x000000000025e5f8 in apply_rule_111 (VarDotVar0=`&lt;generatedCounter&gt;{}`(#token(&quot;0&quot;, &quot;Int&quot;)), VarDotVar1=dotk{}(.KList)) at /home/dwightguth/test/./test.k:9
+#2  0x0000000000268a52 in take_steps ()
+#3  0x000000000026b7b4 in main ()
+(gdb)
+</code></pre>
+<p>Here we see that <code>foo</code> was invoked while applying the rule on line 9 of test.k,
+and we also can see the substitution of that rule. If foo was evaluated while
+evaluating another function, we would also be able to see the arguments of that
+function as well, unless the function was tail recursive, in which case no
+stack frame would exist once the tail call was performed.</p>
+<h3>Breaking on a set of rules or functions</h3>
+<p>Using <code>rbreak &lt;regex&gt;</code> you can set breakpoints on multiple functions.</p>
+<ul>
+<li>
+<p><code>rbreak Lbl</code> - sets a breakpoint on all non hooked <code>function</code>s</p>
+</li>
+<li>
+<p><code>rbreak Lbl.*TEST</code> - sets a breakpoint on all <code>function</code>s from module <code>TEST</code></p>
+</li>
+<li>
+<p><code>rbreak hook_INT</code> - sets a breakpoint on all hooks from module <code>INT</code></p>
+</li>
+</ul>
+<h3>Other debugger issues</h3>
+<ul>
+<li><code>&lt;optimized out&gt;</code> try kompiling without <code>-O1</code>, <code>-O2</code>, or <code>-O3</code>.</li>
+<li><code>(gdb) break definition.kore:break -&gt; No source file named definition.kore.</code>
+send <code>-ccopt -g</code> to kompile in order to generate debug info symbols.</li>
+</ul>
+<h2>Undocumented</h2>
+<p>Backend features not yet given documentation:</p>
+<ul>
+<li>Parser of KORE terms and definitions</li>
+<li>Term representation of K terms</li>
+<li>Hooked sorts and symbols</li>
+<li>Substituting a substitution into the RHS of a rule
+<ul>
+<li>domain values</li>
+<li>functions</li>
+<li>variables</li>
+<li>symbols</li>
+<li>polymorphism</li>
+<li>hooks</li>
+<li>injection compaction</li>
+<li>overload compaction</li>
+</ul>
+</li>
+<li>Pattern Matching / Unification of subject and LHS of rule
+<ul>
+<li>domain values</li>
+<li>symbols</li>
+<li>side conditions</li>
+<li>and/or patterns</li>
+<li>list patterns</li>
+<li>nonlinear variables</li>
+<li>map/set patterns
+<ul>
+<li>deterministic</li>
+<li>nondeterministic</li>
+</ul>
+</li>
+<li>modulo injections</li>
+<li>modulo overloads</li>
+</ul>
+</li>
+<li>Stepping
+<ul>
+<li>initialization</li>
+<li>termination</li>
+</ul>
+</li>
+<li>Print kore terms</li>
+<li>Equality/comparison of terms</li>
+<li>Owise rules</li>
+<li>Strategy #STUCK axiom</li>
+<li>User substitution
+<ul>
+<li>binders</li>
+<li>kvar</li>
+</ul>
+</li>
+</ul>
+<p>To get a complete list of hooks supported by K, you can run:</p>
+<pre class="hljs"><code>grep -P -R &quot;(?&lt;=[^-])hook\([^)]*\)&quot; k-distribution/include/kframework/builtin/ \
+     --include &quot;*.k&quot; -ho | \
+sed &apos;s/hook(//&apos; | sed &apos;s/)//&apos; | sort | uniq | grep -v org.kframework
+</code></pre>
+<p>All of these hooks will also eventually need documentation.</p>
+</body></html></div>
+        </main>
+      </div>
+    </div>
+<footer class="app-footer text-md-left text-center">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-md-2 mb-md-0 mb-4">
+        <span class="pr-md-5 pr-0 py-3">
+          <a href="https://runtimeverification.com" target="_blank">
+            <picture>
+              <source
+                srcset="../assets/img/rv-logo-dark.png"
+                media="(prefers-color-scheme: dark)"
+              />
+              <img
+                class="pr-3 footer-logo"
+                src="../assets/img/rv-logo.png"
+                alt="Runtime Verification Inc logo"
+              />
+            </picture>
+          </a>
+        </span>
+      </div>
+      <div class="col-md-6 mb-md-0 mb-4"></div>
+      <div class="col-md-4 text-md-right">
+        <p class="copyright">
+          &copy; 2020 Runtime Verification Inc. All right reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script
+  async
+  src="https://www.googletagmanager.com/gtag/js?id=UA-163311512-1"
+></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag() {
+    dataLayer.push(arguments);
+  }
+  gtag("js", new Date());
+  gtag("config", "UA-163311512-1");
+</script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Typist/1.2/typist.min.js"></script>
+    <script src="../assets/js/index.js"></script>
+  </body>
+</html>
