@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+<meta charset="utf-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+/>
+<meta
+  name="description"
+  content="Design and implement your programming language and software analysis tools with mathematical rigor."
+/>
+<meta name="keywords" content="runtime, verification, rv, k" />
+<meta name="author" content="K | Runtime Verification Inc" />
+<meta name="robots" content="index, follow" />
+
+<!--favicon icon-->
+<link rel="icon" type="image/png" href="../../../../../../assets/img/favicon.ico" />
+
+<title>
+  K | Runtime Verification Inc
+</title>
+
+<!-- <base href="/k/" /> -->
+
+<!--web fonts-->
+<link
+  href="https://fonts.googleapis.com/css?family=Nunito:300,400,600,700,800"
+  rel="stylesheet"
+/>
+<link
+  href="https://fonts.googleapis.com/css?family=Lora:400i"
+  rel="stylesheet"
+/>
+
+<link
+  href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.14.0/css/all.min.css"
+  rel="stylesheet"
+/>
+
+<link href="../../../../../../assets/css/index.css" rel="stylesheet" />
+
+<!--[if (gt IE 9) |!(IE)]><!-->
+<!--<link rel="stylesheet" href="/assets/vendor/custom-nav/css/effects/fade-menu.css"/>-->
+<!-- <link rel="stylesheet" href="../../../../../../assets/k/vl-nav/css/effects/slide-menu.css" /> -->
+<!--<![endif]-->
+
+  </head>
+
+  <body>
+<header
+  class="navbar navbar-expand navbar-dark flex-column flex-md-row bd-navbar"
+>
+  <a class="logo-link" href="../../../../../../index.html">
+    <img
+      class="logo-dark"
+      srcset="../../../../../../assets/img/k-logo.png"
+      alt="K"
+      style="height: 48px;"
+    />
+    Semantic Framework
+  </a>
+  <ul class="navbar-nav ml-md-auto">
+    <li class="nav-item">
+      <a
+        class="nav-link pl-2 pr-1 mx-1 py-3 my-n2"
+        href="https://github.com/kframework/k"
+        target="_blank"
+        rel="noopener"
+        aria-label="GitHub"
+      >
+        <i class="fab fa-github"></i>
+      </a>
+    </li>
+  </ul>
+  <a
+    class="btn btn-rv-blue d-none d-lg-inline-block mb-3 mb-md-0 ml-md-3"
+    href="../../../../../../downloads"
+    >Download</a
+  >
+</header>
+
+
+    <div class="container-fluid">
+      <div class="row flex-xl-nowrap">
+<div class="col-12 col-md-3 col-xl-2 bd-sidebar mb-3">
+  <form
+    role="search"
+    class="bd-search d-flex align-items-center justify-content-between"
+  >
+    <input
+      type="search"
+      class="form-control"
+      placeholder="Search..."
+      aria-label="Search for..."
+      autocomplete="false"
+      id="search-box"
+    />
+    <button
+      class="btn bd-search-docs-toggle d-md-none p-0 ml-3 collapsed"
+      type="button"
+      aria-label="Toggle docs navigation"
+      style="font-size: 1.4rem;"
+    >
+      <i class="fas fa-bars"></i>
+    </button>
+  </form>
+  <nav class="collapse bd-links" aria-label="Main navigation">
+    <div class="bd-toc-item">
+      <a class="bd-toc-link" href="../../../../../../">Homepage</a>
+      <a class="bd-toc-link" href="../../../../../../downloads">Downloads</a>
+      <a class="bd-toc-link" href="../../../../../../k-distribution/tutorial"
+        >K Tutorial</a
+      >
+      <a class="bd-toc-link" href="../../../../../../pending-documentation/"
+        >User documentation</a
+      >
+      <a
+        class="bd-toc-link"
+        href="../../../../../../k-distribution/include/kframework/builtin/"
+        >Builtins</a
+      >
+    </div>
+  </nav>
+</div>
+
+        <main
+          class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 bd-content"
+          role="main"
+        >
+          <div class="introduction markdown-preview">
+            <html><head></head><body><h1>LOGIK</h1>
+<p>Author: Grigore Ro&#x219;u (<a href="mailto:grosu@illinois.edu" target="_blank" rel="noopener">grosu@illinois.edu</a>)<br>
+Organization: University of Illinois at Urbana-Champaign</p>
+<p>Author: Traian Florin &#x218;erb&#x103;nu&#x21B;&#x103; (<a href="mailto:traian.serbanuta@unibuc.ro" target="_blank" rel="noopener">traian.serbanuta@unibuc.ro</a>)<br>
+Organization: University of Bucharest</p>
+<h2>Abstract</h2>
+<p>This is the <strong>K</strong> semantic definition of LOGIK, a trivial language
+capturing the essence of the logic programming paradigm.  In this
+definition, we explicitly focus on simplicity and mathematical
+clarity, not on advanced logic programming features or performance.
+Those are covered in the LOGIK++ extension under <code>examples/logik++</code>.</p>
+<p>Specifically, a LOGIK program consists of a sequence of <strong>Horn clauses</strong>
+of the form</p>
+<pre class="hljs"><code>P :- P1, P2, ..., Pn .
+</code></pre>
+<p>followed by a <strong>query</strong> of the form</p>
+<pre class="hljs"><code>?- Q1, Q2, ..., Qm .
+</code></pre>
+<p>where <code>P</code>, <code>P1</code>, <code>P2</code>, ..., <code>Pn</code>, <code>Q1</code>, <code>Q2</code>,
+..., <code>Qm</code> are <strong>literals</strong>.  The
+symbol <code>:-</code> is read &quot;if&quot;.  A literal has the form
+<code>p(T1,T2,...,Tk)</code>, where <code>p</code> is a <strong>predicate symbol</strong>
+and where <code>T1,T2,...,Tk</code> are <strong>terms</strong>.  Terms are built as
+usual, with <strong>operation symbols</strong> and <strong>variables</strong>.  A common
+convention in logic programming languages, also adopted here, is that
+variables are capitalized and operation symbols are not.  Operations
+with zero arguments are called <strong>constants</strong> and are written without
+parentheses, that is, <code>c</code> instead of <code>c()</code>.  Horn
+clauses without conditions, called <strong>facts</strong>, are written
+without <code>:-</code>, that is, <code>P.</code> instead of <code>P :- .</code>.</p>
+<p>For example, the LOGIK program below gives a few facts about a
+<code>parent</code> predicate, then several clauses defining some useful
+predicates including an <code>ancestor</code> predicate, and finally a
+query asking for those who both have ancestors and are ancestors
+themselves in the <code>parent</code> relation:</p>
+<pre class="hljs"><code>parent(david,john).
+parent(jim,david).
+parent(steve,jim).
+parent(nathan,steve).
+
+grandparent(A,B):-
+  parent(A,X),
+  parent(X,B).
+
+ancestor(A,B):-
+  parent(A,X),
+  parents(X,B).
+
+parents(X,X).
+parents(A,B):-
+  ancestor(A,B).
+
+both(X) :- ancestor(A,X), ancestor(X,B).
+
+?- both(X).
+</code></pre>
+<p>Above, we only have constant operation symbols, so these and variables
+are the only terms that can be used in predicates.  As expected, the
+LOGIK program above will give us three solutions for <code>X</code>:
+<code>david</code>, <code>steve</code>, and <code>jim</code>.  If we inline the
+<code>both(X)</code> predicate in the query, that is, if we replace the
+query with <code>?- ancestor(A,X), ancestor(X,B).</code> then we get
+10 solutions, one for for each triple <code>A</code>, <code>X</code>, and
+<code>B</code> satisfying both predicates <code>ancestor(A,X)</code> and
+<code>ancestor(X,B)</code>.</p>
+<p>As another example, the program below defines an <code>append</code>
+predicate followed by a simple goal:</p>
+<pre class="hljs"><code>append(nil,L,L).
+append(cons(H,T),L,cons(H,Z)) :- append(T,L,Z).
+
+?- append(cons(a,nil), cons(b,nil), V).
+</code></pre>
+<p>Besides the predicate symbol <code>append</code>, the program above also
+includes a constant symbol <code>nil</code> and a binary operation symbol
+<code>cons</code>.  Additionally, the query also includes two more
+constants, <code>a</code> and <code>b</code>.  The capitalized identifiers are
+all variables.  As expected, the LOGIK program above yields only one
+solution, namely <code>V = cons(a,cons(b,nil))</code>.  On the other hand,
+if we change the query to:</p>
+<pre class="hljs"><code>?- append(L1, cons(a,L2), cons(a,cons(b,cons(a,nil)))).
+</code></pre>
+<p>then LOGIK yields two solutions: one where <code>L1</code> is
+<code>cons(a,cons(b,nil))</code> and <code>L2</code> is <code>nil</code>,
+and another where <code>L1</code> is <code>nil</code> and <code>L2</code> is
+<code>cons(a,cons(b,nil))</code>.</p>
+<p>The programs above all generated <strong>ground solutions</strong>, that is,
+solutions where the query variables are mapped to ground terms (i.e.,
+terms without variables).  Let us now consider the following query:</p>
+<pre class="hljs"><code>?- append(cons(a,nil), Y, Z).
+</code></pre>
+<p>There are obviously infinitely many ground solutions for the query
+above, e.g.,<br>
+<code>Y = nil</code> and <code>Z = cons(a,nil)</code>,<br>
+<code>Y = cons(a,nil)</code> and <code>Z = cons(a,cons(a,nil))</code>,<br>
+<code>Y = cons(b,nil)</code> and <code>Z = cons(a,cons(b,nil))</code>,<br>
+<code>Y = cons(c,cons(b,nil))</code> and <code>Z = cons(a,cons(c,cons(b,nil)))</code>,<br>
+etc.  However, all the ground solutions for the query above can be
+elegantly characterized by the property that <code>Z</code> is bound to a list
+starting with <code>a</code> and followed by the list that <code>Y</code> is
+bound to.  This property can in fact be described as a <strong>symbolic solution</strong>
+to the query: <code>Z = cons(a,Y)</code> or, equivalently,
+<code>Y = Symb</code> and <code>Z = cons(a,Symb)</code>.  It is possible to
+define a ``more general than&apos;&apos; relation on such symbolic solutions,
+in the sense that the more particular solution can be obtained as a
+specialization/substitution of the more general one, and then it can
+be shown that the above is the <strong>most general solution</strong> to the
+stated query.  Logic programming languages, including our LOGIK,
+attempt to always compute such most general solutions.</p>
+<p>Logic programming languages are highly non-deterministic, in that
+several Horn clauses may be used at the same time, each possibly
+resulting in a different solution.  Implementations of logic
+programming languages consist of complex, optimized search and
+indexing algorithms, which we are not concerned with here.  Instead,
+we here take advantage of <strong>K</strong>&apos;s builtin support for search.
+Specifically, to find all the solutions of a LOGIK program, we have to
+use <code>krun</code> with the option <code>--search</code>.  However, note
+that some programs have infinitely many solutions which cannot relate
+to each other by the &quot;more general&quot; relation.  For example, the query</p>
+<pre class="hljs"><code>?- append(L1, cons(a,L2), L3) .
+</code></pre>
+<p>To address such cases and terminate, logic programming languages allow
+the user to choose how many solutions to be computed and displayed.
+In LOGIK, we can use the <code>--bound</code> option of <code>krun</code> for
+this purpose.</p>
+<p>Finally, note that some queries have no solution.  In some cases that
+is easy to detect by exhaustive analysis, such as for the following
+query:</p>
+<pre class="hljs"><code>?- append(cons(a,L1), L2, cons(b,L3)).
+</code></pre>
+<p>Logic programming languages, including LOGIK, terminate in such cases
+and report a no solution answer.  However, there are cases where
+exhaustive analysis is not sufficient, such as for the query:</p>
+<pre class="hljs"><code>?- append(cons(a,L), nil, L).
+</code></pre>
+<p>In such cases, logic programming languages do not terminate.  While
+one may devise techniques to detect non-termination in some cases,
+one cannot do it in general (same like for all Turing-complete
+languages).</p>
+<pre class="hljs"><code><span class="hljs-keyword">require</span> <span class="hljs-string">&quot;unification.k&quot;</span><span class="hljs-keyword">
+
+module</span> LOGIK-COMMON<span class="hljs-keyword">
+  imports</span> DOMAINS-SYNTAX
+</code></pre>
+<h2>Syntax</h2>
+<p>The syntax of LOGIK is straightforward: a program is a sequence of
+Horn clauses followed by a query:</p>
+<pre class="hljs"><code><span class="hljs-keyword">  syntax</span> Literal<span class="hljs-keyword">
+  syntax</span> Term ::= Literal | Literal <span class="hljs-string">&quot;(&quot;</span> Terms <span class="hljs-string">&quot;)&quot;</span><span class="hljs-keyword">
+  syntax</span> Terms ::= List{Term,<span class="hljs-string">&quot;,&quot;</span>}<span class="hljs-keyword">
+  syntax</span> Clause ::= Term <span class="hljs-string">&quot;:-&quot;</span> Terms <span class="hljs-string">&quot;.&quot;</span> | Term <span class="hljs-string">&quot;.&quot;</span><span class="hljs-keyword">
+  syntax</span> Query ::= <span class="hljs-string">&quot;?-&quot;</span> Terms <span class="hljs-string">&quot;.&quot;</span><span class="hljs-keyword">
+  syntax</span> Pgm ::= Query | Clause Pgm<span class="hljs-keyword">
+endmodule</span><span class="hljs-keyword">
+
+module</span> LOGIK-SYNTAX<span class="hljs-keyword">
+  imports</span> LOGIK-COMMON<span class="hljs-keyword">
+  imports</span> BUILTIN-ID-TOKENS
+</code></pre>
+<p>Variables and literals are defined as tokens following the conventions
+used in Prolog (variables start with _ or capital letter, while literals
+start with lower case letters):</p>
+<pre class="hljs"><code><span class="hljs-keyword">  syntax</span> #KVariable ::= r<span class="hljs-string">&quot;[A-Z_][A-Za-z0-9_]*&quot;</span>   [<span class="hljs-literal">token</span>, prec(<span class="hljs-number">2</span>)]
+                      | #UpperId                 [<span class="hljs-literal">token</span>]<span class="hljs-keyword">
+  syntax</span> Term ::= #KVariable [klabel(#SemanticCastToTerm)]<span class="hljs-keyword">
+  syntax</span> Literal ::= r<span class="hljs-string">&quot;[a-z][a-zA-Z0-9_]*&quot;</span>                 [<span class="hljs-literal">token</span>]
+                   | #LowerId                              [<span class="hljs-literal">token</span>]<span class="hljs-keyword">
+endmodule</span><span class="hljs-keyword">
+
+module</span> LOGIK<span class="hljs-keyword">
+  imports</span> LOGIK-COMMON<span class="hljs-keyword">
+  imports</span> DOMAINS<span class="hljs-keyword">
+  imports</span> UNIFICATION
+</code></pre>
+<p>Unification is at the core of logic programming.  Here we are
+going to use the predefined unification procedure (the same one we
+used in the type inferencers in Tutorial 5).</p>
+<h2>Configuration</h2>
+<p>The configuration stores each clause in its own cell for easy access,
+and the most general unifier in a cell named <code>mgu</code>, same like
+the type inferencers.  The <code>k</code> cell holds the query and the
+<code>fresh</code> cell holds a fresh clause instance to be attempted on
+the next query item.  To more easily read the solutions, we add a
+second top-level cell, <code>solution</code>.  Both top cells are
+optional.  Indeed, we start with the main top cell and, when a
+solution is found, we move it into the <code>solution</code> cell and
+discard the main cell.</p>
+<pre class="hljs"><code><span class="hljs-keyword">  configuration</span> &lt;T color=<span class="hljs-string">&quot;yellow&quot;</span> multiplicity=<span class="hljs-string">&quot;?&quot;</span>&gt;
+                  &lt;k color=<span class="hljs-string">&quot;green&quot;</span>&gt; $PGM:Pgm &lt;/k&gt;
+                  &lt;fresh color=<span class="hljs-string">&quot;orange&quot;</span>&gt; .K &lt;/fresh&gt;
+                  &lt;clauses color=<span class="hljs-string">&quot;red&quot;</span>&gt;
+                    &lt;clause color=<span class="hljs-string">&quot;pink&quot;</span> multiplicity=<span class="hljs-string">&quot;*&quot;</span>&gt; .K &lt;/clause&gt;
+                  &lt;/clauses&gt;
+                  &lt;mgu&gt; .K &lt;/mgu&gt;
+                &lt;/T&gt;
+                &lt;solution multiplicity=<span class="hljs-string">&quot;?&quot;</span>&gt; .K &lt;/solution&gt;
+</code></pre>
+<h2>Pre- and post-processing</h2>
+<p>Before we launch the semantics, we first scan the given program and
+place each clause in its own cell, and then place the query in the
+<code>k</code> cell and initialize the mgu with the variables from the query.</p>
+<p>Note that we put a fresh instance of the clause to avoid interference with
+the query variables.  By a &quot;fresh instance&quot; of a clause we mean one whose
+variables are renamed with fresh names; we need that in order to avoid
+undesired unification conflicts due to particular names chosen for
+variables in the original program, as well as conflicts due to
+subsequent uses of the same clause.  It is safe to rename the
+variables in a clause, because clauses are universally quantified in
+their variables.  This process of creating a fresh instance of a
+clause is similar to how we created fresh instances of type schemas in
+the higher-order type inferencer discussed in Tutorial 5.  Indeed, we
+can safely regard clauses as &quot;clause schemas&quot; comprising infinitely
+many instances, one for each context.</p>
+<pre class="hljs"><code><span class="hljs-keyword">  rule</span> &lt;k&gt; C:Clause Pgm =&gt; Pgm &lt;/k&gt;
+       (.Bag =&gt; &lt;clause&gt; #renameVariables(C) &lt;/clause&gt;)<span class="hljs-keyword">
+
+  rule</span> &lt;k&gt; ?- Ls:Terms. =&gt; Ls ...&lt;/k&gt;
+       &lt;mgu&gt; _ =&gt; #variablesMap(#variables(Ls)) &lt;/mgu&gt;
+</code></pre>
+<p>We also sequentialize the goals for easier processing:</p>
+<pre class="hljs"><code><span class="hljs-keyword">  rule</span> L:Term, Ls:Terms =&gt; L ~&gt; Ls<span class="hljs-keyword">
+  rule</span> .Terms =&gt; .
+</code></pre>
+<p>When all the goals are solved, indicated by the empty <code>k</code>
+cell, the calculated most general unifier (mgu) is in the <code>mgu</code>
+cell.  In that case, to ease reading of the final solution we move the
+mgu in the <code>solution</code> cell and delete the rest of the
+configuration:</p>
+<pre class="hljs"><code><span class="hljs-keyword">rule</span> &lt;T&gt;... &lt;k&gt; . &lt;/k&gt; &lt;mgu&gt; Theta &lt;/mgu&gt; ...&lt;/T&gt;
+  =&gt; &lt;solution&gt; Theta &lt;/solution&gt;
+</code></pre>
+<p>Since we are not interested in seeing the failed attempts to solve
+the query, we collapse all the error configurations into an empty
+configuration (recall that both top-level cells in the configuration
+were declared optional).  This way, if we see an empty configuration
+when we search for all solutions, we know that some attempts failed
+(but we do not know which ones).</p>
+<pre class="hljs"><code><span class="hljs-comment">// this would be nice, but we need feedback from the external unifier</span>
+<span class="hljs-comment">// for this.</span>
+<span class="hljs-comment">//  rule &lt;T&gt;... &lt;mgu&gt; _:MguError &lt;/mgu&gt; ...&lt;/T&gt; =&gt; .</span>
+</code></pre>
+<h2>Semantics</h2>
+<p>Once all the infrastructure is in place, the actual semantics of LOGIK
+is quite simple.  All we have to do is to pick some (fresh instance of
+a) clause, then unify its conclusion with the first query literal, and
+then replace that literal with condition of the clause.  The intuition
+here is the following: to satisfy the first literal in the query, we
+need to find some instance of some clause that matches it, and then to
+similarly show that we can satisfy the conditions of that clause.
+Mathematically, this is an instance of the proof principle called
+<strong>resolution</strong>: if <code>p &#x2228; q</code> and <code>&#xAC; p &#x2228; r</code> hold, then so does
+<code>q &#x2228; r</code>.  We let it as an exercise to the reader to see how the two
+relate (hint: assume the negation of the goal together with all the
+clauses, and then derive <strong>false</strong>).</p>
+<p>The following two rules are tightly connected and they together
+perform the following core task: pick a fresh instance of a clause
+which unifies with the first goal item, then add its conditions as new
+goals.</p>
+<p>Pick a clause and generate a fresh instance of it when the
+<code>fresh</code> cell is empty:</p>
+<pre class="hljs"><code><span class="hljs-keyword">  rule</span> &lt;fresh&gt; . =&gt; #renameVariables(C) &lt;/fresh&gt; &lt;clause&gt; C &lt;/clause&gt;
+       &lt;k&gt; T:Term ...&lt;/k&gt;<span class="hljs-keyword">
+  requires</span> #unifiable(T,head(C))
+    [transition]<span class="hljs-keyword">
+
+  syntax</span> Term ::= head(Clause) [function]<span class="hljs-keyword">
+  rule</span> head(L.) =&gt; L<span class="hljs-keyword">
+  rule</span> head(L:-_.) =&gt; L
+</code></pre>
+<p>If the goal is unifiable with the fresh clause&apos;s head, replace the goal
+with the clause body, and empty the <code>fresh</code> cell (so that
+another clause can be chosen using the rule above):</p>
+<pre class="hljs"><code><span class="hljs-keyword">  rule</span> &lt;k&gt; L:Term =&gt; . ...&lt;/k&gt;
+       &lt;fresh&gt;  L:Term . =&gt; . &lt;/fresh&gt;<span class="hljs-keyword">
+
+  rule</span> &lt;k&gt; L:Term :KItem =&gt; Ls ...&lt;/k&gt;
+       &lt;fresh&gt;  L:Term :- Ls:Terms. =&gt; . &lt;/fresh&gt;
+</code></pre>
+<p>Note that there is no problem if a clause is chosen whose
+conclusion literal does not unify with the first goal literal.
+The search
+option of <code>krun</code> will systematically try all clauses, so no
+solution is missed.  Of course, the above is not the most efficient
+way to implement a logic programming language, but recall that our
+objective here was to present a simple and mathematically clean
+solution.  We encourage the interested reader to consult the LOGIK++
+language definition for a more efficient definition of a richer logic
+programming language.</p>
+<pre class="hljs"><code><span class="hljs-keyword">endmodule</span>
+</code></pre>
+</body></html>
+          </div>
+        </main>
+      </div>
+    </div>
+<footer class="app-footer text-md-left text-center">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-md-2 mb-md-0 mb-4">
+        <span class="pr-md-5 pr-0 py-3">
+          <a href="https://runtimeverification.com" target="_blank">
+            <picture>
+              <source
+                srcset="../../../../../../assets/img/rv-logo-dark.png"
+                media="(prefers-color-scheme: dark)"
+              />
+              <img
+                class="pr-3 footer-logo"
+                src="../../../../../../assets/img/rv-logo.png"
+                alt="Runtime Verification Inc logo"
+              />
+            </picture>
+          </a>
+        </span>
+      </div>
+      <div class="col-md-6 mb-md-0 mb-4"></div>
+      <div class="col-md-4 text-md-right">
+        <p class="copyright">
+          &copy; 2020 Runtime Verification Inc. All right reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script
+  async
+  src="https://www.googletagmanager.com/gtag/js?id=UA-163311512-1"
+></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag() {
+    dataLayer.push(arguments);
+  }
+  gtag("js", new Date());
+  gtag("config", "UA-163311512-1");
+</script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Typist/1.2/typist.min.js"></script>
+    <script src="../../../../../../assets/js/index.js"></script>
+    <script>
+      $(function () {
+        // Render youtube video
+        const anchorElements = document.querySelectorAll(".markdown-preview a");
+        for (let i = anchorElements.length - 1; i >= 0; i--) {
+          if (anchorElements.length - 1 - i > 3) {
+            break;
+          }
+          const anchorElement = anchorElements[i];
+          const href = anchorElement.getAttribute("href");
+          if (href.match(/^https?:\/\/youtu.be\//)) {
+            const match = href.match(/^https?:\/\/youtu.be\/(.+?)$/);
+            if (match && match[1]) {
+              const youtubeId = match[1];
+              const $iframe = $(`
+<div style="text-align:center;">
+  <iframe
+    width="560"
+    height="315"
+    src="https://www.youtube.com/embed/${youtubeId}"
+    frameborder="0"
+    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+    allowfullscreen
+    style="max-width: 100%;"
+  ></iframe>
+  <p>The video is out of date</p>
+</div>
+`);
+              $(anchorElement).replaceWith($iframe[0]);
+            }
+          }
+        }
+      });
+    </script>
+  </body>
+</html>
