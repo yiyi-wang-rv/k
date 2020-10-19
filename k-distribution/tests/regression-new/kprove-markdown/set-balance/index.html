@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+<meta charset="utf-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+/>
+<meta
+  name="description"
+  content="Design and implement your programming language and software analysis tools with mathematical rigor."
+/>
+<meta name="keywords" content="runtime, verification, rv, k" />
+<meta name="author" content="K | Runtime Verification Inc" />
+<meta name="robots" content="index, follow" />
+
+<!--favicon icon-->
+<link rel="icon" type="image/png" href="../../../../../assets/img/favicon.ico" />
+
+<title>
+  K | Runtime Verification Inc
+</title>
+
+<!-- <base href="/k/" /> -->
+
+<!--web fonts-->
+<link
+  href="https://fonts.googleapis.com/css?family=Nunito:300,400,600,700,800"
+  rel="stylesheet"
+/>
+<link
+  href="https://fonts.googleapis.com/css?family=Lora:400i"
+  rel="stylesheet"
+/>
+
+<link
+  href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.14.0/css/all.min.css"
+  rel="stylesheet"
+/>
+
+<link href="../../../../../assets/css/index.css" rel="stylesheet" />
+
+<!--[if (gt IE 9) |!(IE)]><!-->
+<!--<link rel="stylesheet" href="/assets/vendor/custom-nav/css/effects/fade-menu.css"/>-->
+<!-- <link rel="stylesheet" href="../../../../../assets/k/vl-nav/css/effects/slide-menu.css" /> -->
+<!--<![endif]-->
+
+  </head>
+
+  <body>
+<header
+  class="navbar navbar-expand navbar-dark flex-column flex-md-row bd-navbar"
+>
+  <a class="logo-link" href="../../../../../index.html">
+    <img
+      class="logo-dark"
+      srcset="../../../../../assets/img/k-logo.png"
+      alt="K"
+      style="height: 48px;"
+    />
+    Semantic Framework
+  </a>
+  <ul class="navbar-nav ml-md-auto">
+    <li class="nav-item">
+      <a
+        class="nav-link pl-2 pr-1 mx-1 py-3 my-n2"
+        href="https://github.com/kframework/k"
+        target="_blank"
+        rel="noopener"
+        aria-label="GitHub"
+      >
+        <i class="fab fa-github"></i>
+      </a>
+    </li>
+  </ul>
+  <a
+    class="btn btn-rv-blue d-none d-lg-inline-block mb-3 mb-md-0 ml-md-3"
+    href="../../../../../downloads"
+    >Download</a
+  >
+</header>
+
+
+    <div class="container-fluid">
+      <div class="row flex-xl-nowrap">
+<div class="col-12 col-md-3 col-xl-2 bd-sidebar mb-3">
+  <form
+    role="search"
+    class="bd-search d-flex align-items-center justify-content-between"
+  >
+    <input
+      type="search"
+      class="form-control"
+      placeholder="Search..."
+      aria-label="Search for..."
+      autocomplete="false"
+      id="search-box"
+    />
+    <button
+      class="btn bd-search-docs-toggle d-md-none p-0 ml-3 collapsed"
+      type="button"
+      aria-label="Toggle docs navigation"
+      style="font-size: 1.4rem;"
+    >
+      <i class="fas fa-bars"></i>
+    </button>
+  </form>
+  <nav class="collapse bd-links" aria-label="Main navigation">
+    <div class="bd-toc-item">
+      <a class="bd-toc-link" href="../../../../../">Homepage</a>
+      <a class="bd-toc-link" href="../../../../../downloads">Downloads</a>
+      <a class="bd-toc-link" href="../../../../../k-distribution/tutorial"
+        >K Tutorial</a
+      >
+      <a class="bd-toc-link" href="../../../../../pending-documentation/"
+        >User documentation</a
+      >
+      <a
+        class="bd-toc-link"
+        href="../../../../../k-distribution/include/kframework/builtin/"
+        >Builtins</a
+      >
+    </div>
+  </nav>
+</div>
+
+        <main
+          class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 bd-content"
+          role="main"
+        >
+          <div class="introduction markdown-preview">
+            <html><head></head><body><h1><code>set_balance</code> spec</h1>
+<h2>State Model</h2>
+<pre class="hljs"><code><span class="hljs-keyword">
+module</span> SET-BALANCE<span class="hljs-keyword">
+    imports</span> INT<span class="hljs-keyword">
+    imports</span> DOMAINS<span class="hljs-keyword">
+    imports</span> COLLECTIONS<span class="hljs-keyword">
+
+    configuration</span>
+      &lt;set-balance&gt;
+        &lt;k&gt; $ACTION:Action &lt;/k&gt;
+        &lt;now&gt; <span class="hljs-number">0</span> &lt;/now&gt;
+        &lt;events&gt; .List &lt;/events&gt;
+        &lt;return-value&gt; .Result &lt;/return-value&gt;
+        &lt;call-stack&gt; .List &lt;/call-stack&gt;
+        &lt;existentialDeposit&gt; <span class="hljs-number">0</span> &lt;/existentialDeposit&gt;
+        &lt;creationFee&gt; <span class="hljs-number">0</span> &lt;/creationFee&gt;
+        &lt;transferFee&gt; <span class="hljs-number">0</span> &lt;/transferFee&gt;
+        &lt;totalIssuance&gt; <span class="hljs-number">0</span> &lt;/totalIssuance&gt;
+        &lt;accounts&gt;
+          &lt;account multiplicity=<span class="hljs-string">&quot;*&quot;</span> type=<span class="hljs-string">&quot;Map&quot;</span>&gt;
+            &lt;accountID&gt; .AccountId:AccountId &lt;/accountID&gt;
+            &lt;freeBalance&gt; <span class="hljs-number">0</span> &lt;/freeBalance&gt;
+            &lt;reservedBalance&gt; <span class="hljs-number">0</span> &lt;/reservedBalance&gt;
+            &lt;vestingBalance&gt; <span class="hljs-number">0</span> &lt;/vestingBalance&gt;
+            &lt;startingBlock&gt; <span class="hljs-number">0</span> &lt;/startingBlock&gt;
+            &lt;perBlock&gt; <span class="hljs-number">0</span> &lt;/perBlock&gt;
+            &lt;nonce&gt; .Nonce &lt;/nonce&gt;
+            &lt;locks&gt; .Set &lt;/locks&gt;
+          &lt;/account&gt;
+        &lt;/accounts&gt;
+      &lt;/set-balance&gt;
+</code></pre>
+<h2>Data</h2>
+<ul>
+<li>An <code>AccountId</code> is an <code>Int</code>.</li>
+<li>An <code>Origin</code> is an <code>AccountId</code>, <code>Root</code>, or <code>None</code>.</li>
+<li>A <code>Nonce</code> is an optional <code>Int</code>.</li>
+<li>An <code>Event</code> records some happenning.</li>
+</ul>
+<pre class="hljs"><code><span class="hljs-keyword">    syntax</span> AccountId ::= <span class="hljs-string">&quot;.AccountId&quot;</span> |<span class="hljs-keyword"> Int</span>
+ <span class="hljs-comment">// ---------------------------------------</span><span class="hljs-keyword">
+
+    syntax</span> Origin ::= AccountId | <span class="hljs-string">&quot;.Root&quot;</span> | <span class="hljs-string">&quot;.None&quot;</span>
+ <span class="hljs-comment">// -----------------------------------------------</span><span class="hljs-keyword">
+
+    syntax</span> Nonce ::= <span class="hljs-string">&quot;.Nonce&quot;</span> |<span class="hljs-keyword"> Int</span>
+ <span class="hljs-comment">// -------------------------------</span><span class="hljs-keyword">
+
+    syntax</span> Event ::= DustEvent (<span class="hljs-keyword"> Int</span> )
+ <span class="hljs-comment">// ----------------------------------</span>
+</code></pre>
+<p>Some predicates which help specifying behavior:</p>
+<ul>
+<li><code>#inWidth</code>: Specify that a given number is in some bitwidth.</li>
+</ul>
+<pre class="hljs"><code><span class="hljs-keyword">    syntax</span><span class="hljs-keyword"> Bool</span> ::= #inWidth(<span class="hljs-keyword">Int</span>,<span class="hljs-keyword"> Int</span>) [function, functional]
+ <span class="hljs-comment">// ---------------------------------------------------------</span><span class="hljs-keyword">
+    rule</span> #inWidth(N, M) =&gt; <span class="hljs-number">0</span> &lt;=<span class="hljs-keyword">Int</span> M andBool M &lt;<span class="hljs-keyword">Int</span> (<span class="hljs-number">2</span> ^<span class="hljs-keyword">Int</span> N)
+</code></pre>
+<h2>Results</h2>
+<p>A <code>Result</code> is the return value of an execution step.</p>
+<ul>
+<li><code>AccountKilled</code> indicates that the free balance goes below the existential threshold.</li>
+<li><code>Updated</code> indicates that an account was updated successfully.</li>
+</ul>
+<pre class="hljs"><code><span class="hljs-keyword">    syntax</span> Result ::= <span class="hljs-string">&quot;.Result&quot;</span> | <span class="hljs-string">&quot;AccountKilled&quot;</span> | <span class="hljs-string">&quot;Updated&quot;</span>
+ <span class="hljs-comment">// ---------------------------------------------------------</span>
+</code></pre>
+<h2>Public Getters</h2>
+<h3><code>total_balance</code></h3>
+<p>Retrieves the total balance of an account.  This includes both the free and
+reserved balances.</p>
+<pre class="hljs"><code><span class="hljs-keyword">    syntax</span><span class="hljs-keyword"> Int</span> ::= <span class="hljs-string">&quot;total_balance&quot;</span> <span class="hljs-string">&quot;(&quot;</span> AccountId <span class="hljs-string">&quot;)&quot;</span> [function, functional]
+ <span class="hljs-comment">// -----------------------------------------------------------------------</span><span class="hljs-keyword">
+    rule</span> total_balance(WHO) =&gt; free_balance(WHO) +<span class="hljs-keyword">Int</span> reserved_balance(WHO)
+</code></pre>
+<h3><code>free_balance</code></h3>
+<p>Gets the free balance of an account.</p>
+<p>Other than when this module is executing, this will never be strictly between
+<code>EXISTENTIAL_DEPOSIT</code> and zero.</p>
+<pre class="hljs"><code><span class="hljs-keyword">    syntax</span><span class="hljs-keyword"> Int</span> ::= <span class="hljs-string">&quot;free_balance&quot;</span> <span class="hljs-string">&quot;(&quot;</span> AccountId <span class="hljs-string">&quot;)&quot;</span> [function, functional]
+ <span class="hljs-comment">// ----------------------------------------------------------------------</span><span class="hljs-keyword">
+    rule</span>    free_balance(_)   =&gt; <span class="hljs-number">0</span> [owise]<span class="hljs-keyword">
+    rule</span> [[ free_balance(WHO) =&gt; FREE_BALANCE ]]
+         &lt;account&gt;
+           &lt;accountID&gt; WHO &lt;/accountID&gt;
+           &lt;freeBalance&gt; FREE_BALANCE &lt;/freeBalance&gt;
+           ...
+         &lt;/account&gt;
+</code></pre>
+<h3><code>reserved_balance</code></h3>
+<p>Gets the reserved balance of an account.</p>
+<p>Other than when this module is executing, this will never be strictly between
+<code>EXISTENTIAL_DEPOSIT</code> and zero.</p>
+<pre class="hljs"><code><span class="hljs-keyword">    syntax</span><span class="hljs-keyword"> Int</span> ::= <span class="hljs-string">&quot;reserved_balance&quot;</span> <span class="hljs-string">&quot;(&quot;</span> AccountId <span class="hljs-string">&quot;)&quot;</span> [function, functional]
+ <span class="hljs-comment">// --------------------------------------------------------------------------</span><span class="hljs-keyword">
+    rule</span>    reserved_balance(_)   =&gt; <span class="hljs-number">0</span> [owise]<span class="hljs-keyword">
+    rule</span> [[ reserved_balance(WHO) =&gt; FREE_BALANCE ]]
+         &lt;account&gt;
+           &lt;accountID&gt; WHO &lt;/accountID&gt;
+           &lt;reservedBalance&gt; FREE_BALANCE &lt;/reservedBalance&gt;
+           ...
+         &lt;/account&gt;
+</code></pre>
+<h3><code>can_slash</code></h3>
+<p>Determines if an account&#x2019;s free balance is over the value provided.  This is
+often used to determine if an account has enough balance to cover a potential
+slash, hence the name.</p>
+<pre class="hljs"><code><span class="hljs-keyword">    syntax</span><span class="hljs-keyword"> Bool</span> ::= <span class="hljs-string">&quot;can_slash&quot;</span> <span class="hljs-string">&quot;(&quot;</span> AccountId <span class="hljs-string">&quot;,&quot;</span><span class="hljs-keyword"> Int</span> <span class="hljs-string">&quot;)&quot;</span> [function, functional]
+ <span class="hljs-comment">// ----------------------------------------------------------------------------</span><span class="hljs-keyword">
+    rule</span>    can_slash(_, _)        =&gt; false<span class="hljs-keyword">
+    rule</span> [[ can_slash(WHO, AMOUNT) =&gt; FREE_BALANCE &gt;=<span class="hljs-keyword">Int</span> AMOUNT ]]
+         &lt;account&gt;
+           &lt;accountID&gt; WHO &lt;/accountID&gt;
+           &lt;freeBalance&gt; FREE_BALANCE &lt;/freeBalance&gt;
+           ...
+         &lt;/account&gt;
+</code></pre>
+<h3><code>total_issuance</code></h3>
+<p>Retrieves the total outstanding amount of currency outstanding.  This will
+always be equal to the sum of all free and reserved balances in all active
+accounts, except when the balances module is executing.</p>
+<pre class="hljs"><code><span class="hljs-keyword">    syntax</span><span class="hljs-keyword"> Int</span> ::= <span class="hljs-string">&quot;total_issuance&quot;</span> [function, functional]
+ <span class="hljs-comment">// ------------------------------------------------------</span><span class="hljs-keyword">
+    rule</span> [[ total_issuance =&gt; TOTAL_ISSUANCE ]]
+         &lt;totalIssuance&gt; TOTAL_ISSUANCE &lt;/totalIssuance&gt;
+</code></pre>
+<h3><code>issue</code></h3>
+<p>Issues currency, creating an imbalance.</p>
+<p>This is not specified, since these semantics do not include the concept of an
+imbalance.  Without the concept of destructors and move semantics, it would be
+almost impossible to use correctly.</p>
+<h3><code>burn</code></h3>
+<p>Burns currency.</p>
+<p>This is not part of the semantics for the same reason <code>burn</code> is not.</p>
+<h2>Actions and Results</h2>
+<p>An <code>Action</code> is an execution step (or the result of an execution step).
+An <code>EntryAction</code> is an <code>Action</code> that can be invoked externally.
+A <code>Result</code> is considered an <code>Action</code>, as is an <code>EntryAction</code>.</p>
+<pre class="hljs"><code><span class="hljs-keyword">    syntax</span> Action ::= Result | EntryAction
+ <span class="hljs-comment">// --------------------------------------</span>
+</code></pre>
+<h3><code>account_exists</code></h3>
+<pre class="hljs"><code><span class="hljs-keyword">    syntax</span><span class="hljs-keyword"> Bool</span> ::= <span class="hljs-string">&quot;account_exists&quot;</span> <span class="hljs-string">&quot;(&quot;</span> AccountId <span class="hljs-string">&quot;)&quot;</span> [function, functional]
+ <span class="hljs-comment">// -------------------------------------------------------------------------</span><span class="hljs-keyword">
+    rule</span>    account_exists(_)   =&gt; false [owise]<span class="hljs-keyword">
+    rule</span> [[ account_exists(WHO) =&gt; true ]]
+         &lt;account&gt; &lt;accountID&gt; WHO &lt;/accountID&gt; ... &lt;/account&gt;
+</code></pre>
+<h3><code>create_account</code></h3>
+<pre class="hljs"><code><span class="hljs-keyword">    syntax</span> Action ::= <span class="hljs-string">&quot;create_account&quot;</span> <span class="hljs-string">&quot;(&quot;</span> AccountId <span class="hljs-string">&quot;)&quot;</span>
+ <span class="hljs-comment">// ----------------------------------------------------</span><span class="hljs-keyword">
+    rule</span> &lt;k&gt; create_account(WHO) =&gt; . ... &lt;/k&gt;
+         &lt;accounts&gt; ( .Bag =&gt; &lt;account&gt; &lt;accountID&gt; WHO &lt;/accountID&gt; ... &lt;/account&gt; ) ... &lt;/accounts&gt;
+</code></pre>
+<h3><code>set_free_balance</code></h3>
+<ul>
+<li>Updates an accounts balance if the new balance is above the existential threshold.</li>
+<li>Kills the account if the balance goes below the existential threshold and the reserved balance is non-zero.</li>
+<li>Reaps the account if the balance goes below the existential threshold and the reserved balance is zero.</li>
+</ul>
+<pre class="hljs"><code><span class="hljs-keyword">    syntax</span> Action ::= <span class="hljs-string">&quot;set_free_balance&quot;</span> <span class="hljs-string">&quot;(&quot;</span> AccountId <span class="hljs-string">&quot;,&quot;</span><span class="hljs-keyword"> Int</span> <span class="hljs-string">&quot;)&quot;</span>
+ <span class="hljs-comment">// --------------------------------------------------------------</span><span class="hljs-keyword">
+    rule</span> &lt;k&gt; (. =&gt; create_account(WHO)) ~&gt; set_free_balance(WHO, _) ... &lt;/k&gt;<span class="hljs-keyword">
+      requires</span> notBool account_exists(WHO)<span class="hljs-keyword">
+
+    rule</span> [free-account-updated]:
+         &lt;k&gt; set_free_balance(WHO, BALANCE) =&gt; . ... &lt;/k&gt;
+         &lt;existentialDeposit&gt; EXISTENTIAL_DEPOSIT &lt;/existentialDeposit&gt;
+         &lt;account&gt;
+           &lt;accountID&gt; WHO &lt;/accountID&gt;
+           &lt;freeBalance&gt; _ =&gt; BALANCE &lt;/freeBalance&gt;
+           ...
+         &lt;/account&gt;<span class="hljs-keyword">
+      requires</span> EXISTENTIAL_DEPOSIT &lt;=<span class="hljs-keyword">Int</span> BALANCE<span class="hljs-keyword">
+
+    rule</span> [free-account-killed]:
+         &lt;k&gt; set_free_balance(WHO, BALANCE) =&gt; . ... &lt;/k&gt;
+         &lt;events&gt; ... (.List =&gt; ListItem(DustEvent(FREE_BALANCE))) &lt;/events&gt;
+         &lt;existentialDeposit&gt; EXISTENTIAL_DEPOSIT &lt;/existentialDeposit&gt;
+         &lt;totalIssuance&gt; TOTAL_ISSUANCE =&gt; TOTAL_ISSUANCE -<span class="hljs-keyword">Int</span> BALANCE &lt;/totalIssuance&gt;
+         &lt;account&gt;
+           &lt;accountID&gt; WHO &lt;/accountID&gt;
+           &lt;nonce&gt; _ =&gt; .Nonce &lt;/nonce&gt;
+           &lt;freeBalance&gt; FREE_BALANCE =&gt; <span class="hljs-number">0</span> &lt;/freeBalance&gt;
+           &lt;reservedBalance&gt; RESERVED_BALANCE &lt;/reservedBalance&gt;
+           ...
+         &lt;/account&gt;<span class="hljs-keyword">
+      requires</span> BALANCE &lt;<span class="hljs-keyword">Int</span> EXISTENTIAL_DEPOSIT
+       andBool <span class="hljs-number">0</span> &lt;<span class="hljs-keyword">Int</span> RESERVED_BALANCE<span class="hljs-keyword">
+
+    rule</span> [free-account-reaped]:
+         &lt;k&gt; set_free_balance(WHO, BALANCE) =&gt; . ... &lt;/k&gt;
+         &lt;events&gt; ... (.List =&gt; ListItem(DustEvent(FREE_BALANCE))) &lt;/events&gt;
+         &lt;existentialDeposit&gt; EXISTENTIAL_DEPOSIT &lt;/existentialDeposit&gt;
+         &lt;totalIssuance&gt; TOTAL_ISSUANCE =&gt; TOTAL_ISSUANCE -<span class="hljs-keyword">Int</span> BALANCE &lt;/totalIssuance&gt;
+         &lt;accounts&gt;
+           ( &lt;account&gt;
+               &lt;accountID&gt; WHO &lt;/accountID&gt;
+               &lt;freeBalance&gt; FREE_BALANCE &lt;/freeBalance&gt;
+               &lt;reservedBalance&gt; <span class="hljs-number">0</span> &lt;/reservedBalance&gt;
+               ...
+             &lt;/account&gt;
+          =&gt; .Bag
+           )
+           ...
+         &lt;/accounts&gt;<span class="hljs-keyword">
+      requires</span> BALANCE &lt;<span class="hljs-keyword">Int</span> EXISTENTIAL_DEPOSIT
+</code></pre>
+<h3><code>set_reserved_balance</code></h3>
+<ul>
+<li>Updates an accounts balance if the new balance is above the existential threshold.</li>
+<li>Kills the account if the balance goes below the existential threshold and the free balance is non-zero.</li>
+<li>Reaps the account if the balance goes below the existential threshold and the free balance is zero.</li>
+</ul>
+<pre class="hljs"><code><span class="hljs-keyword">    syntax</span> Action ::= <span class="hljs-string">&quot;set_reserved_balance&quot;</span> <span class="hljs-string">&quot;(&quot;</span> AccountId <span class="hljs-string">&quot;,&quot;</span><span class="hljs-keyword"> Int</span> <span class="hljs-string">&quot;)&quot;</span>
+ <span class="hljs-comment">// ------------------------------------------------------------------</span><span class="hljs-keyword">
+    rule</span> &lt;k&gt; (. =&gt; create_account(WHO)) ~&gt; set_reserved_balance(WHO, _) ... &lt;/k&gt;<span class="hljs-keyword">
+      requires</span> notBool account_exists(WHO)<span class="hljs-keyword">
+
+    rule</span> [reserved-account-updated]:
+         &lt;k&gt; set_reserved_balance(WHO, BALANCE) =&gt; . ... &lt;/k&gt;
+         &lt;existentialDeposit&gt; EXISTENTIAL_DEPOSIT &lt;/existentialDeposit&gt;
+         &lt;account&gt;
+           &lt;accountID&gt; WHO &lt;/accountID&gt;
+           &lt;reservedBalance&gt; _ =&gt; BALANCE &lt;/reservedBalance&gt;
+           ...
+         &lt;/account&gt;<span class="hljs-keyword">
+      requires</span> EXISTENTIAL_DEPOSIT &lt;=<span class="hljs-keyword">Int</span> BALANCE<span class="hljs-keyword">
+
+    rule</span> [reserved-account-killed]:
+         &lt;k&gt; set_reserved_balance(WHO, BALANCE) =&gt; . ... &lt;/k&gt;
+         &lt;events&gt; ... (.List =&gt; ListItem(DustEvent(RESERVED_BALANCE))) &lt;/events&gt;
+         &lt;existentialDeposit&gt; EXISTENTIAL_DEPOSIT &lt;/existentialDeposit&gt;
+         &lt;totalIssuance&gt; TOTAL_ISSUANCE =&gt; TOTAL_ISSUANCE -<span class="hljs-keyword">Int</span> BALANCE &lt;/totalIssuance&gt;
+         &lt;account&gt;
+           &lt;accountID&gt; WHO &lt;/accountID&gt;
+           &lt;nonce&gt; _ =&gt; .Nonce &lt;/nonce&gt;
+           &lt;freeBalance&gt; FREE_BALANCE  &lt;/freeBalance&gt;
+           &lt;reservedBalance&gt; RESERVED_BALANCE =&gt; <span class="hljs-number">0</span> &lt;/reservedBalance&gt;
+           ...
+         &lt;/account&gt;<span class="hljs-keyword">
+      requires</span> BALANCE &lt;<span class="hljs-keyword">Int</span> EXISTENTIAL_DEPOSIT
+       andBool <span class="hljs-number">0</span> &lt;<span class="hljs-keyword">Int</span> FREE_BALANCE<span class="hljs-keyword">
+
+    rule</span> [reserved-account-reaped]:
+         &lt;k&gt; set_reserved_balance(WHO, BALANCE) =&gt; . ... &lt;/k&gt;
+         &lt;events&gt; ... (.List =&gt; ListItem(DustEvent(RESERVED_BALANCE))) &lt;/events&gt;
+         &lt;existentialDeposit&gt; EXISTENTIAL_DEPOSIT &lt;/existentialDeposit&gt;
+         &lt;totalIssuance&gt; TOTAL_ISSUANCE =&gt; TOTAL_ISSUANCE -<span class="hljs-keyword">Int</span> BALANCE &lt;/totalIssuance&gt;
+         &lt;accounts&gt;
+           ( &lt;account&gt;
+               &lt;accountID&gt; WHO &lt;/accountID&gt;
+               &lt;freeBalance&gt; <span class="hljs-number">0</span> &lt;/freeBalance&gt;
+               &lt;reservedBalance&gt; RESERVED_BALANCE &lt;/reservedBalance&gt;
+               ...
+             &lt;/account&gt;
+          =&gt; .Bag
+           )
+           ...
+         &lt;/accounts&gt;<span class="hljs-keyword">
+      requires</span> BALANCE &lt;<span class="hljs-keyword">Int</span> EXISTENTIAL_DEPOSIT
+</code></pre>
+<h3><code>set_balance</code></h3>
+<ul>
+<li>Sets the new free balance</li>
+<li>Creates suitible imbalances (both positive and negative).</li>
+<li>Calls <code>set_free_balance</code> with the new free balance.</li>
+<li>Calls <code>set_reserved_balance</code> with the new reserved balance.</li>
+</ul>
+<pre class="hljs"><code><span class="hljs-keyword">    syntax</span> EntryAction ::= <span class="hljs-string">&quot;set_balance&quot;</span> <span class="hljs-string">&quot;(&quot;</span> AccountId <span class="hljs-string">&quot;,&quot;</span> AccountId <span class="hljs-string">&quot;,&quot;</span><span class="hljs-keyword"> Int</span> <span class="hljs-string">&quot;,&quot;</span><span class="hljs-keyword"> Int</span> <span class="hljs-string">&quot;)&quot;</span>
+ <span class="hljs-comment">// ------------------------------------------------------------------------------------</span><span class="hljs-keyword">
+    rule</span> [balance-set]:
+        &lt;k&gt; set_balance(_, WHO, FREE_BALANCE, RESERVED_BALANCE)
+         =&gt; set_balance_free(WHO, FREE_BALANCE)
+         ~&gt; set_balance_reserved(WHO, RESERVED_BALANCE)
+        ...
+        &lt;/k&gt;
+</code></pre>
+<p>Helpers for calling <code>set_free_balance</code> and <code>set_reserved_balance</code>.</p>
+<ul>
+<li>Sets the new free balance</li>
+<li>Emits an imbalance event</li>
+<li>Helper function for <code>set_balance</code></li>
+</ul>
+<pre class="hljs"><code><span class="hljs-keyword">    syntax</span> Action ::= <span class="hljs-string">&quot;set_balance_free&quot;</span>     <span class="hljs-string">&quot;(&quot;</span> AccountId <span class="hljs-string">&quot;,&quot;</span><span class="hljs-keyword"> Int</span> <span class="hljs-string">&quot;)&quot;</span><span class="hljs-keyword">
+    syntax</span> Action ::= <span class="hljs-string">&quot;set_balance_reserved&quot;</span> <span class="hljs-string">&quot;(&quot;</span> AccountId <span class="hljs-string">&quot;,&quot;</span><span class="hljs-keyword"> Int</span> <span class="hljs-string">&quot;)&quot;</span>
+ <span class="hljs-comment">// ------------------------------------------------------------------</span><span class="hljs-keyword">
+    rule</span> [balance-set-free]:
+         &lt;k&gt; set_balance_free(WHO, FREE_BALANCE&apos;) =&gt; set_free_balance(WHO, FREE_BALANCE&apos;) ... &lt;/k&gt;
+         &lt;totalIssuance&gt; ISSUANCE =&gt; ISSUANCE +<span class="hljs-keyword">Int</span> (FREE_BALANCE&apos; -<span class="hljs-keyword">Int</span> free_balance(WHO)) &lt;/totalIssuance&gt;<span class="hljs-keyword">
+      requires</span> #inWidth(<span class="hljs-number">96</span>, ISSUANCE +<span class="hljs-keyword">Int</span> (FREE_BALANCE&apos; -<span class="hljs-keyword">Int</span> free_balance(WHO)))<span class="hljs-keyword">
+
+    rule</span> [balance-set-reserved]:
+         &lt;k&gt; set_balance_reserved(WHO, RESERVED_BALANCE&apos;) =&gt; set_reserved_balance(WHO, RESERVED_BALANCE&apos;) ... &lt;/k&gt;
+         &lt;totalIssuance&gt; ISSUANCE =&gt; ISSUANCE +<span class="hljs-keyword">Int</span> (RESERVED_BALANCE&apos; -<span class="hljs-keyword">Int</span> reserved_balance(WHO)) &lt;/totalIssuance&gt;<span class="hljs-keyword">
+      requires</span> #inWidth(<span class="hljs-number">96</span>, ISSUANCE +<span class="hljs-keyword">Int</span> (RESERVED_BALANCE&apos; -<span class="hljs-keyword">Int</span> reserved_balance(WHO)))
+</code></pre>
+<h3><code>transfer_raw</code></h3>
+<p>Transfer some liquid free balance to another account.</p>
+<p><code>transfer</code> will set the <code>FreeBalance</code> of the sender and receiver.
+It will decrease the total issuance of the system by the <code>TransferFee</code>.
+If the sender&apos;s account is below the existential deposit as a result
+of the transfer, the account will be reaped.</p>
+<p>The dispatch origin for this call must be <code>Signed</code> by the transactor.</p>
+<pre class="hljs"><code><span class="hljs-keyword">    syntax</span> ExistenceRequirement ::= <span class="hljs-string">&quot;AllowDeath&quot;</span>
+                                  | <span class="hljs-string">&quot;KeepAlive&quot;</span><span class="hljs-keyword">
+
+    syntax</span> EntryAction ::= transfer(Origin, AccountId,<span class="hljs-keyword"> Int</span>)
+                         | <span class="hljs-string">&quot;transfer_keep_alive&quot;</span> <span class="hljs-string">&quot;(&quot;</span> Origin <span class="hljs-string">&quot;,&quot;</span> AccountId <span class="hljs-string">&quot;,&quot;</span><span class="hljs-keyword"> Int</span> <span class="hljs-string">&quot;)&quot;</span>
+ <span class="hljs-comment">// ---------------------------------------------------------------------------------</span><span class="hljs-keyword">
+
+    syntax</span> Action ::= rawTransfer(AccountId, AccountId,<span class="hljs-keyword"> Int</span>, ExistenceRequirement)
+ <span class="hljs-comment">// ------------------------------------------------------------------------------</span><span class="hljs-keyword">
+    rule</span> [transfer-to-raw]:
+         &lt;k&gt; transfer(ORIGIN:AccountId, DESTINATION, AMOUNT)
+          =&gt; rawTransfer(ORIGIN, DESTINATION, AMOUNT, AllowDeath)
+         ...
+         &lt;/k&gt;<span class="hljs-keyword">
+
+    rule</span> [transfer-keep-alive]:
+         &lt;k&gt; transfer_keep_alive(ORIGIN:AccountId, DESTINATION, AMOUNT)
+          =&gt; rawTransfer(ORIGIN, DESTINATION, AMOUNT, KeepAlive)
+         ...
+         &lt;/k&gt;<span class="hljs-keyword">
+
+    rule</span> &lt;k&gt; (. =&gt; create_account(DESTINATION)) ~&gt; rawTransfer(ORIGIN, DESTINATION, _, _) ... &lt;/k&gt;<span class="hljs-keyword">
+      requires</span>         account_exists(ORIGIN)
+       andBool notBool account_exists(DESTINATION)<span class="hljs-keyword">
+
+    rule</span> [transfer-self]:
+         &lt;k&gt; rawTransfer(ORIGIN:AccountId, ORIGIN, _, _) =&gt; . ... &lt;/k&gt;<span class="hljs-keyword">
+      requires</span> account_exists(ORIGIN)<span class="hljs-keyword">
+
+    rule</span> [transfer-existing-account]:
+         &lt;k&gt; rawTransfer(ORIGIN, DESTINATION, AMOUNT, EXISTENCE_REQUIREMENT)
+          =&gt; set_free_balance(ORIGIN, SOURCE_BALANCE -<span class="hljs-keyword">Int</span> AMOUNT -<span class="hljs-keyword">Int</span> FEE)
+          ~&gt; set_free_balance(DESTINATION, DESTINATION_BALANCE +<span class="hljs-keyword">Int</span> AMOUNT)
+         ...
+         &lt;/k&gt;
+         &lt;totalIssuance&gt; ISSUANCE =&gt; ISSUANCE -<span class="hljs-keyword">Int</span> FEE &lt;/totalIssuance&gt;
+         &lt;existentialDeposit&gt; EXISTENTIAL_DEPOSIT &lt;/existentialDeposit&gt;
+         &lt;transferFee&gt; FEE &lt;/transferFee&gt;
+         &lt;accounts&gt;
+           &lt;account&gt;
+             &lt;accountID&gt; ORIGIN &lt;/accountID&gt;
+             &lt;freeBalance&gt; SOURCE_BALANCE &lt;/freeBalance&gt;
+             ...
+           &lt;/account&gt;
+           &lt;account&gt;
+             &lt;accountID&gt; DESTINATION &lt;/accountID&gt;
+             &lt;freeBalance&gt; DESTINATION_BALANCE &lt;/freeBalance&gt;
+             ...
+           &lt;/account&gt;
+         &lt;/accounts&gt;<span class="hljs-keyword">
+      requires</span> ORIGIN =/=K DESTINATION
+       andBool DESTINATION_BALANCE &gt;<span class="hljs-keyword">Int</span> <span class="hljs-number">0</span>
+       andBool SOURCE_BALANCE &gt;=<span class="hljs-keyword">Int</span> (AMOUNT +<span class="hljs-keyword">Int</span> FEE)
+       andBool ensure_can_withdraw(ORIGIN, Transfer, SOURCE_BALANCE -<span class="hljs-keyword">Int</span> AMOUNT -<span class="hljs-keyword">Int</span> FEE)
+       andBool (EXISTENCE_REQUIREMENT ==K AllowDeath orBool SOURCE_BALANCE -<span class="hljs-keyword">Int</span> AMOUNT -<span class="hljs-keyword">Int</span> FEE &gt;<span class="hljs-keyword">Int</span> EXISTENTIAL_DEPOSIT)<span class="hljs-keyword">
+
+    rule</span> [transfer-create-account]:
+         &lt;k&gt; rawTransfer(ORIGIN:AccountId, DESTINATION, AMOUNT, EXISTENCE_REQUIREMENT)
+          =&gt; set_free_balance(ORIGIN, SOURCE_BALANCE -<span class="hljs-keyword">Int</span> AMOUNT -<span class="hljs-keyword">Int</span> CREATION_FEE)
+          ~&gt; set_free_balance(DESTINATION, AMOUNT)
+         ...
+         &lt;/k&gt;
+         &lt;totalIssuance&gt; ISSUANCE =&gt; ISSUANCE -<span class="hljs-keyword">Int</span> CREATION_FEE &lt;/totalIssuance&gt;
+         &lt;existentialDeposit&gt; EXISTENTIAL_DEPOSIT &lt;/existentialDeposit&gt;
+         &lt;creationFee&gt; CREATION_FEE &lt;/creationFee&gt;
+         &lt;accounts&gt;
+           &lt;account&gt;
+             &lt;accountID&gt; ORIGIN &lt;/accountID&gt;
+             &lt;freeBalance&gt; SOURCE_BALANCE &lt;/freeBalance&gt;
+             ...
+           &lt;/account&gt;
+           &lt;account&gt;
+             &lt;accountID&gt; DESTINATION &lt;/accountID&gt;
+             &lt;freeBalance&gt; <span class="hljs-number">0</span> &lt;/freeBalance&gt;
+             &lt;reservedBalance&gt; <span class="hljs-number">0</span> &lt;/reservedBalance&gt;
+             ...
+           &lt;/account&gt;
+           ...
+         &lt;/accounts&gt;<span class="hljs-keyword">
+      requires</span> ORIGIN =/=K DESTINATION
+       andBool SOURCE_BALANCE &gt;=<span class="hljs-keyword">Int</span> (AMOUNT +<span class="hljs-keyword">Int</span> CREATION_FEE)
+       andBool EXISTENTIAL_DEPOSIT &lt;=<span class="hljs-keyword">Int</span> AMOUNT
+       andBool ensure_can_withdraw(ORIGIN, Transfer, SOURCE_BALANCE -<span class="hljs-keyword">Int</span> AMOUNT -<span class="hljs-keyword">Int</span> CREATION_FEE)
+       andBool (EXISTENCE_REQUIREMENT ==K AllowDeath orBool SOURCE_BALANCE -<span class="hljs-keyword">Int</span> AMOUNT -<span class="hljs-keyword">Int</span> CREATION_FEE &gt;=<span class="hljs-keyword">Int</span> EXISTENTIAL_DEPOSIT)
+</code></pre>
+<h3><code>force_transfer</code></h3>
+<p>Force a transfer from any account to any other account.  This can only be done by root.</p>
+<pre class="hljs"><code><span class="hljs-keyword">    syntax</span> EntryAction ::= <span class="hljs-string">&quot;force_transfer&quot;</span> <span class="hljs-string">&quot;(&quot;</span> Origin <span class="hljs-string">&quot;,&quot;</span> AccountId <span class="hljs-string">&quot;,&quot;</span> AccountId <span class="hljs-string">&quot;,&quot;</span><span class="hljs-keyword"> Int</span> <span class="hljs-string">&quot;)&quot;</span>
+ <span class="hljs-comment">// ------------------------------------------------------------------------------------------</span><span class="hljs-keyword">
+    rule</span> [force-transfer]:
+         &lt;k&gt; force_transfer(.Root, SOURCE, DESTINATION, AMOUNT) =&gt; transfer(SOURCE, DESTINATION, AMOUNT) ... &lt;/k&gt;
+</code></pre>
+<h3><code>withdraw</code></h3>
+<p>Withdraw funds from an account.</p>
+<pre class="hljs"><code><span class="hljs-keyword">    syntax</span> EntryAction ::= withdraw(AccountId,<span class="hljs-keyword"> Int</span>, WithdrawReason, ExistenceRequirement)
+ <span class="hljs-comment">// -------------------------------------------------------------------------------------</span><span class="hljs-keyword">
+    rule</span> [withdraw]: <span class="hljs-comment">// K really needs where clauses</span>
+         &lt;k&gt; withdraw(WHO, AMOUNT, REASON, EXISTENCE_REQUIREMENT)
+          =&gt; withdrawInner(WHO, AMOUNT, AMOUNT -<span class="hljs-keyword">Int</span> free_balance(WHO), REASON, EXISTENCE_REQUIREMENT)
+         ...
+         &lt;/k&gt;<span class="hljs-keyword">
+
+    syntax</span> Action ::= withdrawInner(AccountId,<span class="hljs-keyword"> Int</span>,<span class="hljs-keyword"> Int</span>, WithdrawReason, ExistenceRequirement)
+ <span class="hljs-comment">// ------------------------------------------------------------------------------------------</span><span class="hljs-keyword">
+    rule</span> [withdrawInner]:
+         &lt;k&gt; withdrawInner(WHO, AMOUNT, NEW_BALANCE, REASON, EXISTENCE_REQUIREMENT)
+          =&gt; set_free_balance(WHO, NEW_BALANCE)
+         ...
+         &lt;/k&gt;
+         &lt;totalIssuance&gt; ISSUANCE =&gt; ISSUANCE -<span class="hljs-keyword">Int</span> AMOUNT &lt;/totalIssuance&gt;
+         &lt;existentialDeposit&gt; EXISTENTIAL_DEPOSIT &lt;/existentialDeposit&gt;<span class="hljs-keyword">
+      requires</span> NEW_BALANCE &gt;=<span class="hljs-keyword">Int</span> <span class="hljs-number">0</span>
+       andBool ensure_can_withdraw(WHO, REASON, NEW_BALANCE)
+       andBool (EXISTENCE_REQUIREMENT ==K AllowDeath orBool NEW_BALANCE &gt;=<span class="hljs-keyword">Int</span> EXISTENTIAL_DEPOSIT)
+</code></pre>
+<h2>Call Frames</h2>
+<p>Function call and return.</p>
+<pre class="hljs"><code><span class="hljs-keyword">    syntax</span> CallFrame ::= frame(continuation: K)<span class="hljs-keyword">
+    syntax</span> Action ::= call   ( Action )
+                    | return ( Result )
+ <span class="hljs-comment">// -----------------------------------</span><span class="hljs-keyword">
+    rule</span> [call]:
+         &lt;k&gt; call(Action) ~&gt; CONT =&gt; Action &lt;/k&gt;
+         &lt;call-stack&gt; .List =&gt; ListItem(frame(CONT)) ... &lt;/call-stack&gt;<span class="hljs-keyword">
+
+    rule</span> [return]:
+         &lt;k&gt; return(R) ~&gt; _ =&gt; CONT &lt;/k&gt;
+         &lt;return-value&gt; _ =&gt; R &lt;/return-value&gt;
+         &lt;call-stack&gt; ListItem(frame(CONT)) =&gt; .List ... &lt;/call-stack&gt;<span class="hljs-keyword">
+
+    rule</span> [return-unit]:
+         &lt;k&gt; . =&gt; CONT &lt;/k&gt;
+         &lt;return-value&gt; _ =&gt; .Result &lt;/return-value&gt;
+         &lt;call-stack&gt; ListItem(frame(CONT)) =&gt; .List ... &lt;/call-stack&gt;
+</code></pre>
+<p>Ensure that a given amount can be withdrawn from an account.</p>
+<p><strong>FIXME</strong>: we do not account for multiple withdrawl reasons, due to K&#x2019;s
+lacking polymorphism.</p>
+<pre class="hljs"><code><span class="hljs-keyword">    syntax</span> WithdrawReason ::= <span class="hljs-string">&quot;TransactionPayment&quot;</span>
+                            | <span class="hljs-string">&quot;Transfer&quot;</span>
+                            | <span class="hljs-string">&quot;Reserve&quot;</span>
+                            | <span class="hljs-string">&quot;Fee&quot;</span>
+                            | <span class="hljs-string">&quot;Tip&quot;</span>
+ <span class="hljs-comment">// -------------------------------</span><span class="hljs-keyword">
+
+
+    syntax</span><span class="hljs-keyword"> Bool</span> ::= <span class="hljs-string">&quot;ensure_can_withdraw&quot;</span> <span class="hljs-string">&quot;(&quot;</span> AccountId <span class="hljs-string">&quot;,&quot;</span> WithdrawReason <span class="hljs-string">&quot;,&quot;</span><span class="hljs-keyword"> Int</span> <span class="hljs-string">&quot;)&quot;</span> [function, functional]
+ <span class="hljs-comment">// ---------------------------------------------------------------------------------------------------------</span><span class="hljs-keyword">
+    rule</span> ensure_can_withdraw(_, _, _) =&gt; true [owise]<span class="hljs-keyword">
+
+    rule</span> [[ ensure_can_withdraw(WHO, Transfer #Or Reserve, BALANCE) =&gt; false ]]
+         &lt;account&gt;
+           &lt;accountID&gt; WHO &lt;/accountID&gt;
+           &lt;vestingBalance&gt; VESTING_BALANCE &lt;/vestingBalance&gt;
+           ...
+         &lt;/account&gt;<span class="hljs-keyword">
+      requires</span> VESTING_BALANCE &lt;<span class="hljs-keyword">Int</span> BALANCE<span class="hljs-keyword">
+
+    rule</span> [[ ensure_can_withdraw(WHO, REASON, BALANCE) =&gt; false ]]
+         &lt;now&gt; NOW &lt;/now&gt;
+         &lt;account&gt;
+           &lt;accountID&gt; WHO &lt;/accountID&gt;
+           &lt;locks&gt; ACCOUNT_LOCKS &lt;/locks&gt;
+           ...
+         &lt;/account&gt;<span class="hljs-keyword">
+      requires</span> activeLocks(ACCOUNT_LOCKS, NOW, REASON, BALANCE)<span class="hljs-keyword">
+
+    syntax</span> LockID ::= <span class="hljs-string">&quot;Election&quot;</span>
+                    | <span class="hljs-string">&quot;Staking&quot;</span>
+                    | <span class="hljs-string">&quot;Democracy&quot;</span>
+                    | <span class="hljs-string">&quot;Phragmen&quot;</span>
+ <span class="hljs-comment">// ----------------------------</span><span class="hljs-keyword">
+
+    syntax</span> AccountLock ::= lock ( id: LockID, until:<span class="hljs-keyword"> Int</span>, amount:<span class="hljs-keyword"> Int</span>, reasons: Set )
+ <span class="hljs-comment">// ---------------------------------------------------------------------------------</span><span class="hljs-keyword">
+
+    syntax</span><span class="hljs-keyword"> Bool</span> ::= activeLock (AccountLock,<span class="hljs-keyword"> Int</span>, WithdrawReason,<span class="hljs-keyword"> Int</span>      ) [function]
+                  | activeLocks(Set,<span class="hljs-keyword">         Int</span>, WithdrawReason,<span class="hljs-keyword"> Int</span>      ) [function]
+                  | activeLocks(List,<span class="hljs-keyword">        Int</span>, WithdrawReason,<span class="hljs-keyword"> Int</span>,<span class="hljs-keyword"> Bool</span>) [function, klabel(activeLocksAux)]
+ <span class="hljs-comment">// -----------------------------------------------------------------------------------------------------------</span><span class="hljs-keyword">
+    rule</span> activeLock(AL, NOW, REASON, BALANCE) =&gt; NOW &lt;<span class="hljs-keyword">Int</span> until(AL) andBool BALANCE &lt;<span class="hljs-keyword">Int</span> amount(AL) andBool REASON in reasons(AL)<span class="hljs-keyword">
+
+    rule</span> activeLocks(ALS, NOW, REASON, BALANCE) =&gt; activeLocks(Set2List(ALS), NOW, REASON, BALANCE, false)<span class="hljs-keyword">
+
+    rule</span> activeLocks(.List, _, _, _, RESULT) =&gt; RESULT<span class="hljs-keyword">
+    rule</span> activeLocks((ListItem(AL) =&gt; .List) _, NOW, REASON, BALANCE, RESULT =&gt; RESULT orBool activeLock(AL, NOW, REASON, BALANCE))
+</code></pre>
+<h2>Slashing and repatriation of reserved balances</h2>
+<p>The first of these is also used by <code>slash</code>.</p>
+<ul>
+<li><code>slash_reserved</code></li>
+<li><code>repatriate_reserved</code></li>
+</ul>
+<pre class="hljs"><code><span class="hljs-keyword">    syntax</span> Action ::= <span class="hljs-string">&quot;slash_reserved&quot;</span> <span class="hljs-string">&quot;(&quot;</span> AccountId <span class="hljs-string">&quot;,&quot;</span><span class="hljs-keyword"> Int</span> <span class="hljs-string">&quot;)&quot;</span>
+ <span class="hljs-comment">// ------------------------------------------------------------</span><span class="hljs-keyword">
+    rule</span> [slash-reserved]:
+         &lt;k&gt; slash_reserved(ACCOUNT, AMOUNT)
+          =&gt; set_reserved_balance(ACCOUNT, maxInt(<span class="hljs-number">0</span>, RESERVED_BALANCE -<span class="hljs-keyword">Int</span> AMOUNT))
+         ...
+         &lt;/k&gt;
+         &lt;accounts&gt;
+           &lt;account&gt;
+             &lt;accountID&gt; ACCOUNT &lt;/accountID&gt;
+             &lt;reservedBalance&gt; RESERVED_BALANCE &lt;/reservedBalance&gt;
+             ...
+           &lt;/account&gt;
+         &lt;/accounts&gt;
+         &lt;totalIssuance&gt; TOTAL_ISSUANCE =&gt; TOTAL_ISSUANCE -<span class="hljs-keyword">Int</span> minInt(RESERVED_BALANCE, AMOUNT) &lt;/totalIssuance&gt;<span class="hljs-keyword">
+
+    syntax</span> Action ::= <span class="hljs-string">&quot;repatriate_reserved&quot;</span> <span class="hljs-string">&quot;(&quot;</span> AccountId <span class="hljs-string">&quot;,&quot;</span> AccountId <span class="hljs-string">&quot;,&quot;</span><span class="hljs-keyword"> Int</span> <span class="hljs-string">&quot;)&quot;</span>
+ <span class="hljs-comment">// -------------------------------------------------------------------------------</span><span class="hljs-keyword">
+    rule</span> [repatriate-reserved]:
+         &lt;k&gt; repatriate_reserved(SLASHED, BENEFICIARY, AMOUNT)
+          =&gt; set_free_balance(BENEFICIARY, BENEFICIARY_FREE_BALANCE +<span class="hljs-keyword">Int</span> minInt(SLASHED_RESERVED_BALANCE, AMOUNT))
+          ~&gt; set_reserved_balance(SLASHED, SLASHED_RESERVED_BALANCE -<span class="hljs-keyword">Int</span> minInt(SLASHED_RESERVED_BALANCE, AMOUNT))
+         ...
+         &lt;/k&gt;
+         &lt;accounts&gt;
+           &lt;account&gt;
+             &lt;accountID&gt; SLASHED &lt;/accountID&gt;
+             &lt;reservedBalance&gt; SLASHED_RESERVED_BALANCE &lt;/reservedBalance&gt;
+             ...
+           &lt;/account&gt;
+           &lt;account&gt;
+             &lt;accountID&gt; BENEFICIARY &lt;/accountID&gt;
+             &lt;reservedBalance&gt; BENEFICIARY_RESERVED_BALANCE &lt;/reservedBalance&gt;
+             &lt;freeBalance&gt; BENEFICIARY_FREE_BALANCE &lt;/freeBalance&gt;
+             ...
+           &lt;/account&gt;
+         &lt;/accounts&gt;<span class="hljs-keyword">
+      requires</span> BENEFICIARY_FREE_BALANCE +<span class="hljs-keyword">Int</span> BENEFICIARY_RESERVED_BALANCE &gt;<span class="hljs-keyword">Int</span> <span class="hljs-number">0</span>
+       andBool SLASHED =/=K BENEFICIARY<span class="hljs-keyword">
+
+    rule</span> [repatriate-reserved-same-account]:
+         &lt;k&gt; repatriate_reserved(SLASHED, SLASHED, AMOUNT) =&gt; unreserve(SLASHED, AMOUNT) ... &lt;/k&gt;
+</code></pre>
+<h3>Slashing</h3>
+<p>Used to punish a node for violating the protocol.</p>
+<pre class="hljs"><code><span class="hljs-keyword">    syntax</span> EntryAction ::= slash ( AccountId ,<span class="hljs-keyword"> Int</span> )
+ <span class="hljs-comment">// ------------------------------------------------</span><span class="hljs-keyword">
+    rule</span> [slash]:
+         &lt;k&gt; slash(ACCOUNT, AMOUNT) =&gt; set_free_balance(ACCOUNT, FREE_BALANCE -<span class="hljs-keyword">Int</span> AMOUNT) ... &lt;/k&gt;
+         &lt;accounts&gt;
+           &lt;account&gt;
+             &lt;accountID&gt; ACCOUNT &lt;/accountID&gt;
+             &lt;freeBalance&gt; FREE_BALANCE &lt;/freeBalance&gt;
+             ...
+           &lt;/account&gt;
+         &lt;/accounts&gt;
+         &lt;totalIssuance&gt; TOTAL_ISSUANCE =&gt; TOTAL_ISSUANCE -<span class="hljs-keyword">Int</span> AMOUNT &lt;/totalIssuance&gt;<span class="hljs-keyword">
+      requires</span> FREE_BALANCE &gt;=<span class="hljs-keyword">Int</span> AMOUNT<span class="hljs-keyword">
+
+    rule</span> [slash-empty-free]:
+         &lt;k&gt; slash(ACCOUNT, AMOUNT)
+          =&gt; set_free_balance(ACCOUNT, <span class="hljs-number">0</span>)
+          ~&gt; slash_reserved(ACCOUNT, AMOUNT -<span class="hljs-keyword">Int</span> FREE_BALANCE)
+         ...
+         &lt;/k&gt;
+         &lt;accounts&gt;
+           &lt;account&gt;
+             &lt;accountID&gt; ACCOUNT &lt;/accountID&gt;
+             &lt;freeBalance&gt; FREE_BALANCE &lt;/freeBalance&gt;
+             ...
+           &lt;/account&gt;
+         &lt;/accounts&gt;
+         &lt;totalIssuance&gt; TOTAL_ISSUANCE =&gt; TOTAL_ISSUANCE -<span class="hljs-keyword">Int</span> FREE_BALANCE &lt;/totalIssuance&gt;<span class="hljs-keyword">
+      requires</span> FREE_BALANCE &lt;<span class="hljs-keyword">Int</span> AMOUNT
+</code></pre>
+<h3>Reservation and unreservation of balances</h3>
+<p>Used to move balance from free to reserved and visa versa.</p>
+<pre class="hljs"><code><span class="hljs-keyword">    syntax</span> Action ::= reserve ( AccountId ,<span class="hljs-keyword"> Int</span> )
+ <span class="hljs-comment">// ---------------------------------------------</span><span class="hljs-keyword">
+    rule</span> [reserve]:
+         &lt;k&gt; reserve(ACCOUNT, AMOUNT)
+          =&gt; set_reserved_balance(ACCOUNT, FREE_BALANCE +<span class="hljs-keyword">Int</span> AMOUNT)
+          ~&gt; set_free_balance(ACCOUNT, FREE_BALANCE -<span class="hljs-keyword">Int</span> AMOUNT)
+         ...
+         &lt;/k&gt;
+         &lt;accounts&gt;
+           &lt;account&gt;
+             &lt;accountID&gt; ACCOUNT &lt;/accountID&gt;
+             &lt;freeBalance&gt; FREE_BALANCE &lt;/freeBalance&gt;
+             &lt;reservedBalance&gt; _ &lt;/reservedBalance&gt;
+             ...
+           &lt;/account&gt;
+         &lt;/accounts&gt;<span class="hljs-keyword">
+      requires</span> FREE_BALANCE &gt;=<span class="hljs-keyword">Int</span> AMOUNT
+       andBool ensure_can_withdraw(ACCOUNT, Reserve, FREE_BALANCE -<span class="hljs-keyword">Int</span> AMOUNT)<span class="hljs-keyword">
+
+    syntax</span> Action ::= unreserve ( AccountId ,<span class="hljs-keyword"> Int</span> )
+ <span class="hljs-comment">// -----------------------------------------------</span><span class="hljs-keyword">
+    rule</span> [unreserve]:
+         &lt;k&gt; unreserve(ACCOUNT, AMOUNT)
+          =&gt; set_free_balance(ACCOUNT, FREE_BALANCE +<span class="hljs-keyword">Int</span> minInt(AMOUNT, RESERVED_BALANCE))
+          ~&gt; set_reserved_balance(ACCOUNT, FREE_BALANCE -<span class="hljs-keyword">Int</span> minInt(AMOUNT, RESERVED_BALANCE))
+         ...
+         &lt;/k&gt;
+         &lt;accounts&gt;
+           &lt;account&gt;
+             &lt;accountID&gt; ACCOUNT &lt;/accountID&gt;
+             &lt;freeBalance&gt; FREE_BALANCE &lt;/freeBalance&gt;
+             &lt;reservedBalance&gt; RESERVED_BALANCE &lt;/reservedBalance&gt;
+             ...
+           &lt;/account&gt;
+         &lt;/accounts&gt;
+</code></pre>
+<h2>Vesting</h2>
+<ul>
+<li><code>locked_at</code> &#x2015; amount currently locked</li>
+<li><code>vesting_balance</code> &#x2015; get the balance that cannot currently be withdrawn.</li>
+</ul>
+<pre class="hljs"><code><span class="hljs-keyword">    syntax</span><span class="hljs-keyword"> Int</span> ::= <span class="hljs-string">&quot;locked_at&quot;</span> <span class="hljs-string">&quot;(&quot;</span> AccountId <span class="hljs-string">&quot;)&quot;</span> [function, functional]
+ <span class="hljs-comment">// -------------------------------------------------------------------</span><span class="hljs-keyword">
+    rule</span> [[ locked_at(WHO) =&gt; maxInt(<span class="hljs-number">0</span>, VESTING_BALANCE -<span class="hljs-keyword">Int</span> (PER_BLOCK *<span class="hljs-keyword">Int</span> maxInt(<span class="hljs-number">0</span>, NOW -<span class="hljs-keyword">Int</span> STARTING_BLOCK))) ]]
+         &lt;now&gt; NOW &lt;/now&gt;
+         &lt;account&gt;
+           &lt;accountID&gt; WHO &lt;/accountID&gt;
+           &lt;vestingBalance&gt; VESTING_BALANCE &lt;/vestingBalance&gt;
+           &lt;startingBlock&gt; STARTING_BLOCK &lt;/startingBlock&gt;
+           &lt;perBlock&gt; PER_BLOCK &lt;/perBlock&gt;
+           ...
+         &lt;/account&gt;<span class="hljs-keyword">
+
+    syntax</span><span class="hljs-keyword"> Int</span> ::= <span class="hljs-string">&quot;vesting_balance&quot;</span> <span class="hljs-string">&quot;(&quot;</span> AccountId <span class="hljs-string">&quot;)&quot;</span> [function, functional]
+ <span class="hljs-comment">// -------------------------------------------------------------------------</span><span class="hljs-keyword">
+    rule</span> [[ vesting_balance(WHO) =&gt; minInt(FREE_BALANCE, locked_at(WHO)) ]]
+         &lt;account&gt;
+           &lt;accountID&gt; WHO &lt;/accountID&gt;
+           &lt;freeBalance&gt; FREE_BALANCE &lt;/freeBalance&gt;
+           ...
+        &lt;/account&gt;
+</code></pre>
+<h2>Deposits</h2>
+<p>Deposit into an existing account.</p>
+<pre class="hljs"><code><span class="hljs-keyword">    syntax</span> EntryAction ::= <span class="hljs-string">&quot;deposit_into_existing&quot;</span> <span class="hljs-string">&quot;(&quot;</span> AccountId <span class="hljs-string">&quot;,&quot;</span><span class="hljs-keyword"> Int</span> <span class="hljs-string">&quot;)&quot;</span>
+ <span class="hljs-comment">// ------------------------------------------------------------------------</span><span class="hljs-keyword">
+    rule</span> [deposit-into-existing]:
+         &lt;k&gt; deposit_into_existing(WHO, AMOUNT) =&gt; . ... &lt;/k&gt;
+         &lt;totalIssuance&gt; TOTAL_ISSUANCE =&gt; TOTAL_ISSUANCE +<span class="hljs-keyword">Int</span> AMOUNT &lt;/totalIssuance&gt;
+         &lt;account&gt;
+           &lt;accountID&gt; WHO &lt;/accountID&gt;
+           &lt;freeBalance&gt; FREE_BALANCE =&gt; FREE_BALANCE +<span class="hljs-keyword">Int</span> AMOUNT &lt;/freeBalance&gt;
+           ...
+         &lt;/account&gt;<span class="hljs-keyword">
+      requires</span> FREE_BALANCE &gt;<span class="hljs-keyword">Int</span> <span class="hljs-number">0</span>
+</code></pre>
+<p>End of module</p>
+<pre class="hljs"><code><span class="hljs-keyword">endmodule</span>
+</code></pre>
+</body></html>
+          </div>
+        </main>
+      </div>
+    </div>
+<footer class="app-footer text-md-left text-center">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-md-2 mb-md-0 mb-4">
+        <span class="pr-md-5 pr-0 py-3">
+          <a href="https://runtimeverification.com" target="_blank">
+            <picture>
+              <source
+                srcset="../../../../../assets/img/rv-logo-dark.png"
+                media="(prefers-color-scheme: dark)"
+              />
+              <img
+                class="pr-3 footer-logo"
+                src="../../../../../assets/img/rv-logo.png"
+                alt="Runtime Verification Inc logo"
+              />
+            </picture>
+          </a>
+        </span>
+      </div>
+      <div class="col-md-6 mb-md-0 mb-4"></div>
+      <div class="col-md-4 text-md-right">
+        <p class="copyright">
+          &copy; 2020 Runtime Verification Inc. All right reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script
+  async
+  src="https://www.googletagmanager.com/gtag/js?id=UA-163311512-1"
+></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag() {
+    dataLayer.push(arguments);
+  }
+  gtag("js", new Date());
+  gtag("config", "UA-163311512-1");
+</script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Typist/1.2/typist.min.js"></script>
+    <script src="../../../../../assets/js/index.js"></script>
+    <script>
+      $(function () {
+        // Render youtube video
+        const anchorElements = document.querySelectorAll(".markdown-preview a");
+        for (let i = anchorElements.length - 1; i >= 0; i--) {
+          if (anchorElements.length - 1 - i > 3) {
+            break;
+          }
+          const anchorElement = anchorElements[i];
+          const href = anchorElement.getAttribute("href");
+          if (href.match(/^https?:\/\/youtu.be\//)) {
+            const match = href.match(/^https?:\/\/youtu.be\/(.+?)$/);
+            if (match && match[1]) {
+              const youtubeId = match[1];
+              const $iframe = $(`
+<div style="text-align:center;">
+  <iframe
+    width="560"
+    height="315"
+    src="https://www.youtube.com/embed/${youtubeId}"
+    frameborder="0"
+    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+    allowfullscreen
+    style="max-width: 100%;"
+  ></iframe>
+  <p>The video is out of date</p>
+</div>
+`);
+              $(anchorElement).replaceWith($iframe[0]);
+            }
+          }
+        }
+      });
+    </script>
+  </body>
+</html>
