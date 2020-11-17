@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+<meta charset="utf-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+/>
+<meta
+  name="description"
+  content="Design and implement your programming language and software analysis tools with mathematical rigor."
+/>
+<meta name="keywords" content="runtime, verification, rv, k" />
+<meta name="author" content="K | Runtime Verification Inc" />
+<meta name="robots" content="index, follow" />
+
+<!--favicon icon-->
+<link rel="icon" type="image/png" href="../../assets/img/favicon.ico" />
+
+<title>
+  K | Runtime Verification Inc
+</title>
+
+<!-- <base href="/k/" /> -->
+
+<!--web fonts-->
+<link
+  href="https://fonts.googleapis.com/css?family=Nunito:300,400,600,700,800"
+  rel="stylesheet"
+/>
+<link
+  href="https://fonts.googleapis.com/css?family=Lora:400i"
+  rel="stylesheet"
+/>
+
+<link
+  href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.14.0/css/all.min.css"
+  rel="stylesheet"
+/>
+
+<link href="../../assets/css/index.css" rel="stylesheet" />
+
+<!--[if (gt IE 9) |!(IE)]><!-->
+<!--<link rel="stylesheet" href="/assets/vendor/custom-nav/css/effects/fade-menu.css"/>-->
+<!-- <link rel="stylesheet" href="../../assets/k/vl-nav/css/effects/slide-menu.css" /> -->
+<!--<![endif]-->
+
+  </head>
+
+  <body>
+<header
+  class="navbar navbar-expand navbar-dark flex-column flex-md-row bd-navbar"
+>
+  <a class="logo-link" href="../../index.html">
+    <img
+      class="logo-dark"
+      srcset="../../assets/img/k-logo.png"
+      alt="K"
+      style="height: 48px;"
+    />
+    Semantic Framework
+  </a>
+  <ul class="navbar-nav ml-md-auto">
+    <li class="nav-item">
+      <a
+        class="nav-link pl-2 pr-1 mx-1 py-3 my-n2"
+        href="https://github.com/kframework/k"
+        target="_blank"
+        rel="noopener"
+        aria-label="GitHub"
+      >
+        <i class="fab fa-github"></i>
+      </a>
+    </li>
+  </ul>
+  <a
+    class="btn btn-rv-blue d-none d-lg-inline-block mb-3 mb-md-0 ml-md-3"
+    href="../../downloads"
+    >Download</a
+  >
+</header>
+
+
+    <div class="container-fluid">
+      <div class="row flex-xl-nowrap">
+<div class="col-12 col-md-3 col-xl-2 bd-sidebar mb-3">
+  <form
+    role="search"
+    class="bd-search d-flex align-items-center justify-content-between"
+  >
+    <input
+      type="search"
+      class="form-control"
+      placeholder="Search..."
+      aria-label="Search for..."
+      autocomplete="false"
+      id="search-box"
+    />
+    <button
+      class="btn bd-search-docs-toggle d-md-none p-0 ml-3 collapsed"
+      type="button"
+      aria-label="Toggle docs navigation"
+      style="font-size: 1.4rem;"
+    >
+      <i class="fas fa-bars"></i>
+    </button>
+  </form>
+  <nav class="collapse bd-links" aria-label="Main navigation">
+    <div class="bd-toc-item">
+      <a class="bd-toc-link" href="../../">Homepage</a>
+      <a class="bd-toc-link" href="../../downloads">Downloads</a>
+      <a class="bd-toc-link" href="../../k-distribution/tutorial"
+        >K Tutorial</a
+      >
+      <a class="bd-toc-link" href="../../pending-documentation/"
+        >User documentation</a
+      >
+      <a
+        class="bd-toc-link"
+        href="../../k-distribution/include/kframework/builtin/"
+        >Builtins</a
+      >
+    </div>
+  </nav>
+</div>
+
+        <main
+          class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 bd-content"
+          role="main"
+        >
+          <div class="introduction markdown-preview">
+            <html><head></head><body><h1>Installing the K Framework Package</h1>
+<p>We currently strive to provide packages for the following platforms:</p>
+<ul>
+<li>Ubuntu Bionic (18.04)</li>
+<li>Debian Buster</li>
+<li>Arch Linux</li>
+<li>MacOS X Mojave/Homewbrew</li>
+<li>Docker Images</li>
+<li>Platform Independent K Binary</li>
+</ul>
+<p><strong>NOTE</strong>: We do not currently support running K on native Windows. To use K on
+Windows, you are encouraged to install
+<a href="https://docs.microsoft.com/en-us/windows/wsl/install-win10" target="_blank" rel="noopener">Windows Subsystem for Linux</a>
+and follow the instructions for Ubuntu Bionic.</p>
+<p><strong>NOTE</strong>: The distributed packages do <strong>not</strong> include the OCAML backend
+dependency setup. See the end of this file for instructons on using the OCAML
+backend with the package-installed K.</p>
+<h2>Download Packages</h2>
+<p>Download the appropriate package from the GitHub, via the
+<a href="https://github.com/kframework/k/releases" target="_blank" rel="noopener">Releases</a> page.
+Releases are generated as often as possible from <code>master</code> build.</p>
+<h2>Install Packages</h2>
+<p>For version <code>X.Y.Z</code>, disto <code>DISTRO</code>, and package ID <code>ID</code>, the following
+instructions tell you how to install on each system.</p>
+<h3>Ubuntu Bionic (18.04)/Debian Buster</h3>
+<pre class="hljs"><code>sudo apt install ./kframework_X.Y.Z_amd64_DISTRO.deb
+</code></pre>
+<h3>Arch Linux</h3>
+<pre class="hljs"><code>pacman -U ./kframework-git-X.Y.Z-1-x86_64.pkg.tar.zst
+</code></pre>
+<h3>MacOS X Mojave/Homebrew</h3>
+<p><a href="https://brew.sh/" target="_blank" rel="noopener">Homebrew</a> (or just brew) is a third-party package manager
+for MacOS.
+If you have not installed brew, you must do so before installing the K
+Framework brew package.</p>
+<p>With brew installed, do the following to install the K Framework brew package
+(with build number <code>BN</code>):</p>
+<pre class="hljs"><code>brew install kframework--X.Y.Z.ID.bottle.BN.tar.gz -v
+</code></pre>
+<p>Note: the brew package should install on MacOS X Catalina systems even though
+the package was built for Mojave.</p>
+<h4>Homebrew Alternate Installation</h4>
+<p>To directly install the latest K Framework brew package without needing to
+download it separately, do the following:</p>
+<pre class="hljs"><code>brew install kframework/k/kframework
+</code></pre>
+<p>Or, to streamline future K Framework upgrades, you can <code>tap</code> the K Framework
+package repository. This lets future installations/upgrades/etc... use the
+unprefixed package name.</p>
+<pre class="hljs"><code>brew tap kframework/k
+brew install kframework
+</code></pre>
+<h3>Docker Images</h3>
+<p>Docker images with K pre-installed are available at the
+<a href="https://hub.docker.com/repository/docker/runtimeverificationinc/kframework-k" target="_blank" rel="noopener">runtimeverification/kframework-k Docker Hub repository</a>.</p>
+<p>Each release at <code>COMMIT_ID</code> has an image associated with it at
+<code>runtimeverificationinc/kframework-k:ubuntu-bionic-COMMIT_ID</code>.
+The latest <code>master</code> build Docker image can be accessed with <code>COMMIT_ID</code> set to
+<code>master</code>.</p>
+<p>To run the image directly:</p>
+<pre class="hljs"><code>docker run -it runtimeverificationinc/kframework-k:ubuntu-bionic-COMMIT_ID
+</code></pre>
+<p>and to make a Docker Image based on it, use the following line in your
+<code>Dockerfile</code>:</p>
+<pre class="hljs"><code><span class="hljs-keyword">FROM</span> runtimeverificationinc/kframework-k:ubuntu-bionic-COMMIT_ID
+</code></pre>
+<h3>Platform Independent K Binary</h3>
+<p>The platform independent K binary is a best-attempt at making a portable
+distribution of K. When possible, prefer the platform specific packages.
+We have only tested this on Ubuntu, although it may work on other distributions.
+Appropriate installation instructions and bug reports are welcome from
+contributors.</p>
+<ol>
+<li>
+<p>Install Prerequisites:</p>
+<pre class="hljs"><code>sudo apt-get update
+sudo apt-get install build-essential m4 openjdk-8-jre libgmp-dev libmpfr-dev pkg-config flex bison z3 libz3-dev unzip python3
+</code></pre>
+</li>
+<li>
+<p>Unpack the binary (will place in subdirectory <code>k</code>), move to preferred install location:</p>
+<pre class="hljs"><code>tar -xvf kframework-X.Y.Z-ID-x86_64.pkg.tar.gz
+mv k /PATH/TO/INSTALL/k
+</code></pre>
+</li>
+<li>
+<p>Update your <code>PATH</code> (using the <code>k</code> directory extracted to above):</p>
+<pre class="hljs"><code><span class="hljs-built_in">export</span> PATH=<span class="hljs-variable">$PATH</span>:/PATH/TO/INSTALL/k/bin
+</code></pre>
+</li>
+<li>
+<p>Test:</p>
+<p>Go to one of the examples (say <code>k/tutorial/2_languages/1_simple/1_untyped/</code>).
+Assuming <code>k/bin</code> is in your <code>$PATH</code>, you can compile and test a definition by
+running the <code>make</code> command. To execute a program you can use e.g.
+<code>krun tests/diverse/factorial.simple</code>. K supports the LLVM/Haskell/Java
+backends for concrete execution and the Haskell/Java backend for symbolic
+execution and program verification (with <code>kompile --backend [haskell|java]</code>).</p>
+</li>
+</ol>
+<h2>OCAML Backend (Optional)</h2>
+<p><strong>NOTE</strong>: It is <em>strongly</em> recommended that you use the LLVM backend instead of
+the OCAML backend. The OCAML backend is being sunsetted.</p>
+<p>To use the OCAML backend requires an installation of the OCAML package manager
+OPAM. Instructions on installing OPAM are available here:
+<a href="https://opam.ocaml.org/doc/Install.html" target="_blank" rel="noopener">https://opam.ocaml.org/doc/Install.html</a>.
+You should install on Windows by following the instructions for the Linux
+distribution you installed for Windows Subsystem for Linux.</p>
+<p>Once <code>opam</code> is installed, you can prepare the installation to run the OCAML
+backend by running (for a user-local install):</p>
+<pre class="hljs"><code>k-configure-opam
+<span class="hljs-built_in">eval</span> $(opam config env)
+</code></pre>
+<p><code>k-configure-opam</code> is in the <code>k/bin</code> directory, and the <code>eval</code> command sets up
+your OCAML environment. You can optionally control where the OCAML dependencies
+are installed by setting the <code>OPAMROOT</code> environment variable before running the
+above commands with <code>export OPAMROOT=/path/to/opam/root</code>.</p>
+</body></html>
+          </div>
+        </main>
+      </div>
+    </div>
+<footer class="app-footer text-md-left text-center">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-md-2 mb-md-0 mb-4">
+        <span class="pr-md-5 pr-0 py-3">
+          <a href="https://runtimeverification.com" target="_blank">
+            <picture>
+              <source
+                srcset="../../assets/img/rv-logo-dark.png"
+                media="(prefers-color-scheme: dark)"
+              />
+              <img
+                class="pr-3 footer-logo"
+                src="../../assets/img/rv-logo.png"
+                alt="Runtime Verification Inc logo"
+              />
+            </picture>
+          </a>
+        </span>
+      </div>
+      <div class="col-md-6 mb-md-0 mb-4"></div>
+      <div class="col-md-4 text-md-right">
+        <p class="copyright">
+          &copy; 2020 Runtime Verification Inc. All right reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script
+  async
+  src="https://www.googletagmanager.com/gtag/js?id=UA-163311512-1"
+></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag() {
+    dataLayer.push(arguments);
+  }
+  gtag("js", new Date());
+  gtag("config", "UA-163311512-1");
+</script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Typist/1.2/typist.min.js"></script>
+    <script src="../../assets/js/index.js"></script>
+    <script>
+      $(function () {
+        // Render youtube video
+        const anchorElements = document.querySelectorAll(".markdown-preview a");
+        for (let i = anchorElements.length - 1; i >= 0; i--) {
+          if (anchorElements.length - 1 - i > 3) {
+            break;
+          }
+          const anchorElement = anchorElements[i];
+          const href = anchorElement.getAttribute("href");
+          if (href.match(/^https?:\/\/youtu.be\//)) {
+            const match = href.match(/^https?:\/\/youtu.be\/(.+?)$/);
+            if (match && match[1]) {
+              const youtubeId = match[1];
+              const $iframe = $(`
+<div style="text-align:center;">
+  <iframe
+    width="560"
+    height="315"
+    src="https://www.youtube.com/embed/${youtubeId}"
+    frameborder="0"
+    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+    allowfullscreen
+    style="max-width: 100%;"
+  ></iframe>
+  <p>The video is out of date</p>
+</div>
+`);
+              $(anchorElement).replaceWith($iframe[0]);
+            }
+          }
+        }
+      });
+    </script>
+  </body>
+</html>
