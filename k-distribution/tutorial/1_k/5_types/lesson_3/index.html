@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+<meta charset="utf-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+/>
+<meta
+  name="description"
+  content="Design and implement your programming language and software analysis tools with mathematical rigor."
+/>
+<meta name="keywords" content="runtime, verification, rv, k" />
+<meta name="author" content="K | Runtime Verification Inc" />
+<meta name="robots" content="index, follow" />
+
+<!--favicon icon-->
+<link rel="icon" type="image/png" href="../../../../../assets/img/favicon.ico" />
+
+<title>
+  K | Runtime Verification Inc
+</title>
+
+<!-- <base href="/k/" /> -->
+
+<!--web fonts-->
+<link
+  href="https://fonts.googleapis.com/css?family=Nunito:300,400,600,700,800"
+  rel="stylesheet"
+/>
+<link
+  href="https://fonts.googleapis.com/css?family=Lora:400i"
+  rel="stylesheet"
+/>
+
+<link
+  href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.14.0/css/all.min.css"
+  rel="stylesheet"
+/>
+
+<link href="../../../../../assets/css/index.css" rel="stylesheet" />
+
+<!--[if (gt IE 9) |!(IE)]><!-->
+<!--<link rel="stylesheet" href="/assets/vendor/custom-nav/css/effects/fade-menu.css"/>-->
+<!-- <link rel="stylesheet" href="../../../../../assets/k/vl-nav/css/effects/slide-menu.css" /> -->
+<!--<![endif]-->
+
+  </head>
+
+  <body>
+<header
+  class="navbar navbar-expand navbar-dark flex-column flex-md-row bd-navbar"
+>
+  <a class="logo-link" href="../../../../../index.html">
+    <img
+      class="logo-dark"
+      srcset="../../../../../assets/img/k-logo.png"
+      alt="K"
+      style="height: 48px;"
+    />
+    Semantic Framework
+  </a>
+  <ul class="navbar-nav ml-md-auto">
+    <li class="nav-item">
+      <a
+        class="nav-link pl-2 pr-1 mx-1 py-3 my-n2"
+        href="https://github.com/kframework/k"
+        target="_blank"
+        rel="noopener"
+        aria-label="GitHub"
+      >
+        <i class="fab fa-github"></i>
+      </a>
+    </li>
+  </ul>
+  <a
+    class="btn btn-rv-blue d-none d-lg-inline-block mb-3 mb-md-0 ml-md-3"
+    href="../../../../../downloads"
+    >Download</a
+  >
+</header>
+
+
+    <div class="container-fluid">
+      <div class="row flex-xl-nowrap">
+<div class="col-12 col-md-3 col-xl-2 bd-sidebar mb-3">
+  <form
+    role="search"
+    class="bd-search d-flex align-items-center justify-content-between"
+  >
+    <input
+      type="search"
+      class="form-control"
+      placeholder="Search..."
+      aria-label="Search for..."
+      autocomplete="false"
+      id="search-box"
+    />
+    <button
+      class="btn bd-search-docs-toggle d-md-none p-0 ml-3 collapsed"
+      type="button"
+      aria-label="Toggle docs navigation"
+      style="font-size: 1.4rem;"
+    >
+      <i class="fas fa-bars"></i>
+    </button>
+  </form>
+  <nav class="collapse bd-links" aria-label="Main navigation">
+    <div class="bd-toc-item">
+      <a class="bd-toc-link" href="../../../../../">Homepage</a>
+      <a class="bd-toc-link" href="../../../../../downloads">Downloads</a>
+      <a class="bd-toc-link" href="../../../../../k-distribution/tutorial"
+        >K Tutorial</a
+      >
+      <a class="bd-toc-link" href="../../../../../pending-documentation/"
+        >User documentation</a
+      >
+      <a
+        class="bd-toc-link"
+        href="../../../../../k-distribution/include/kframework/builtin/"
+        >Builtins</a
+      >
+    </div>
+  </nav>
+</div>
+
+        <main
+          class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 bd-content"
+          role="main"
+        >
+          <div class="introduction markdown-preview"><!-- Copyright (c) 2012-2019 K Team. All Rights Reserved. --><html><head></head><body><h1 id="environment-based-higher-order-type-systems">Environment-Based Higher-Order Type Systems</h1>
+<p>In this lesson you learn how to define an environment-based type system for
+a higher-order language, namely the LAMBDA language defined in Part 1 of the
+tutorial.</p>
+<p>The simplest and fastest way to proceed is to copy the substitution-based
+type system of LAMBDA from the previous lesson and modify it into an
+environment-based one. A large portion of the substitution-based definition
+will remain unchanged. We only have to modify the rules that use
+substitution.</p>
+<p>We do not need the substitution anymore, so we can remove the require and
+import statements. The syntax of types and expressions stays unchanged, but
+we can now remove the <code>binder</code> tag of lambda.</p>
+<p>Like in the type system of IMP++ in Lesson 1, we need a configuration that
+contains, besides the <code>&lt;k/&gt;</code> cell, a <code>&lt;tenv/&gt;</code> cell that will hold the type
+environment.</p>
+<p>In an environment-based definition, unlike in a substitution-based one, we
+need to lookup variables in the environment. So let us start with the
+type lookup rule:</p>
+<pre><code>rule &lt;k&gt; X:Id =&gt; T ...&lt;/k&gt; &lt;tenv&gt;... X |-&gt; T ...&lt;/k&gt;
+</code></pre>
+<p>The type environment is populated by the semantic rule of <code>lambda</code>:</p>
+<pre><code>rule &lt;k&gt; lambda X : T . E =&gt; (T -&gt; E) ~&gt; Rho ...&lt;/k&gt;
+     &lt;tenv&gt; Rho =&gt; Rho[X &lt;- T] &lt;/tenv&gt;
+</code></pre>
+<p>So <code>X</code> is bound to its type <code>T</code> in the type environment, and then <code>T -&gt; E</code>
+is scheduled for processing. Recall that the arrow type construct has been
+extended into a strict expression construct, so <code>E</code> will be eventually reduced
+to its type. Like in other environment-based definitions, we need to make
+sure that we recover the type environment after the computation in the scope
+of the declared variable terminates.</p>
+<p>The typing rule of application does not change, so it stays as elegant as it
+was in the substitution-based definition:</p>
+<pre><code>rule (T1 -&gt; T2) T1 =&gt; T2
+</code></pre>
+<p>So do the rules for arithmetic and Boolean constructs, and those for the
+<code>if</code>, and <code>let</code>, and <code>letrec</code>.</p>
+<p>The <code>mu</code> rule needs to change, because it was previously defined using
+substitution. We modify it in the same spirit as we modified the <code>lambda</code>
+rule: bind <code>X</code> to its type in the environment, schedule its body for typing
+in its right context, and then recover the type environment.</p>
+<p>Finally, we give the semantics of environment recovery, making sure
+the environment is recovered only after the preceding computation is
+reduced to a type:</p>
+<p>rule <k> _:Type ~&gt; (Rho =&gt; .) ...</k> <tenv> _ =&gt; Rho </tenv></p>
+<p>The changes that we applied to the substitution-based definition were
+therefore quite systematic: each substitution invocation was replaced with
+an appropriate type environment update/recovery.</p>
+<p>Go to <a href="../lesson_4/">Lesson 4, Type Systems: A Naive Substitution-Based Type Inferencer</a>.</p>
+</body></html></div>
+        </main>
+      </div>
+    </div>
+<footer class="app-footer text-md-left text-center">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-md-2 mb-md-0 mb-4">
+        <span class="pr-md-5 pr-0 py-3">
+          <a href="https://runtimeverification.com" target="_blank">
+            <picture>
+              <source
+                srcset="../../../../../assets/img/rv-logo-dark.png"
+                media="(prefers-color-scheme: dark)"
+              />
+              <img
+                class="pr-3 footer-logo"
+                src="../../../../../assets/img/rv-logo.png"
+                alt="Runtime Verification Inc logo"
+              />
+            </picture>
+          </a>
+        </span>
+      </div>
+      <div class="col-md-6 mb-md-0 mb-4"></div>
+      <div class="col-md-4 text-md-right">
+        <p class="copyright">
+          &copy; 2020 Runtime Verification Inc. All right reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Typist/1.2/typist.min.js"></script>
+    <script src="../../../../../assets/js/index.js"></script>
+    <script>
+      $(function () {
+        // Render youtube video
+        const anchorElements = document.querySelectorAll(".markdown-preview a");
+        for (let i = anchorElements.length - 1; i >= 0; i--) {
+          if (anchorElements.length - 1 - i > 3) {
+            break;
+          }
+          const anchorElement = anchorElements[i];
+          const href = anchorElement.getAttribute("href");
+          if (href.match(/^https?:\/\/youtu.be\//)) {
+            const match = href.match(/^https?:\/\/youtu.be\/(.+?)$/);
+            if (match && match[1]) {
+              const youtubeId = match[1];
+              const $iframe = $(`
+<div style="text-align:center;">
+  <iframe
+    width="560"
+    height="315"
+    src="https://www.youtube.com/embed/${youtubeId}"
+    frameborder="0"
+    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+    allowfullscreen
+    style="max-width: 100%;"
+  ></iframe>
+  <p>The video is out of date</p>
+</div>
+`);
+              $(anchorElement).replaceWith($iframe[0]);
+            }
+          }
+        }
+      });
+    </script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-9LBGDMRG32"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-9LBGDMRG32");
+    </script>
+  </body>
+</html>
