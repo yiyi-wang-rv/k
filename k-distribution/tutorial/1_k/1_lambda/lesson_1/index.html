@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+<meta charset="utf-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+/>
+<meta
+  name="description"
+  content="Design and implement your programming language and software analysis tools with mathematical rigor."
+/>
+<meta name="keywords" content="runtime, verification, rv, k" />
+<meta name="author" content="K | Runtime Verification Inc" />
+<meta name="robots" content="index, follow" />
+
+<!--favicon icon-->
+<link rel="icon" type="image/png" href="../../../../../assets/img/favicon.ico" />
+
+<title>
+  K | Runtime Verification Inc
+</title>
+
+<!-- <base href="/k/" /> -->
+
+<!--web fonts-->
+<link
+  href="https://fonts.googleapis.com/css?family=Nunito:300,400,600,700,800"
+  rel="stylesheet"
+/>
+<link
+  href="https://fonts.googleapis.com/css?family=Lora:400i"
+  rel="stylesheet"
+/>
+
+<link
+  href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.14.0/css/all.min.css"
+  rel="stylesheet"
+/>
+
+<link href="../../../../../assets/css/index.css" rel="stylesheet" />
+
+<!--[if (gt IE 9) |!(IE)]><!-->
+<!--<link rel="stylesheet" href="/assets/vendor/custom-nav/css/effects/fade-menu.css"/>-->
+<!-- <link rel="stylesheet" href="../../../../../assets/k/vl-nav/css/effects/slide-menu.css" /> -->
+<!--<![endif]-->
+
+  </head>
+
+  <body>
+<header
+  class="navbar navbar-expand navbar-dark flex-column flex-md-row bd-navbar"
+>
+  <a class="logo-link" href="../../../../../index.html">
+    <img
+      class="logo-dark"
+      srcset="../../../../../assets/img/k-logo.png"
+      alt="K"
+      style="height: 48px;"
+    />
+    Semantic Framework
+  </a>
+  <ul class="navbar-nav ml-md-auto">
+    <li class="nav-item">
+      <a
+        class="nav-link pl-2 pr-1 mx-1 py-3 my-n2"
+        href="https://github.com/kframework/k"
+        target="_blank"
+        rel="noopener"
+        aria-label="GitHub"
+      >
+        <i class="fab fa-github"></i>
+      </a>
+    </li>
+  </ul>
+  <a
+    class="btn btn-rv-blue d-none d-lg-inline-block mb-3 mb-md-0 ml-md-3"
+    href="../../../../../downloads"
+    >Download</a
+  >
+</header>
+
+
+    <div class="container-fluid">
+      <div class="row flex-xl-nowrap">
+<div class="col-12 col-md-3 col-xl-2 bd-sidebar mb-3">
+  <form
+    role="search"
+    class="bd-search d-flex align-items-center justify-content-between"
+  >
+    <input
+      type="search"
+      class="form-control"
+      placeholder="Search..."
+      aria-label="Search for..."
+      autocomplete="false"
+      id="search-box"
+    />
+    <button
+      class="btn bd-search-docs-toggle d-md-none p-0 ml-3 collapsed"
+      type="button"
+      aria-label="Toggle docs navigation"
+      style="font-size: 1.4rem;"
+    >
+      <i class="fas fa-bars"></i>
+    </button>
+  </form>
+  <nav class="collapse bd-links" aria-label="Main navigation">
+    <div class="bd-toc-item">
+      <a class="bd-toc-link" href="../../../../../">Homepage</a>
+      <a class="bd-toc-link" href="../../../../../downloads">Downloads</a>
+      <a class="bd-toc-link" href="../../../../../k-distribution/tutorial"
+        >K Tutorial</a
+      >
+      <a class="bd-toc-link" href="../../../../../pending-documentation/"
+        >User documentation</a
+      >
+      <a
+        class="bd-toc-link"
+        href="../../../../../k-distribution/include/kframework/builtin/"
+        >Builtins</a
+      >
+    </div>
+  </nav>
+</div>
+
+        <main
+          class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 bd-content"
+          role="main"
+        >
+          <div class="introduction markdown-preview"><!-- Copyright (c) 2012-2019 K Team. All Rights Reserved. --><html><head></head><body><h1 id="syntax-modules-and-basic-k-commands">Syntax Modules and Basic K Commands</h1>
+<p>Here we define our first K module, which contains the initial syntax of the
+LAMBDA language, and learn how to use the basic K commands.</p>
+<p>Let us create an empty working folder, and open a terminal window
+(to the left) and an editor window (to the right). We will edit our K
+definition in the right window in a file called <code>lambda.k</code>, and will call
+the K tool commands in the left window.</p>
+<p>Let us start by defining a K module, containing the syntax of LAMBDA.</p>
+<p>K modules are introduced with the keywords <code>module</code> ... <code>endmodule</code>.</p>
+<p>The keyword <code>syntax</code> adds new productions to the syntax grammar, using a
+BNF-like notation.</p>
+<p>Terminals are enclosed in double-quotes, like strings.</p>
+<p>You can define multiple productions for the same non-terminal in the same
+syntax declaration using the <code>|</code> separator.</p>
+<p>Productions can have attributes, which are enclosed in square brackets.</p>
+<p>The attribute <code>left</code> tells the parser that we want the lambda application to be
+left associative. For example, <code>a b c d</code> will then parse as <code>(((a b) c) d)</code>.</p>
+<p>The attribute <code>bracket</code> tells the parser to not generate a node for the
+parenthesis production in the abstract syntax trees associated to programs.
+In other words, we want to allow parentheses to be used for grouping, but we
+do not want to bother to give them their obvious (ignore) semantics.</p>
+<p>In our variant of lambda calculus defined here, identifiers and lambda
+abstractions are meant to be irreducible, that is, are meant to be values.
+However, so far <code>Val</code> is just another non-terminal, just like <code>Exp</code>,
+without any semantic meaning. It will get a semantic meaning later.</p>
+<p>After we are done typing our definition in the file <code>lambda.k</code>, we can kompile
+it with the command:</p>
+<pre><code>kompile lambda.k
+</code></pre>
+<p>If we get no errors then a parser has been generated. This parser will be
+called from now on by default by the krun tool. To see whether and how the
+parser works, we are going to write some LAMBDA programs and store them in
+files with the extension <code>.lambda</code>.</p>
+<p>Let us create a file <code>identity.lambda</code>, which contains the identity lambda
+abstraction:</p>
+<pre><code>lambda x . x
+</code></pre>
+<p>Now let us call <code>krun</code> on <code>identity.lambda</code>:</p>
+<pre><code>krun identity.lambda
+</code></pre>
+<p>Make sure you call the <code>krun</code> command from the folder containing your language
+definition (otherwise type <code>krun --help</code> to learn how to pass a language
+definition as a parameter to <code>krun</code>). The krun command produces the output:</p>
+<pre><code>&lt;k&gt;
+  lambda x . x
+&lt;/k&gt;
+</code></pre>
+<p>If you see such an output it means that your program has been parsed (and then
+pretty printed) correctly. If you want to see the internal abstract syntax
+tree (AST) representation of the parsed program, which we call the K AST, then
+type <code>kast</code> in the command instead of <code>krun</code>:</p>
+<pre><code>kast identity.lambda
+</code></pre>
+<p>You should normally never need to see this internal representation in your
+K definitions, so do not get scared (yes, it is ugly for humans, but it is
+very convenient for tools).</p>
+<p>Note that <code>krun</code> placed the program in a <code>&lt;k&gt; ... &lt;/k&gt;</code> cell. In K, computations
+happen only in cells. If you do not define a configuration in your definition,
+like we did here, then a configuration will be created automatically for you
+which contains only one cell, the default <code>k</code> cell, which holds the program.</p>
+<p>Next, let us create a file <code>free-variable-capture.lambda</code>, which contains an
+expression which, in order to execute correctly in a substitution-based
+semantics of LAMBDA, the substitution operation needs to avoid
+variable-capture:</p>
+<pre><code>a (((lambda x.lambda y.x) y) z)
+</code></pre>
+<p>Next, file <code>closed-variable-capture.lambda</code> shows an expression which also
+requires a capture-free substitution, but this expression is closed (that is,
+it has no free variables) and all its bound variables are distinct (I believe
+this is the smallest such expression):</p>
+<pre><code>(lambda z.(z z)) (lambda x.lambda y.(x y))
+</code></pre>
+<p>Finally, the file <code>omega.lambda</code> contains the classic omega combinator
+(or closed expression), which is the smallest expression which loops forever
+(not now, but after we define the semantics of LAMBDA):</p>
+<pre><code>(lambda x.(x x)) (lambda x.(x x))
+</code></pre>
+<p>Feel free to define and parse several other LAMBDA programs to get a feel for
+how the parser works. Parse also some incorrect programs, to see how the
+parser generates error messages.</p>
+<p>In the next lesson we will see how to define semantic rules that iteratively
+rewrite expressions over the defined syntax until they evaluate to a result.
+This way, we obtain our first programming language defined using K.</p>
+<p>Go to <a href="../lesson_2/">Lesson 2, LAMBDA: Module Importing, Rules, Variables</a></p>
+<p><a href="http://youtu.be/y5Tf1EZVj8E" target="_blank" rel="noopener">MOVIE (out of date) [4&apos;07&quot;]</a></p>
+</body></html></div>
+        </main>
+      </div>
+    </div>
+<footer class="app-footer text-md-left text-center">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-md-2 mb-md-0 mb-4">
+        <span class="pr-md-5 pr-0 py-3">
+          <a href="https://runtimeverification.com" target="_blank">
+            <picture>
+              <source
+                srcset="../../../../../assets/img/rv-logo-dark.png"
+                media="(prefers-color-scheme: dark)"
+              />
+              <img
+                class="pr-3 footer-logo"
+                src="../../../../../assets/img/rv-logo.png"
+                alt="Runtime Verification Inc logo"
+              />
+            </picture>
+          </a>
+        </span>
+      </div>
+      <div class="col-md-6 mb-md-0 mb-4"></div>
+      <div class="col-md-4 text-md-right">
+        <p class="copyright">
+          &copy; 2020 Runtime Verification Inc. All right reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Typist/1.2/typist.min.js"></script>
+    <script src="../../../../../assets/js/index.js"></script>
+    <script>
+      $(function () {
+        // Render youtube video
+        const anchorElements = document.querySelectorAll(".markdown-preview a");
+        for (let i = anchorElements.length - 1; i >= 0; i--) {
+          if (anchorElements.length - 1 - i > 3) {
+            break;
+          }
+          const anchorElement = anchorElements[i];
+          const href = anchorElement.getAttribute("href");
+          if (href.match(/^https?:\/\/youtu.be\//)) {
+            const match = href.match(/^https?:\/\/youtu.be\/(.+?)$/);
+            if (match && match[1]) {
+              const youtubeId = match[1];
+              const $iframe = $(`
+<div style="text-align:center;">
+  <iframe
+    width="560"
+    height="315"
+    src="https://www.youtube.com/embed/${youtubeId}"
+    frameborder="0"
+    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+    allowfullscreen
+    style="max-width: 100%;"
+  ></iframe>
+  <p>The video is out of date</p>
+</div>
+`);
+              $(anchorElement).replaceWith($iframe[0]);
+            }
+          }
+        }
+      });
+    </script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-9LBGDMRG32"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-9LBGDMRG32");
+    </script>
+  </body>
+</html>
