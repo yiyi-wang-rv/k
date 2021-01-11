@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+<meta charset="utf-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+/>
+<meta
+  name="description"
+  content="Design and implement your programming language and software analysis tools with mathematical rigor."
+/>
+<meta name="keywords" content="runtime, verification, rv, k" />
+<meta name="author" content="K | Runtime Verification Inc" />
+<meta name="robots" content="index, follow" />
+
+<!--favicon icon-->
+<link rel="icon" type="image/png" href="../../../../../../../assets/img/favicon.ico" />
+
+<title>
+  K | Runtime Verification Inc
+</title>
+
+<!-- <base href="/k/" /> -->
+
+<!--web fonts-->
+<link
+  href="https://fonts.googleapis.com/css?family=Nunito:300,400,600,700,800"
+  rel="stylesheet"
+/>
+<link
+  href="https://fonts.googleapis.com/css?family=Lora:400i"
+  rel="stylesheet"
+/>
+
+<link
+  href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.14.0/css/all.min.css"
+  rel="stylesheet"
+/>
+
+<link href="../../../../../../../assets/css/index.css" rel="stylesheet" />
+
+<!--[if (gt IE 9) |!(IE)]><!-->
+<!--<link rel="stylesheet" href="/assets/vendor/custom-nav/css/effects/fade-menu.css"/>-->
+<!-- <link rel="stylesheet" href="../../../../../../../assets/k/vl-nav/css/effects/slide-menu.css" /> -->
+<!--<![endif]-->
+
+  </head>
+
+  <body>
+<header
+  class="navbar navbar-expand navbar-dark flex-column flex-md-row bd-navbar"
+>
+  <a class="logo-link" href="../../../../../../../index.html">
+    <img
+      class="logo-dark"
+      srcset="../../../../../../../assets/img/k-logo.png"
+      alt="K"
+      style="height: 48px;"
+    />
+    Semantic Framework
+  </a>
+  <ul class="navbar-nav ml-md-auto">
+    <li class="nav-item">
+      <a
+        class="nav-link pl-2 pr-1 mx-1 py-3 my-n2"
+        href="https://github.com/kframework/k"
+        target="_blank"
+        rel="noopener"
+        aria-label="GitHub"
+      >
+        <i class="fab fa-github"></i>
+      </a>
+    </li>
+  </ul>
+  <a
+    class="btn btn-rv-blue d-none d-lg-inline-block mb-3 mb-md-0 ml-md-3"
+    href="../../../../../../../downloads"
+    >Download</a
+  >
+</header>
+
+
+    <div class="container-fluid">
+      <div class="row flex-xl-nowrap">
+<div class="col-12 col-md-3 col-xl-2 bd-sidebar mb-3">
+  <form
+    role="search"
+    class="bd-search d-flex align-items-center justify-content-between"
+  >
+    <input
+      type="search"
+      class="form-control"
+      placeholder="Search..."
+      aria-label="Search for..."
+      autocomplete="false"
+      id="search-box"
+    />
+    <button
+      class="btn bd-search-docs-toggle d-md-none p-0 ml-3 collapsed"
+      type="button"
+      aria-label="Toggle docs navigation"
+      style="font-size: 1.4rem;"
+    >
+      <i class="fas fa-bars"></i>
+    </button>
+  </form>
+  <nav class="collapse bd-links" aria-label="Main navigation">
+    <div class="bd-toc-item">
+      <a class="bd-toc-link" href="../../../../../../../">Homepage</a>
+      <a class="bd-toc-link" href="../../../../../../../downloads">Downloads</a>
+      <a class="bd-toc-link" href="../../../../../../../k-distribution/tutorial"
+        >K Tutorial</a
+      >
+      <a class="bd-toc-link" href="../../../../../../../pending-documentation/"
+        >User documentation</a
+      >
+      <a
+        class="bd-toc-link"
+        href="../../../../../../../k-distribution/include/kframework/builtin/"
+        >Builtins</a
+      >
+    </div>
+  </nav>
+</div>
+
+        <main
+          class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 bd-content"
+          role="main"
+        >
+          <div class="introduction markdown-preview"><html><head></head><body><h1 id="simple-%E2%80%94-typed-%E2%80%94-dynamic">SIMPLE &#x2014; Typed &#x2014; Dynamic</h1>
+<p>Author: Grigore Ro&#x219;u (<a href="mailto:grosu@illinois.edu" target="_blank" rel="noopener">grosu@illinois.edu</a>)<br>
+Organization: University of Illinois at Urbana-Champaign</p>
+<p>Author: Traian Florin &#x218;erb&#x103;nu&#x21B;&#x103; (<a href="mailto:traian.serbanuta@unibuc.ro" target="_blank" rel="noopener">traian.serbanuta@unibuc.ro</a>)<br>
+Organization: University of Bucharest</p>
+<h2 id="abstract">Abstract</h2>
+<p>This is the <strong>K</strong> dynamic semantics of the typed SIMPLE language.
+It is very similar to the semantics of the untyped SIMPLE, the
+difference being that we now dynamically check the typing policy
+described in the static semantics of typed SIMPLE.  Because of the
+dynamic nature of the semantics, we can also perform some additional
+checks which were not possible in the static semantics, such as
+memory leaks due to accessing an array out of its bounds.  We will
+highlight the differences between the dynamically typed and the
+untyped SIMPLE as we proceed with the semantics.  We recommend the
+reader to consult the typing policy and the syntax of types discussed
+in the static semantics of the typed SIMPLE language.</p>
+<pre class="language-k"><code><span class="token keyword">module</span> SIMPLE<span class="token operator">-</span>TYPED<span class="token operator">-</span>DYNAMIC<span class="token operator">-</span>SYNTAX
+  <span class="token keyword">imports</span> DOMAINS<span class="token operator">-</span>SYNTAX
+</code></pre>
+<h2 id="syntax">Syntax</h2>
+<p>The syntax of typed SIMPLE extends that of untyped SIMPLE with support
+for declaring types to variables and functions.</p>
+<p>The syntax below is identical to that of the static semantics of typed
+SIMPLE.  However, the <strong>K</strong> strictness attributes are like those of the untyped
+SIMPLE, to capture the desired evaluation strategies of the various language
+constructs.</p>
+<pre class="language-k"><code>  <span class="token keyword">syntax</span> <span class="token keyword">Id</span> <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">&quot;main&quot;</span> <span class="token punctuation">[</span><span class="token class-name">token</span><span class="token punctuation">]</span>
+</code></pre>
+<h2 id="types">Types</h2>
+<pre class="language-k"><code>  <span class="token keyword">syntax</span> Type <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">&quot;void&quot;</span> <span class="token operator">|</span> <span class="token string">&quot;int&quot;</span> <span class="token operator">|</span> <span class="token string">&quot;bool&quot;</span> <span class="token operator">|</span> <span class="token string">&quot;string&quot;</span>
+                <span class="token operator">|</span> Type <span class="token string">&quot;[&quot;</span> <span class="token string">&quot;]&quot;</span>
+                &gt; Types <span class="token string">&quot;-&gt;&quot;</span> Type
+                <span class="token operator">|</span> <span class="token string">&quot;(&quot;</span> Type <span class="token string">&quot;)&quot;</span>           <span class="token punctuation">[</span><span class="token class-name">bracket</span><span class="token punctuation">]</span>
+  <span class="token keyword">syntax</span> Types <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> List<span class="token punctuation">{</span>Type<span class="token punctuation">,</span><span class="token string">&quot;,&quot;</span><span class="token punctuation">}</span>
+</code></pre>
+<h2 id="declarations">Declarations</h2>
+<pre class="language-k"><code>  <span class="token keyword">syntax</span> Param <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> Type <span class="token keyword">Id</span>
+  <span class="token keyword">syntax</span> Params <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> List<span class="token punctuation">{</span>Param<span class="token punctuation">,</span><span class="token string">&quot;,&quot;</span><span class="token punctuation">}</span>
+
+  <span class="token keyword">syntax</span> Stmt <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> Type Exps <span class="token string">&quot;;&quot;</span>
+                <span class="token operator">|</span> Type <span class="token keyword">Id</span> <span class="token string">&quot;(&quot;</span> Params <span class="token string">&quot;)&quot;</span> Block
+</code></pre>
+<h2 id="expressions">Expressions</h2>
+<pre class="language-k"><code>  <span class="token keyword">syntax</span> Exp <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token keyword">Int</span> <span class="token operator">|</span> <span class="token keyword">Bool</span> <span class="token operator">|</span> <span class="token keyword">String</span> <span class="token operator">|</span> <span class="token keyword">Id</span>
+               <span class="token operator">|</span> <span class="token string">&quot;(&quot;</span> Exp <span class="token string">&quot;)&quot;</span>             <span class="token punctuation">[</span><span class="token class-name">bracket</span><span class="token punctuation">]</span>
+               <span class="token operator">|</span> <span class="token string">&quot;++&quot;</span> Exp
+               &gt; Exp <span class="token string">&quot;[&quot;</span> Exps <span class="token string">&quot;]&quot;</span>        <span class="token punctuation">[</span><span class="token class-name">strict</span><span class="token punctuation">]</span>
+               &gt; Exp <span class="token string">&quot;(&quot;</span> Exps <span class="token string">&quot;)&quot;</span>        <span class="token punctuation">[</span><span class="token class-name">strict</span><span class="token punctuation">]</span>
+               <span class="token operator">|</span> <span class="token string">&quot;-&quot;</span> Exp                 <span class="token punctuation">[</span><span class="token class-name">strict</span><span class="token punctuation">]</span>
+               <span class="token operator">|</span> <span class="token string">&quot;sizeOf&quot;</span> <span class="token string">&quot;(&quot;</span> Exp <span class="token string">&quot;)&quot;</span>    <span class="token punctuation">[</span><span class="token class-name">strict</span><span class="token punctuation">]</span>
+               <span class="token operator">|</span> <span class="token string">&quot;read&quot;</span> <span class="token string">&quot;(&quot;</span> <span class="token string">&quot;)&quot;</span>
+               &gt; <span class="token class-name">left</span><span class="token punctuation">:</span>
+                 Exp <span class="token string">&quot;*&quot;</span> Exp             <span class="token punctuation">[</span><span class="token class-name">strict</span><span class="token punctuation">,</span> <span class="token class-name">left</span><span class="token punctuation">]</span>
+               <span class="token operator">|</span> Exp <span class="token string">&quot;/&quot;</span> Exp             <span class="token punctuation">[</span><span class="token class-name">strict</span><span class="token punctuation">,</span> <span class="token class-name">left</span><span class="token punctuation">]</span>
+               <span class="token operator">|</span> Exp <span class="token string">&quot;%&quot;</span> Exp             <span class="token punctuation">[</span><span class="token class-name">strict</span><span class="token punctuation">,</span> <span class="token class-name">left</span><span class="token punctuation">]</span>
+               &gt; <span class="token class-name">left</span><span class="token punctuation">:</span>
+                 Exp <span class="token string">&quot;+&quot;</span> Exp             <span class="token punctuation">[</span><span class="token class-name">strict</span><span class="token punctuation">,</span> <span class="token class-name">left</span><span class="token punctuation">]</span>
+               <span class="token operator">|</span> Exp <span class="token string">&quot;-&quot;</span> Exp             <span class="token punctuation">[</span><span class="token class-name">strict</span><span class="token punctuation">,</span> <span class="token class-name">left</span><span class="token punctuation">]</span>
+               &gt; <span class="token class-name">non-assoc</span><span class="token punctuation">:</span>
+                 Exp <span class="token string">&quot;&lt;&quot;</span> Exp             <span class="token punctuation">[</span><span class="token class-name">strict</span><span class="token punctuation">,</span> <span class="token class-name">non-assoc</span><span class="token punctuation">]</span>
+               <span class="token operator">|</span> Exp <span class="token string">&quot;&lt;=&quot;</span> Exp            <span class="token punctuation">[</span><span class="token class-name">strict</span><span class="token punctuation">,</span> <span class="token class-name">non-assoc</span><span class="token punctuation">]</span>
+               <span class="token operator">|</span> Exp <span class="token string">&quot;&gt;&quot;</span> Exp             <span class="token punctuation">[</span><span class="token class-name">strict</span><span class="token punctuation">,</span> <span class="token class-name">non-assoc</span><span class="token punctuation">]</span>
+               <span class="token operator">|</span> Exp <span class="token string">&quot;&gt;=&quot;</span> Exp            <span class="token punctuation">[</span><span class="token class-name">strict</span><span class="token punctuation">,</span> <span class="token class-name">non-assoc</span><span class="token punctuation">]</span>
+               <span class="token operator">|</span> Exp <span class="token string">&quot;==&quot;</span> Exp            <span class="token punctuation">[</span><span class="token class-name">strict</span><span class="token punctuation">,</span> <span class="token class-name">non-assoc</span><span class="token punctuation">]</span>
+               <span class="token operator">|</span> Exp <span class="token string">&quot;!=&quot;</span> Exp            <span class="token punctuation">[</span><span class="token class-name">strict</span><span class="token punctuation">,</span> <span class="token class-name">non-assoc</span><span class="token punctuation">]</span>
+               &gt; <span class="token string">&quot;!&quot;</span> Exp                 <span class="token punctuation">[</span><span class="token class-name">strict</span><span class="token punctuation">]</span>
+               &gt; <span class="token class-name">left</span><span class="token punctuation">:</span>
+                 Exp <span class="token string">&quot;&amp;&amp;&quot;</span> Exp            <span class="token punctuation">[</span><span class="token class-name">strict</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token class-name">left</span><span class="token punctuation">]</span>
+               <span class="token operator">|</span> Exp <span class="token string">&quot;||&quot;</span> Exp            <span class="token punctuation">[</span><span class="token class-name">strict</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token class-name">left</span><span class="token punctuation">]</span>
+               &gt; <span class="token string">&quot;spawn&quot;</span> Block
+               &gt; Exp <span class="token string">&quot;=&quot;</span> Exp             <span class="token punctuation">[</span><span class="token class-name">strict</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token class-name">right</span><span class="token punctuation">]</span>
+</code></pre>
+<p>Like in the static semantics, there is no need for lists of identifiers
+(because we now have lists of parameters).</p>
+<pre class="language-k"><code>  <span class="token keyword">syntax</span> Exps <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> List<span class="token punctuation">{</span>Exp<span class="token punctuation">,</span><span class="token string">&quot;,&quot;</span><span class="token punctuation">}</span>          <span class="token punctuation">[</span><span class="token class-name">strict</span><span class="token punctuation">]</span>
+  <span class="token keyword">syntax</span> Val
+  <span class="token keyword">syntax</span> Vals <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> List<span class="token punctuation">{</span>Val<span class="token punctuation">,</span><span class="token string">&quot;,&quot;</span><span class="token punctuation">}</span>
+</code></pre>
+<h2 id="statements">Statements</h2>
+<pre class="language-k"><code>  <span class="token keyword">syntax</span> Block <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">&quot;{&quot;</span> <span class="token string">&quot;}&quot;</span>
+                <span class="token operator">|</span> <span class="token string">&quot;{&quot;</span> Stmt <span class="token string">&quot;}&quot;</span>
+
+  <span class="token keyword">syntax</span> Stmt <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> Block
+                <span class="token operator">|</span> Exp <span class="token string">&quot;;&quot;</span>                               <span class="token punctuation">[</span><span class="token class-name">strict</span><span class="token punctuation">]</span>
+                <span class="token operator">|</span> <span class="token string">&quot;if&quot;</span> <span class="token string">&quot;(&quot;</span> Exp <span class="token string">&quot;)&quot;</span> Block <span class="token string">&quot;else&quot;</span> Block   <span class="token punctuation">[</span><span class="token class-name">avoid</span><span class="token punctuation">,</span> <span class="token class-name">strict</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">]</span>
+                <span class="token operator">|</span> <span class="token string">&quot;if&quot;</span> <span class="token string">&quot;(&quot;</span> Exp <span class="token string">&quot;)&quot;</span> Block
+                <span class="token operator">|</span> <span class="token string">&quot;while&quot;</span> <span class="token string">&quot;(&quot;</span> Exp <span class="token string">&quot;)&quot;</span> Block
+            <span class="token operator">|</span> <span class="token string">&quot;for&quot;</span> <span class="token string">&quot;(&quot;</span> Stmt Exp <span class="token string">&quot;;&quot;</span> Exp <span class="token string">&quot;)&quot;</span> Block
+                <span class="token operator">|</span> <span class="token string">&quot;print&quot;</span> <span class="token string">&quot;(&quot;</span> Exps <span class="token string">&quot;)&quot;</span> <span class="token string">&quot;;&quot;</span>              <span class="token punctuation">[</span><span class="token class-name">strict</span><span class="token punctuation">]</span>
+                <span class="token operator">|</span> <span class="token string">&quot;return&quot;</span> Exp <span class="token string">&quot;;&quot;</span>                      <span class="token punctuation">[</span><span class="token class-name">strict</span><span class="token punctuation">]</span>
+                <span class="token operator">|</span> <span class="token string">&quot;return&quot;</span> <span class="token string">&quot;;&quot;</span>
+                <span class="token operator">|</span> <span class="token string">&quot;try&quot;</span> Block <span class="token string">&quot;catch&quot;</span> <span class="token string">&quot;(&quot;</span> Param <span class="token string">&quot;)&quot;</span> Block
+            <span class="token operator">|</span> <span class="token string">&quot;throw&quot;</span> Exp <span class="token string">&quot;;&quot;</span>                       <span class="token punctuation">[</span><span class="token class-name">strict</span><span class="token punctuation">]</span>
+                <span class="token operator">|</span> <span class="token string">&quot;join&quot;</span> Exp <span class="token string">&quot;;&quot;</span>                        <span class="token punctuation">[</span><span class="token class-name">strict</span><span class="token punctuation">]</span>
+                <span class="token operator">|</span> <span class="token string">&quot;acquire&quot;</span> Exp <span class="token string">&quot;;&quot;</span>                     <span class="token punctuation">[</span><span class="token class-name">strict</span><span class="token punctuation">]</span>
+                <span class="token operator">|</span> <span class="token string">&quot;release&quot;</span> Exp <span class="token string">&quot;;&quot;</span>                     <span class="token punctuation">[</span><span class="token class-name">strict</span><span class="token punctuation">]</span>
+                <span class="token operator">|</span> <span class="token string">&quot;rendezvous&quot;</span> Exp <span class="token string">&quot;;&quot;</span>                  <span class="token punctuation">[</span><span class="token class-name">strict</span><span class="token punctuation">]</span>
+
+  <span class="token keyword">syntax</span> Stmt <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> Stmt Stmt                          <span class="token punctuation">[</span><span class="token class-name">right</span><span class="token punctuation">]</span>
+</code></pre>
+<p>The same desugaring macros like in the statically typed SIMPLE.</p>
+<pre class="language-k"><code>  <span class="token keyword">rule</span> if <span class="token punctuation">(</span>E<span class="token punctuation">)</span> S <span class="token operator">=&gt;</span> if <span class="token punctuation">(</span>E<span class="token punctuation">)</span> S else <span class="token punctuation">{</span><span class="token punctuation">}</span>                                     <span class="token punctuation">[</span><span class="token class-name">macro</span><span class="token punctuation">]</span>
+  <span class="token keyword">rule</span> for<span class="token punctuation">(</span>Start Cond<span class="token punctuation">;</span> Step<span class="token punctuation">)</span> <span class="token punctuation">{</span>S<span class="token punctuation">:</span>Stmt<span class="token punctuation">}</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>Start while<span class="token punctuation">(</span>Cond<span class="token punctuation">)</span><span class="token punctuation">{</span>S Step<span class="token punctuation">;</span><span class="token punctuation">}</span><span class="token punctuation">}</span>  <span class="token punctuation">[</span><span class="token class-name">macro</span><span class="token punctuation">]</span>
+  <span class="token keyword">rule</span> for<span class="token punctuation">(</span>Start Cond<span class="token punctuation">;</span> Step<span class="token punctuation">)</span> <span class="token punctuation">{</span><span class="token punctuation">}</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>Start while<span class="token punctuation">(</span>Cond<span class="token punctuation">)</span><span class="token punctuation">{</span>Step<span class="token punctuation">;</span><span class="token punctuation">}</span><span class="token punctuation">}</span>           <span class="token punctuation">[</span><span class="token class-name">macro</span><span class="token punctuation">]</span>
+  <span class="token keyword">rule</span> T<span class="token punctuation">:</span>Type E1<span class="token punctuation">:</span>Exp<span class="token punctuation">,</span> E2<span class="token punctuation">:</span>Exp<span class="token punctuation">,</span> Es<span class="token punctuation">:</span>Exps<span class="token punctuation">;</span> <span class="token operator">=&gt;</span> T E1<span class="token punctuation">;</span> T E2<span class="token punctuation">,</span> Es<span class="token punctuation">;</span>               <span class="token punctuation">[</span><span class="token class-name">macro-rec</span><span class="token punctuation">]</span>
+  <span class="token keyword">rule</span> T<span class="token punctuation">:</span>Type X<span class="token punctuation">:</span><span class="token keyword">Id</span> <span class="token operator">=</span> E<span class="token punctuation">;</span> <span class="token operator">=&gt;</span> T X<span class="token punctuation">;</span> X <span class="token operator">=</span> E<span class="token punctuation">;</span>                                  <span class="token punctuation">[</span><span class="token class-name">macro</span><span class="token punctuation">]</span>
+
+<span class="token keyword">endmodule</span>
+
+
+<span class="token keyword">module</span> SIMPLE<span class="token operator">-</span>TYPED<span class="token operator">-</span>DYNAMIC
+  <span class="token keyword">imports</span> SIMPLE<span class="token operator">-</span>TYPED<span class="token operator">-</span>DYNAMIC<span class="token operator">-</span>SYNTAX
+  <span class="token keyword">imports</span> DOMAINS
+</code></pre>
+<h2 id="semantics">Semantics</h2>
+<h3 id="values-and-results">Values and results</h3>
+<p>These are similar to those of untyped SIMPLE, except that the array
+references and the function abstrations now also hold their types.
+These types are needed in order to easily compute the type of any
+value in the language (see the auxiliary <code>typeOf</code> operation at
+the end of this module).</p>
+<pre class="language-k"><code>  <span class="token keyword">syntax</span> Val <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token keyword">Int</span> <span class="token operator">|</span> <span class="token keyword">Bool</span> <span class="token operator">|</span> <span class="token keyword">String</span>
+               <span class="token operator">|</span> array<span class="token punctuation">(</span>Type<span class="token punctuation">,</span><span class="token keyword">Int</span><span class="token punctuation">,</span><span class="token keyword">Int</span><span class="token punctuation">)</span>
+               <span class="token operator">|</span> lambda<span class="token punctuation">(</span>Type<span class="token punctuation">,</span>Params<span class="token punctuation">,</span>Stmt<span class="token punctuation">)</span>
+  <span class="token keyword">syntax</span> Exp <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> Val
+  <span class="token keyword">syntax</span> Exps <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> Vals
+  <span class="token keyword">syntax</span> KResult <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> Val
+                   <span class="token operator">|</span> Vals  <span class="token comment">// TODO: should not need this</span>
+</code></pre>
+<h3 id="configuration">Configuration</h3>
+<p>The configuration is almost identical to that of untyped SIMPLE,
+except for a <code>return</code> cell inside the <code>control</code> cell.
+This <code>return</code> cell will hold, like in the static semantics of
+typed SIMPLE, the expected type of the value returned by the function
+being executed.  The contents of this cell will be set whenever a
+function is invoked and will be checked whenever the evaluation of the
+function body encounters an explicit <code>return</code> statement.</p>
+<pre class="language-k"><code>  <span class="token comment">// the syntax declarations below are required because the sorts are</span>
+  <span class="token comment">// referenced directly by a production and, because of the way KIL to KORE</span>
+  <span class="token comment">// is implemented, the configuration syntax is not available yet</span>
+  <span class="token comment">// should simply work once KIL is removed completely</span>
+  <span class="token comment">// check other definitions for this hack as well</span>
+
+  <span class="token keyword">syntax</span> ControlCell
+  <span class="token keyword">syntax</span> ControlCellFragment
+
+  <span class="token keyword">configuration</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>T</span> <span class="token attr-name">color</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">&quot;</span>red<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>
+                  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>threads</span> <span class="token attr-name">color</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">&quot;</span>orange<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>
+                    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>thread</span> <span class="token attr-name">multiplicity</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">&quot;</span>*<span class="token punctuation">&quot;</span></span> <span class="token attr-name">color</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">&quot;</span>yellow<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>
+                      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span> <span class="token attr-name">color</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">&quot;</span>green<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span> <span class="token punctuation">(</span>$PGM<span class="token punctuation">:</span>Stmt <span class="token operator">~&gt;</span> execute<span class="token punctuation">)</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>
+<span class="token comment">//                      &lt;br/&gt;</span>
+                      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>control</span> <span class="token attr-name">color</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">&quot;</span>cyan<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>
+                        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>fstack</span> <span class="token attr-name">color</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">&quot;</span>blue<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span> <span class="token punctuation">.</span>List <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>fstack</span><span class="token punctuation">&gt;</span></span>
+                        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>xstack</span> <span class="token attr-name">color</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">&quot;</span>purple<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span> <span class="token punctuation">.</span>List <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>xstack</span><span class="token punctuation">&gt;</span></span>
+                        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>returnType</span> <span class="token attr-name">color</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">&quot;</span>LimeGreen<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span> void <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>returnType</span><span class="token punctuation">&gt;</span></span>
+                       <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>control</span><span class="token punctuation">&gt;</span></span>
+<span class="token comment">//                      &lt;br/&gt;</span>
+                      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>env</span> <span class="token attr-name">color</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">&quot;</span>violet<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span> <span class="token punctuation">.</span>Map <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>env</span><span class="token punctuation">&gt;</span></span>
+                      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>holds</span> <span class="token attr-name">color</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">&quot;</span>black<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span> <span class="token punctuation">.</span>Map <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>holds</span><span class="token punctuation">&gt;</span></span>
+                      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>id</span> <span class="token attr-name">color</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">&quot;</span>pink<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span> <span class="token number">0</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>id</span><span class="token punctuation">&gt;</span></span>
+                    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>thread</span><span class="token punctuation">&gt;</span></span>
+                  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>threads</span><span class="token punctuation">&gt;</span></span>
+<span class="token comment">//                  &lt;br/&gt;</span>
+                  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>genv</span> <span class="token attr-name">color</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">&quot;</span>pink<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span> <span class="token punctuation">.</span>Map <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>genv</span><span class="token punctuation">&gt;</span></span>
+                  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>store</span> <span class="token attr-name">color</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">&quot;</span>white<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span> <span class="token punctuation">.</span>Map <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>store</span><span class="token punctuation">&gt;</span></span>
+                  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>busy</span> <span class="token attr-name">color</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">&quot;</span>cyan<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span><span class="token punctuation">.</span>Set<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>busy</span><span class="token punctuation">&gt;</span></span>
+                  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>terminated</span> <span class="token attr-name">color</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">&quot;</span>red<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span> <span class="token punctuation">.</span>Set <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>terminated</span><span class="token punctuation">&gt;</span></span>
+                  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>input</span> <span class="token attr-name">color</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">&quot;</span>magenta<span class="token punctuation">&quot;</span></span> <span class="token attr-name">stream</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">&quot;</span>stdin<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span> <span class="token punctuation">.</span>List <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>input</span><span class="token punctuation">&gt;</span></span>
+                  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>output</span> <span class="token attr-name">color</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">&quot;</span>brown<span class="token punctuation">&quot;</span></span> <span class="token attr-name">stream</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">&quot;</span>stdout<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span> <span class="token punctuation">.</span>List <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>output</span><span class="token punctuation">&gt;</span></span>
+                  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>nextLoc</span> <span class="token attr-name">color</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">&quot;</span>gray<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span> <span class="token number">0</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>nextLoc</span><span class="token punctuation">&gt;</span></span>
+                <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>T</span><span class="token punctuation">&gt;</span></span>
+</code></pre>
+<h2 id="declarations-and-initialization">Declarations and Initialization</h2>
+<h3 id="variable-declaration">Variable Declaration</h3>
+<p>The <code>undefined</code> construct is now parameterized by a type.
+A main difference between untyped SIMPLE and dynamically typed SIMPLE
+is that the latter assigns a type to each of its locations and that
+type cannot be changed during the execution of the program.  We do not
+do any memory management in our semantic definitions here, so
+locations cannot be reclaimed, garbage collected and/or reused.  Each
+location corresponds precisely to an allocated variable or array
+element, whose type was explicitly or implicitly declared in the
+program and does not change.  It is therefore safe to type each
+location and then never allow that type to change.  The typed
+undefined values effectively assign both a type and an undefined value
+to a location.</p>
+<pre class="language-k"><code>  <span class="token keyword">syntax</span> KItem <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> undefined<span class="token punctuation">(</span>Type<span class="token punctuation">)</span>  <span class="token punctuation">[</span><span class="token class-name">latex</span><span class="token punctuation">(</span>\bot_<span class="token punctuation">{</span>#<span class="token number">1</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">]</span>
+
+  <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> T<span class="token punctuation">:</span>Type X<span class="token punctuation">:</span><span class="token keyword">Id</span><span class="token punctuation">;</span> <span class="token operator">=&gt;</span> <span class="token punctuation">.</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>
+       <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>env</span><span class="token punctuation">&gt;</span></span> Env <span class="token operator">=&gt;</span> Env<span class="token punctuation">[</span>X &lt;<span class="token operator">-</span> L<span class="token punctuation">]</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>env</span><span class="token punctuation">&gt;</span></span>
+       <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>store</span><span class="token punctuation">&gt;</span></span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token punctuation">.</span>Map <span class="token operator">=&gt;</span> L <span class="token operator">|</span><span class="token operator">-</span>&gt; undefined<span class="token punctuation">(</span>T<span class="token punctuation">)</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>store</span><span class="token punctuation">&gt;</span></span>
+       <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>nextLoc</span><span class="token punctuation">&gt;</span></span> L<span class="token punctuation">:</span><span class="token keyword">Int</span> <span class="token operator">=&gt;</span> L <span class="token operator">+</span><span class="token keyword">Int</span> <span class="token number">1</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>nextLoc</span><span class="token punctuation">&gt;</span></span>
+</code></pre>
+<h3 id="array-declaration">Array Declaration</h3>
+<p>The dynamic semantics of typed array declarations is similar to that
+in untyped SIMPLE, but we have to make sure that we associate the
+right type to the allocated locations.</p>
+<pre class="language-k"><code>  <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> T<span class="token punctuation">:</span>Type X<span class="token punctuation">:</span><span class="token keyword">Id</span><span class="token punctuation">[</span>N<span class="token punctuation">:</span><span class="token keyword">Int</span><span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token operator">=&gt;</span> <span class="token punctuation">.</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>
+       <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>env</span><span class="token punctuation">&gt;</span></span> Env <span class="token operator">=&gt;</span> Env<span class="token punctuation">[</span>X &lt;<span class="token operator">-</span> L<span class="token punctuation">]</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>env</span><span class="token punctuation">&gt;</span></span>
+       <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>store</span><span class="token punctuation">&gt;</span></span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token punctuation">.</span>Map <span class="token operator">=&gt;</span> L <span class="token operator">|</span><span class="token operator">-</span>&gt; array<span class="token punctuation">(</span>T<span class="token punctuation">,</span> L <span class="token operator">+</span><span class="token keyword">Int</span> <span class="token number">1</span><span class="token punctuation">,</span> N<span class="token punctuation">)</span>
+                          <span class="token punctuation">(</span>L <span class="token operator">+</span><span class="token keyword">Int</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">(</span>L <span class="token operator">+</span><span class="token keyword">Int</span> N<span class="token punctuation">)</span> <span class="token operator">|</span><span class="token operator">-</span>&gt; undefined<span class="token punctuation">(</span>T<span class="token punctuation">)</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>store</span><span class="token punctuation">&gt;</span></span>
+       <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>nextLoc</span><span class="token punctuation">&gt;</span></span> L<span class="token punctuation">:</span><span class="token keyword">Int</span> <span class="token operator">=&gt;</span> L <span class="token operator">+</span><span class="token keyword">Int</span> <span class="token number">1</span> <span class="token operator">+</span><span class="token keyword">Int</span> N <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>nextLoc</span><span class="token punctuation">&gt;</span></span>
+    when N <span class="token operator">&gt;=</span><span class="token keyword">Int</span> <span class="token number">0</span>
+
+  <span class="token keyword">context</span> _<span class="token punctuation">:</span>Type _<span class="token punctuation">:</span><span class="token punctuation">:</span>Exp<span class="token punctuation">[</span>HOLE<span class="token punctuation">:</span><span class="token punctuation">:</span>Exps<span class="token punctuation">]</span><span class="token punctuation">;</span>
+</code></pre>
+<p>The desugaring of multi-dimensional arrays into unidimensional
+ones is also similar to that in untyped SIMPLE, although we have to
+make sure that all the declared variables have the right types.  The
+auxiliary operation <code>T&lt;Vs&gt;</code>, defined at the end of the file,
+adds the length of <code>Vs</code> dimensions to the type <code>T</code>.</p>
+<pre class="language-k"><code><span class="token comment">// TODO: Check the desugaring below to be consistent with the one for untyped simple</span>
+
+  <span class="token keyword">syntax</span> <span class="token keyword">Id</span> <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">&quot;$1&quot;</span> <span class="token operator">|</span> <span class="token string">&quot;$2&quot;</span>
+  <span class="token keyword">rule</span> T<span class="token punctuation">:</span>Type X<span class="token punctuation">:</span><span class="token keyword">Id</span><span class="token punctuation">[</span>N1<span class="token punctuation">:</span><span class="token keyword">Int</span><span class="token punctuation">,</span> N2<span class="token punctuation">:</span><span class="token keyword">Int</span><span class="token punctuation">,</span> Vs<span class="token punctuation">:</span>Vals<span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token operator">=&gt;</span> T<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Vs</span><span class="token punctuation">&gt;</span></span> X<span class="token punctuation">[</span>N1<span class="token punctuation">]</span><span class="token punctuation">;</span>
+       <span class="token punctuation">{</span>
+         T<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Vs</span><span class="token punctuation">&gt;</span></span> $<span class="token number">1</span><span class="token operator">=</span>X<span class="token punctuation">;</span>
+         for<span class="token punctuation">(</span>int $<span class="token number">2</span><span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span> $<span class="token number">2</span> <span class="token operator">&lt;=</span> N1 <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">;</span> <span class="token operator">++</span>$<span class="token number">2</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+           T X<span class="token punctuation">[</span>N2<span class="token punctuation">,</span>Vs<span class="token punctuation">]</span><span class="token punctuation">;</span>
+           $<span class="token number">1</span><span class="token punctuation">[</span>$<span class="token number">2</span><span class="token punctuation">]</span> <span class="token operator">=</span> X<span class="token punctuation">;</span>
+         <span class="token punctuation">}</span>
+       <span class="token punctuation">}</span>
+    <span class="token punctuation">[</span><span class="token class-name">structural</span><span class="token punctuation">]</span>
+</code></pre>
+<h3 id="function-declaration">Function declaration</h3>
+<p>Store all function parameters, as well as the return type, as part
+of the lambda abstraction.  In the spirit of dynamic typing, we will
+make sure that parameters are well typed when the function is invoked.</p>
+<pre class="language-k"><code>  <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> T<span class="token punctuation">:</span>Type F<span class="token punctuation">:</span><span class="token keyword">Id</span><span class="token punctuation">(</span>Ps<span class="token punctuation">:</span>Params<span class="token punctuation">)</span> S <span class="token operator">=&gt;</span> <span class="token punctuation">.</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>
+       <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>env</span><span class="token punctuation">&gt;</span></span> Env <span class="token operator">=&gt;</span> Env<span class="token punctuation">[</span>F &lt;<span class="token operator">-</span> L<span class="token punctuation">]</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>env</span><span class="token punctuation">&gt;</span></span>
+       <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>store</span><span class="token punctuation">&gt;</span></span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token punctuation">.</span>Map <span class="token operator">=&gt;</span> L <span class="token operator">|</span><span class="token operator">-</span>&gt; lambda<span class="token punctuation">(</span>T<span class="token punctuation">,</span> Ps<span class="token punctuation">,</span> S<span class="token punctuation">)</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>store</span><span class="token punctuation">&gt;</span></span>
+       <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>nextLoc</span><span class="token punctuation">&gt;</span></span> L <span class="token operator">=&gt;</span> L <span class="token operator">+</span><span class="token keyword">Int</span> <span class="token number">1</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>nextLoc</span><span class="token punctuation">&gt;</span></span>
+</code></pre>
+<h3 id="calling-main()">Calling <code>main()</code></h3>
+<p>When done with the first pass, call <code>main()</code>.</p>
+<pre class="language-k"><code>  <span class="token keyword">syntax</span> KItem <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">&quot;execute&quot;</span>
+  <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> execute <span class="token operator">=&gt;</span> main<span class="token punctuation">(</span><span class="token punctuation">.</span>Exps<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>
+       <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>env</span><span class="token punctuation">&gt;</span></span> Env <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>env</span><span class="token punctuation">&gt;</span></span>
+       <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>genv</span><span class="token punctuation">&gt;</span></span> <span class="token punctuation">.</span>Map <span class="token operator">=&gt;</span> Env <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>genv</span><span class="token punctuation">&gt;</span></span>  <span class="token punctuation">[</span><span class="token class-name">structural</span><span class="token punctuation">]</span>
+</code></pre>
+<h3 id="expressions-1">Expressions</h3>
+<h3 id="variable-lookup">Variable lookup</h3>
+<pre class="language-k"><code>  <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> X<span class="token punctuation">:</span><span class="token keyword">Id</span> <span class="token operator">=&gt;</span> V <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>
+       <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>env</span><span class="token punctuation">&gt;</span></span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> X <span class="token operator">|</span><span class="token operator">-</span>&gt; L <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>env</span><span class="token punctuation">&gt;</span></span>
+       <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>store</span><span class="token punctuation">&gt;</span></span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> L <span class="token operator">|</span><span class="token operator">-</span>&gt; V<span class="token punctuation">:</span>Val <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>store</span><span class="token punctuation">&gt;</span></span>  <span class="token punctuation">[</span>lookup<span class="token punctuation">]</span>
+</code></pre>
+<h3 id="variable%2Farray-increment">Variable/Array increment</h3>
+<pre class="language-k"><code>  <span class="token keyword">context</span> <span class="token operator">++</span><span class="token punctuation">(</span>HOLE <span class="token operator">=&gt;</span> lvalue<span class="token punctuation">(</span>HOLE<span class="token punctuation">)</span><span class="token punctuation">)</span>
+  <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> <span class="token operator">++</span>loc<span class="token punctuation">(</span>L<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> I <span class="token operator">+</span><span class="token keyword">Int</span> <span class="token number">1</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>
+       <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>store</span><span class="token punctuation">&gt;</span></span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> L <span class="token operator">|</span><span class="token operator">-</span>&gt; <span class="token punctuation">(</span>I<span class="token punctuation">:</span><span class="token keyword">Int</span> <span class="token operator">=&gt;</span> I <span class="token operator">+</span><span class="token keyword">Int</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>store</span><span class="token punctuation">&gt;</span></span>  <span class="token punctuation">[</span>increment<span class="token punctuation">]</span>
+</code></pre>
+<h3 id="arithmetic-operators">Arithmetic operators</h3>
+<pre class="language-k"><code>  <span class="token keyword">rule</span> I1 <span class="token operator">+</span> I2 <span class="token operator">=&gt;</span> I1 <span class="token operator">+</span><span class="token keyword">Int</span> I2
+  <span class="token keyword">rule</span> Str1 <span class="token operator">+</span> Str2 <span class="token operator">=&gt;</span> Str1 <span class="token operator">+</span><span class="token keyword">String</span> Str2
+  <span class="token keyword">rule</span> I1 <span class="token operator">-</span> I2 <span class="token operator">=&gt;</span> I1 <span class="token operator">-</span><span class="token keyword">Int</span> I2
+  <span class="token keyword">rule</span> I1 <span class="token operator">*</span> I2 <span class="token operator">=&gt;</span> I1 <span class="token operator">*</span><span class="token keyword">Int</span> I2
+  <span class="token keyword">rule</span> I1 <span class="token operator">/</span> I2 <span class="token operator">=&gt;</span> I1 <span class="token operator">/</span><span class="token keyword">Int</span> I2 when I2 <span class="token operator">=</span><span class="token operator">/</span><span class="token operator">=</span>K <span class="token number">0</span>
+  <span class="token keyword">rule</span> I1 <span class="token operator">%</span> I2 <span class="token operator">=&gt;</span> I1 <span class="token operator">%</span><span class="token keyword">Int</span> I2 when I2 <span class="token operator">=</span><span class="token operator">/</span><span class="token operator">=</span>K <span class="token number">0</span>
+  <span class="token keyword">rule</span> <span class="token operator">-</span> I <span class="token operator">=&gt;</span> <span class="token number">0</span> <span class="token operator">-</span><span class="token keyword">Int</span> I
+  <span class="token keyword">rule</span> I1 &lt; I2 <span class="token operator">=&gt;</span> I1 &lt;<span class="token keyword">Int</span> I2
+  <span class="token keyword">rule</span> I1 <span class="token operator">&lt;=</span> I2 <span class="token operator">=&gt;</span> I1 <span class="token operator">&lt;=</span><span class="token keyword">Int</span> I2
+  <span class="token keyword">rule</span> I1 &gt; I2 <span class="token operator">=&gt;</span> I1 &gt;<span class="token keyword">Int</span> I2
+  <span class="token keyword">rule</span> I1 <span class="token operator">&gt;=</span> I2 <span class="token operator">=&gt;</span> I1 <span class="token operator">&gt;=</span><span class="token keyword">Int</span> I2
+  <span class="token keyword">rule</span> V1<span class="token punctuation">:</span>Val <span class="token operator">==</span> V2<span class="token punctuation">:</span>Val <span class="token operator">=&gt;</span> V1 <span class="token operator">==</span>K V2
+  <span class="token keyword">rule</span> V1<span class="token punctuation">:</span>Val <span class="token operator">!=</span> V2<span class="token punctuation">:</span>Val <span class="token operator">=&gt;</span> V1 <span class="token operator">=</span><span class="token operator">/</span><span class="token operator">=</span>K V2
+  <span class="token keyword">rule</span> <span class="token operator">!</span> T <span class="token operator">=&gt;</span> notBool<span class="token punctuation">(</span>T<span class="token punctuation">)</span>
+  <span class="token keyword">rule</span> <span class="token boolean">true</span>  <span class="token operator">&amp;&amp;</span> E <span class="token operator">=&gt;</span> E
+  <span class="token keyword">rule</span> <span class="token boolean">false</span> <span class="token operator">&amp;&amp;</span> _ <span class="token operator">=&gt;</span> <span class="token boolean">false</span>
+  <span class="token keyword">rule</span> <span class="token boolean">true</span>  <span class="token operator">||</span> _ <span class="token operator">=&gt;</span> <span class="token boolean">true</span>
+  <span class="token keyword">rule</span> <span class="token boolean">false</span> <span class="token operator">||</span> E <span class="token operator">=&gt;</span> E
+</code></pre>
+<h3 id="array-lookup">Array lookup</h3>
+<p>Check array bounds, as part of the dynamic typing policy.</p>
+<pre class="language-k"><code><span class="token comment">// Same comment as for simple untyped regarding [anywhere]</span>
+  <span class="token keyword">rule</span> V<span class="token punctuation">:</span>Val<span class="token punctuation">[</span>N1<span class="token punctuation">:</span><span class="token keyword">Int</span><span class="token punctuation">,</span> N2<span class="token punctuation">:</span><span class="token keyword">Int</span><span class="token punctuation">,</span> Vs<span class="token punctuation">:</span>Vals<span class="token punctuation">]</span> <span class="token operator">=&gt;</span> V<span class="token punctuation">[</span>N1<span class="token punctuation">]</span><span class="token punctuation">[</span>N2<span class="token punctuation">,</span> Vs<span class="token punctuation">]</span>
+    <span class="token punctuation">[</span><span class="token class-name">structural</span><span class="token punctuation">,</span> anywhere<span class="token punctuation">]</span>
+
+<span class="token comment">// Same comment as for simple untyped regarding [anywhere]</span>
+  <span class="token keyword">rule</span> array<span class="token punctuation">(</span>_<span class="token punctuation">:</span>Type<span class="token punctuation">,</span> L<span class="token punctuation">:</span><span class="token keyword">Int</span><span class="token punctuation">,</span> M<span class="token punctuation">:</span><span class="token keyword">Int</span><span class="token punctuation">)</span><span class="token punctuation">[</span>N<span class="token punctuation">:</span><span class="token keyword">Int</span><span class="token punctuation">]</span> <span class="token operator">=&gt;</span> lookup<span class="token punctuation">(</span>L <span class="token operator">+</span><span class="token keyword">Int</span> N<span class="token punctuation">)</span>
+    when N <span class="token operator">&gt;=</span><span class="token keyword">Int</span> <span class="token number">0</span> andBool N &lt;<span class="token keyword">Int</span> M  <span class="token punctuation">[</span><span class="token class-name">structural</span><span class="token punctuation">,</span> anywhere<span class="token punctuation">]</span>
+</code></pre>
+<h3 id="size-of-an-array">Size of an array</h3>
+<pre class="language-k"><code>  <span class="token keyword">rule</span> sizeOf<span class="token punctuation">(</span>array<span class="token punctuation">(</span>_<span class="token punctuation">,</span>_<span class="token punctuation">,</span>N<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> N
+</code></pre>
+<h3 id="function-call">Function call</h3>
+<p>Define function call and return together, to see their relationship.
+Note that the operation <code>mkDecls</code> now declares properly typed
+instantiated variables, and that the semantics of <code>return</code> also
+checks that that type of the returned value is expected one.</p>
+<pre class="language-k"><code>  <span class="token keyword">syntax</span> KItem <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token punctuation">(</span>Type<span class="token punctuation">,</span>Map<span class="token punctuation">,</span>K<span class="token punctuation">,</span>ControlCellFragment<span class="token punctuation">)</span>
+
+  <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> lambda<span class="token punctuation">(</span>T<span class="token punctuation">,</span>Ps<span class="token punctuation">,</span>S<span class="token punctuation">)</span><span class="token punctuation">(</span>Vs<span class="token punctuation">:</span>Vals<span class="token punctuation">)</span> <span class="token operator">~&gt;</span> K <span class="token operator">=&gt;</span> mkDecls<span class="token punctuation">(</span>Ps<span class="token punctuation">,</span>Vs<span class="token punctuation">)</span> S return<span class="token punctuation">;</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>
+       <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>control</span><span class="token punctuation">&gt;</span></span>
+         <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>fstack</span><span class="token punctuation">&gt;</span></span> <span class="token punctuation">.</span>List <span class="token operator">=&gt;</span> ListItem<span class="token punctuation">(</span><span class="token punctuation">(</span>T&apos;<span class="token punctuation">,</span>Env<span class="token punctuation">,</span>K<span class="token punctuation">,</span>C<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>fstack</span><span class="token punctuation">&gt;</span></span>
+         <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>returnType</span><span class="token punctuation">&gt;</span></span> T&apos; <span class="token operator">=&gt;</span> T <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>returnType</span><span class="token punctuation">&gt;</span></span>
+         C
+       <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>control</span><span class="token punctuation">&gt;</span></span>
+       <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>env</span><span class="token punctuation">&gt;</span></span> Env <span class="token operator">=&gt;</span> GEnv <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>env</span><span class="token punctuation">&gt;</span></span>
+       <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>genv</span><span class="token punctuation">&gt;</span></span> GEnv <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>genv</span><span class="token punctuation">&gt;</span></span>
+
+  <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> return V<span class="token punctuation">:</span>Val<span class="token punctuation">;</span> <span class="token operator">~&gt;</span> _ <span class="token operator">=&gt;</span> V <span class="token operator">~&gt;</span> K <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>
+       <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>control</span><span class="token punctuation">&gt;</span></span>
+         <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>fstack</span><span class="token punctuation">&gt;</span></span> ListItem<span class="token punctuation">(</span><span class="token punctuation">(</span>T&apos;<span class="token punctuation">,</span>Env<span class="token punctuation">,</span>K<span class="token punctuation">,</span>C<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">.</span>List <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>fstack</span><span class="token punctuation">&gt;</span></span>
+         <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>returnType</span><span class="token punctuation">&gt;</span></span> T <span class="token operator">=&gt;</span> T&apos; <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>returnType</span><span class="token punctuation">&gt;</span></span>
+         <span class="token punctuation">(</span>_ <span class="token operator">=&gt;</span> C<span class="token punctuation">)</span>
+       <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>control</span><span class="token punctuation">&gt;</span></span>
+       <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>env</span><span class="token punctuation">&gt;</span></span> _ <span class="token operator">=&gt;</span> Env <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>env</span><span class="token punctuation">&gt;</span></span>
+    when typeOf<span class="token punctuation">(</span>V<span class="token punctuation">)</span> <span class="token operator">==</span>K T   <span class="token comment">// check the type of the returned value</span>
+</code></pre>
+<p>Like the <code>undefined</code> above, <code>nothing</code> also gets
+tagged with a type now.  The empty <code>return</code> statement is
+completed to return the <code>nothing</code> value tagged as expected.</p>
+<pre class="language-k"><code>  <span class="token keyword">syntax</span> Val <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> nothing<span class="token punctuation">(</span>Type<span class="token punctuation">)</span>
+  <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> return<span class="token punctuation">;</span> <span class="token operator">=&gt;</span> return nothing<span class="token punctuation">(</span>T<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>returnType</span><span class="token punctuation">&gt;</span></span> T <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>returnType</span><span class="token punctuation">&gt;</span></span>
+    <span class="token punctuation">[</span><span class="token class-name">structural</span><span class="token punctuation">]</span>
+</code></pre>
+<h3 id="read">Read</h3>
+<pre class="language-k"><code>  <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> read<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> I <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>input</span><span class="token punctuation">&gt;</span></span> ListItem<span class="token punctuation">(</span>I<span class="token punctuation">:</span><span class="token keyword">Int</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">.</span>List <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>input</span><span class="token punctuation">&gt;</span></span>  <span class="token punctuation">[</span>read<span class="token punctuation">]</span>
+</code></pre>
+<h3 id="assignment">Assignment</h3>
+<p>The assignment now checks that the type of the assigned location is
+preserved:</p>
+<pre class="language-k"><code>  <span class="token keyword">context</span> <span class="token punctuation">(</span>HOLE <span class="token operator">=&gt;</span> lvalue<span class="token punctuation">(</span>HOLE<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">=</span> _
+
+  <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> loc<span class="token punctuation">(</span>L<span class="token punctuation">)</span> <span class="token operator">=</span> V<span class="token punctuation">:</span>Val <span class="token operator">=&gt;</span> V <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>store</span><span class="token punctuation">&gt;</span></span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> L <span class="token operator">|</span><span class="token operator">-</span>&gt; <span class="token punctuation">(</span>V&apos; <span class="token operator">=&gt;</span> V<span class="token punctuation">)</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>store</span><span class="token punctuation">&gt;</span></span>
+    when typeOf<span class="token punctuation">(</span>V<span class="token punctuation">)</span> <span class="token operator">==</span>K typeOf<span class="token punctuation">(</span>V&apos;<span class="token punctuation">)</span>  <span class="token punctuation">[</span>assignment<span class="token punctuation">]</span>
+</code></pre>
+<h3 id="statements-1">Statements</h3>
+<h3 id="blocks">Blocks</h3>
+<pre class="language-k"><code>  <span class="token keyword">rule</span> <span class="token punctuation">{</span><span class="token punctuation">}</span> <span class="token operator">=&gt;</span> <span class="token punctuation">.</span>  <span class="token punctuation">[</span><span class="token class-name">structural</span><span class="token punctuation">]</span>
+  <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> <span class="token punctuation">{</span> S <span class="token punctuation">}</span> <span class="token operator">=&gt;</span> S <span class="token operator">~&gt;</span> setEnv<span class="token punctuation">(</span>Env<span class="token punctuation">)</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>env</span><span class="token punctuation">&gt;</span></span> Env <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>env</span><span class="token punctuation">&gt;</span></span>  <span class="token punctuation">[</span><span class="token class-name">structural</span><span class="token punctuation">]</span>
+</code></pre>
+<h3 id="sequential-composition">Sequential composition</h3>
+<pre class="language-k"><code>  <span class="token keyword">rule</span> S1<span class="token punctuation">:</span>Stmt S2<span class="token punctuation">:</span>Stmt <span class="token operator">=&gt;</span> S1 <span class="token operator">~&gt;</span> S2  <span class="token punctuation">[</span><span class="token class-name">structural</span><span class="token punctuation">]</span>
+</code></pre>
+<h3 id="expression-statements">Expression statements</h3>
+<pre class="language-k"><code>  <span class="token keyword">rule</span> _<span class="token punctuation">:</span>Val<span class="token punctuation">;</span> <span class="token operator">=&gt;</span> <span class="token punctuation">.</span>
+</code></pre>
+<h3 id="conditional">Conditional</h3>
+<pre class="language-k"><code>  <span class="token keyword">rule</span> if <span class="token punctuation">(</span> <span class="token boolean">true</span><span class="token punctuation">)</span> S else _ <span class="token operator">=&gt;</span> S
+  <span class="token keyword">rule</span> if <span class="token punctuation">(</span><span class="token boolean">false</span><span class="token punctuation">)</span> _ else S <span class="token operator">=&gt;</span> S
+</code></pre>
+<h3 id="while-loop">While loop</h3>
+<pre class="language-k"><code>  <span class="token keyword">rule</span> while <span class="token punctuation">(</span>E<span class="token punctuation">)</span> S <span class="token operator">=&gt;</span> if <span class="token punctuation">(</span>E<span class="token punctuation">)</span> <span class="token punctuation">{</span>S while<span class="token punctuation">(</span>E<span class="token punctuation">)</span>S<span class="token punctuation">}</span>  <span class="token punctuation">[</span><span class="token class-name">structural</span><span class="token punctuation">]</span>
+</code></pre>
+<h3 id="print">Print</h3>
+<p>We only allow printing integers and strings:</p>
+<pre class="language-k"><code>  <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> print<span class="token punctuation">(</span>V<span class="token punctuation">:</span>Val<span class="token punctuation">,</span> Es <span class="token operator">=&gt;</span> Es<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>output</span><span class="token punctuation">&gt;</span></span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token punctuation">.</span>List <span class="token operator">=&gt;</span> ListItem<span class="token punctuation">(</span>V<span class="token punctuation">)</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>output</span><span class="token punctuation">&gt;</span></span>
+    when typeOf<span class="token punctuation">(</span>V<span class="token punctuation">)</span> <span class="token operator">==</span>K int orBool typeOf<span class="token punctuation">(</span>V<span class="token punctuation">)</span> <span class="token operator">==</span>K string  <span class="token punctuation">[</span>print<span class="token punctuation">]</span>
+  <span class="token keyword">rule</span> print<span class="token punctuation">(</span><span class="token punctuation">.</span>Vals<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token operator">=&gt;</span> <span class="token punctuation">.</span>  <span class="token punctuation">[</span><span class="token class-name">structural</span><span class="token punctuation">]</span>
+</code></pre>
+<h3 id="exceptions">Exceptions</h3>
+<p>Exception parameters are now typed, but note that the semantics below
+works correctly only when the thrown exception has the same type as
+the innermost try-catch paramete.  To keep things simple, for the time
+being we can assume that SIMPLE only throws and catches integer
+values, in which case our semantics below works fine:</p>
+<pre class="language-k"><code>  <span class="token keyword">syntax</span> KItem <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token punctuation">(</span>Param<span class="token punctuation">,</span>Stmt<span class="token punctuation">,</span>K<span class="token punctuation">,</span>Map<span class="token punctuation">,</span>ControlCellFragment<span class="token punctuation">)</span>  <span class="token comment">// Param instead of Id</span>
+
+  <span class="token keyword">syntax</span> KItem <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">&quot;popx&quot;</span>
+
+  <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> <span class="token punctuation">(</span>try S1 catch<span class="token punctuation">(</span>P<span class="token punctuation">)</span> S2 <span class="token operator">=&gt;</span> S1 <span class="token operator">~&gt;</span> popx<span class="token punctuation">)</span> <span class="token operator">~&gt;</span> K <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>
+       <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>control</span><span class="token punctuation">&gt;</span></span>
+         <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>xstack</span><span class="token punctuation">&gt;</span></span> <span class="token punctuation">.</span>List <span class="token operator">=&gt;</span> ListItem<span class="token punctuation">(</span><span class="token punctuation">(</span>P<span class="token punctuation">,</span> S2<span class="token punctuation">,</span> K<span class="token punctuation">,</span> Env<span class="token punctuation">,</span> C<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>xstack</span><span class="token punctuation">&gt;</span></span>
+         C
+       <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>control</span><span class="token punctuation">&gt;</span></span>
+       <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>env</span><span class="token punctuation">&gt;</span></span> Env <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>env</span><span class="token punctuation">&gt;</span></span>
+
+  <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> popx <span class="token operator">=&gt;</span> <span class="token punctuation">.</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>
+       <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>xstack</span><span class="token punctuation">&gt;</span></span> ListItem<span class="token punctuation">(</span>_<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">.</span>List <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>xstack</span><span class="token punctuation">&gt;</span></span>
+
+  <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> throw V<span class="token punctuation">:</span>Val<span class="token punctuation">;</span> <span class="token operator">~&gt;</span> _ <span class="token operator">=&gt;</span> <span class="token punctuation">{</span> T X <span class="token operator">=</span> V<span class="token punctuation">;</span> S2 <span class="token punctuation">}</span> <span class="token operator">~&gt;</span> K <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>
+       <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>control</span><span class="token punctuation">&gt;</span></span>
+         <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>xstack</span><span class="token punctuation">&gt;</span></span> ListItem<span class="token punctuation">(</span><span class="token punctuation">(</span>T<span class="token punctuation">:</span>Type X<span class="token punctuation">:</span><span class="token keyword">Id</span><span class="token punctuation">,</span> S2<span class="token punctuation">,</span> K<span class="token punctuation">,</span> Env<span class="token punctuation">,</span> C<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">.</span>List <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>xstack</span><span class="token punctuation">&gt;</span></span>
+         <span class="token punctuation">(</span>_ <span class="token operator">=&gt;</span> C<span class="token punctuation">)</span>
+       <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>control</span><span class="token punctuation">&gt;</span></span>
+       <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>env</span><span class="token punctuation">&gt;</span></span> _ <span class="token operator">=&gt;</span> Env <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>env</span><span class="token punctuation">&gt;</span></span>
+</code></pre>
+<h3 id="threads">Threads</h3>
+<h3 id="thread-creation">Thread creation</h3>
+<pre class="language-k"><code>   <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>thread</span><span class="token punctuation">&gt;</span></span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+          <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> spawn S <span class="token operator">=&gt;</span> <span class="token operator">!</span>T<span class="token punctuation">:</span><span class="token keyword">Int</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>
+          <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>env</span><span class="token punctuation">&gt;</span></span> Env <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>env</span><span class="token punctuation">&gt;</span></span>
+        <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>thread</span><span class="token punctuation">&gt;</span></span>
+        <span class="token punctuation">(</span><span class="token punctuation">.</span>Bag <span class="token operator">=&gt;</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>thread</span><span class="token punctuation">&gt;</span></span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+                <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> S <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>
+                <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>env</span><span class="token punctuation">&gt;</span></span> Env <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>env</span><span class="token punctuation">&gt;</span></span>
+                <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>id</span><span class="token punctuation">&gt;</span></span> <span class="token operator">!</span>T <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>id</span><span class="token punctuation">&gt;</span></span>
+              <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>thread</span><span class="token punctuation">&gt;</span></span><span class="token punctuation">)</span>
+</code></pre>
+<h3 id="thread-termination">Thread termination</h3>
+<pre class="language-k"><code>   <span class="token keyword">rule</span> <span class="token punctuation">(</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>thread</span><span class="token punctuation">&gt;</span></span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span><span class="token punctuation">.</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>holds</span><span class="token punctuation">&gt;</span></span>H<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>holds</span><span class="token punctuation">&gt;</span></span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>id</span><span class="token punctuation">&gt;</span></span>T<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>id</span><span class="token punctuation">&gt;</span></span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>thread</span><span class="token punctuation">&gt;</span></span> <span class="token operator">=&gt;</span> <span class="token punctuation">.</span>Bag<span class="token punctuation">)</span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>busy</span><span class="token punctuation">&gt;</span></span> Busy <span class="token operator">=&gt;</span> Busy <span class="token operator">-</span>Set keys<span class="token punctuation">(</span>H<span class="token punctuation">)</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>busy</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>terminated</span><span class="token punctuation">&gt;</span></span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token punctuation">.</span>Set <span class="token operator">=&gt;</span> SetItem<span class="token punctuation">(</span>T<span class="token punctuation">)</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>terminated</span><span class="token punctuation">&gt;</span></span>
+</code></pre>
+<h3 id="thread-joining">Thread joining</h3>
+<pre class="language-k"><code>   <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> join T<span class="token punctuation">:</span><span class="token keyword">Int</span><span class="token punctuation">;</span> <span class="token operator">=&gt;</span> <span class="token punctuation">.</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>terminated</span><span class="token punctuation">&gt;</span></span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> SetItem<span class="token punctuation">(</span>T<span class="token punctuation">)</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>terminated</span><span class="token punctuation">&gt;</span></span>
+</code></pre>
+<h3 id="acquire-lock">Acquire lock</h3>
+<pre class="language-k"><code>   <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> acquire V<span class="token punctuation">:</span>Val<span class="token punctuation">;</span> <span class="token operator">=&gt;</span> <span class="token punctuation">.</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>holds</span><span class="token punctuation">&gt;</span></span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token punctuation">.</span>Map <span class="token operator">=&gt;</span> V <span class="token operator">|</span><span class="token operator">-</span>&gt; <span class="token number">0</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>holds</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>busy</span><span class="token punctuation">&gt;</span></span> Busy <span class="token punctuation">(</span><span class="token punctuation">.</span>Set <span class="token operator">=&gt;</span> SetItem<span class="token punctuation">(</span>V<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>busy</span><span class="token punctuation">&gt;</span></span>
+     when <span class="token punctuation">(</span>notBool<span class="token punctuation">(</span>V in Busy<span class="token punctuation">:</span>Set<span class="token punctuation">)</span><span class="token punctuation">)</span>  <span class="token punctuation">[</span>acquire<span class="token punctuation">]</span>
+
+   <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> acquire V<span class="token punctuation">;</span> <span class="token operator">=&gt;</span> <span class="token punctuation">.</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>holds</span><span class="token punctuation">&gt;</span></span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> V<span class="token punctuation">:</span>Val <span class="token operator">|</span><span class="token operator">-</span>&gt; <span class="token punctuation">(</span>N<span class="token punctuation">:</span><span class="token keyword">Int</span> <span class="token operator">=&gt;</span> N <span class="token operator">+</span><span class="token keyword">Int</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>holds</span><span class="token punctuation">&gt;</span></span>
+</code></pre>
+<h3 id="release-lock">Release lock</h3>
+<pre class="language-k"><code>   <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> release V<span class="token punctuation">:</span>Val<span class="token punctuation">;</span> <span class="token operator">=&gt;</span> <span class="token punctuation">.</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>holds</span><span class="token punctuation">&gt;</span></span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> V <span class="token operator">|</span><span class="token operator">-</span>&gt; <span class="token punctuation">(</span>N <span class="token operator">=&gt;</span> N<span class="token punctuation">:</span><span class="token keyword">Int</span> <span class="token operator">-</span><span class="token keyword">Int</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>holds</span><span class="token punctuation">&gt;</span></span>
+      when N &gt;<span class="token keyword">Int</span> <span class="token number">0</span>
+
+   <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> release V<span class="token punctuation">;</span> <span class="token operator">=&gt;</span> <span class="token punctuation">.</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>holds</span><span class="token punctuation">&gt;</span></span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> V<span class="token punctuation">:</span>Val <span class="token operator">|</span><span class="token operator">-</span>&gt; <span class="token number">0</span> <span class="token operator">=&gt;</span> <span class="token punctuation">.</span>Map <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>holds</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>busy</span><span class="token punctuation">&gt;</span></span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> SetItem<span class="token punctuation">(</span>V<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">.</span>Set <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>busy</span><span class="token punctuation">&gt;</span></span>
+</code></pre>
+<h3 id="rendezvous-synchronization">Rendezvous synchronization</h3>
+<pre class="language-k"><code>   <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> rendezvous V<span class="token punctuation">:</span>Val<span class="token punctuation">;</span> <span class="token operator">=&gt;</span> <span class="token punctuation">.</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> rendezvous V<span class="token punctuation">;</span> <span class="token operator">=&gt;</span> <span class="token punctuation">.</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>  <span class="token punctuation">[</span>rendezvous<span class="token punctuation">]</span>
+</code></pre>
+<h3 id="auxiliary-declarations-and-operations">Auxiliary declarations and operations</h3>
+<p>Turns a list of parameters and a list of instance values for them
+into a list of variable declarations.</p>
+<pre class="language-k"><code>  <span class="token keyword">syntax</span> Stmt <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> mkDecls<span class="token punctuation">(</span>Params<span class="token punctuation">,</span>Vals<span class="token punctuation">)</span>  <span class="token punctuation">[</span>function<span class="token punctuation">]</span>
+  <span class="token keyword">rule</span> mkDecls<span class="token punctuation">(</span><span class="token punctuation">(</span>T<span class="token punctuation">:</span>Type X<span class="token punctuation">:</span><span class="token keyword">Id</span><span class="token punctuation">,</span> Ps<span class="token punctuation">:</span>Params<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token punctuation">(</span>V<span class="token punctuation">:</span>Val<span class="token punctuation">,</span> Vs<span class="token punctuation">:</span>Vals<span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token operator">=&gt;</span> T X<span class="token operator">=</span>V<span class="token punctuation">;</span> mkDecls<span class="token punctuation">(</span>Ps<span class="token punctuation">,</span>Vs<span class="token punctuation">)</span>
+  <span class="token keyword">rule</span> mkDecls<span class="token punctuation">(</span><span class="token punctuation">.</span>Params<span class="token punctuation">,</span><span class="token punctuation">.</span>Vals<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
+</code></pre>
+<p>Location lookup.</p>
+<pre class="language-k"><code>  <span class="token keyword">syntax</span> Exp <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> lookup<span class="token punctuation">(</span><span class="token keyword">Int</span><span class="token punctuation">)</span>  <span class="token comment">// see NOTES.md for why Exp instead of KItem</span>
+  <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> lookup<span class="token punctuation">(</span>L<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> V <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>store</span><span class="token punctuation">&gt;</span></span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> L <span class="token operator">|</span><span class="token operator">-</span>&gt; V<span class="token punctuation">:</span>Val <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>store</span><span class="token punctuation">&gt;</span></span>  <span class="token punctuation">[</span>lookup<span class="token punctuation">]</span>
+</code></pre>
+<p>Environment recovery.</p>
+<pre class="language-k"><code><span class="token comment">// TODO: same comment regarding setEnv(...) as for simple untyped</span>
+
+  <span class="token keyword">syntax</span> KItem <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> setEnv<span class="token punctuation">(</span>Map<span class="token punctuation">)</span>
+  <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> setEnv<span class="token punctuation">(</span>Env<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">.</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>env</span><span class="token punctuation">&gt;</span></span> _ <span class="token operator">=&gt;</span> Env <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>env</span><span class="token punctuation">&gt;</span></span>  <span class="token punctuation">[</span><span class="token class-name">structural</span><span class="token punctuation">]</span>
+  <span class="token keyword">rule</span> <span class="token punctuation">(</span>setEnv<span class="token punctuation">(</span>_<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">.</span><span class="token punctuation">)</span> <span class="token operator">~&gt;</span> setEnv<span class="token punctuation">(</span>_<span class="token punctuation">)</span>  <span class="token punctuation">[</span><span class="token class-name">structural</span><span class="token punctuation">]</span>
+</code></pre>
+<p>lvalue and loc</p>
+<pre class="language-k"><code>  <span class="token keyword">syntax</span> Exp <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> lvalue<span class="token punctuation">(</span>K<span class="token punctuation">)</span>
+  <span class="token keyword">syntax</span> Val <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> loc<span class="token punctuation">(</span><span class="token keyword">Int</span><span class="token punctuation">)</span>
+
+  <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> lvalue<span class="token punctuation">(</span>X<span class="token punctuation">:</span><span class="token keyword">Id</span> <span class="token operator">=&gt;</span> loc<span class="token punctuation">(</span>L<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>env</span><span class="token punctuation">&gt;</span></span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> X <span class="token operator">|</span><span class="token operator">-</span>&gt; L<span class="token punctuation">:</span><span class="token keyword">Int</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>env</span><span class="token punctuation">&gt;</span></span>
+    <span class="token punctuation">[</span><span class="token class-name">structural</span><span class="token punctuation">]</span>
+
+  <span class="token comment">//context lvalue(_[HOLE])</span>
+  <span class="token comment">//context lvalue(HOLE[_])</span>
+  <span class="token keyword">context</span> lvalue<span class="token punctuation">(</span>_<span class="token punctuation">:</span><span class="token punctuation">:</span>Exp<span class="token punctuation">[</span>HOLE<span class="token punctuation">:</span><span class="token punctuation">:</span>Exps<span class="token punctuation">]</span><span class="token punctuation">)</span>
+  <span class="token keyword">context</span> lvalue<span class="token punctuation">(</span>HOLE<span class="token punctuation">:</span><span class="token punctuation">:</span>Exp<span class="token punctuation">[</span>_<span class="token punctuation">:</span><span class="token punctuation">:</span>Exps<span class="token punctuation">]</span><span class="token punctuation">)</span>
+
+  <span class="token keyword">rule</span> lvalue<span class="token punctuation">(</span>lookup<span class="token punctuation">(</span>L<span class="token punctuation">:</span><span class="token keyword">Int</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> loc<span class="token punctuation">(</span>L<span class="token punctuation">)</span><span class="token punctuation">)</span>  <span class="token punctuation">[</span><span class="token class-name">structural</span><span class="token punctuation">]</span>
+</code></pre>
+<p>Adds the corresponding depth to an array type</p>
+<pre class="language-k"><code>  <span class="token keyword">syntax</span> Type <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> Type <span class="token string">&quot;&lt;&quot;</span> Vals <span class="token string">&quot;&gt;&quot;</span>  <span class="token punctuation">[</span>function<span class="token punctuation">]</span>
+  <span class="token keyword">rule</span> T<span class="token punctuation">:</span>Type<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token namespace">_,Vs:</span>Vals</span><span class="token punctuation">&gt;</span></span> <span class="token operator">=&gt;</span> T<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Vs</span><span class="token punctuation">&gt;</span></span>
+  <span class="token keyword">rule</span> T<span class="token punctuation">:</span>Type<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>.Vals</span><span class="token punctuation">&gt;</span></span> <span class="token operator">=&gt;</span> T
+</code></pre>
+<p>Sequences of locations.</p>
+<pre class="language-k"><code>  <span class="token keyword">syntax</span> Map <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token keyword">Int</span> <span class="token string">&quot;...&quot;</span> <span class="token keyword">Int</span> <span class="token string">&quot;|-&gt;&quot;</span> K
+    <span class="token punctuation">[</span>function<span class="token punctuation">,</span> <span class="token class-name">latex</span><span class="token punctuation">(</span><span class="token punctuation">{</span>#<span class="token number">1</span><span class="token punctuation">}</span>\ldots<span class="token punctuation">{</span>#<span class="token number">2</span><span class="token punctuation">}</span>\mapsto<span class="token punctuation">{</span>#<span class="token number">3</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">]</span>
+  <span class="token keyword">rule</span> N<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>M <span class="token operator">|</span><span class="token operator">-</span>&gt; _ <span class="token operator">=&gt;</span> <span class="token punctuation">.</span>Map  when N &gt;<span class="token keyword">Int</span> M
+  <span class="token keyword">rule</span> N<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>M <span class="token operator">|</span><span class="token operator">-</span>&gt; K <span class="token operator">=&gt;</span> N <span class="token operator">|</span><span class="token operator">-</span>&gt; K <span class="token punctuation">(</span>N <span class="token operator">+</span><span class="token keyword">Int</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>M <span class="token operator">|</span><span class="token operator">-</span>&gt; K  when N <span class="token operator">&lt;=</span><span class="token keyword">Int</span> M
+
+<span class="token comment">// Type of a value.</span>
+  <span class="token keyword">syntax</span> Type <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> typeOf<span class="token punctuation">(</span>K<span class="token punctuation">)</span>  <span class="token punctuation">[</span>function<span class="token punctuation">]</span>
+  <span class="token keyword">rule</span> typeOf<span class="token punctuation">(</span>_<span class="token punctuation">:</span><span class="token keyword">Int</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> int
+  <span class="token keyword">rule</span> typeOf<span class="token punctuation">(</span>_<span class="token punctuation">:</span><span class="token keyword">Bool</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> bool
+  <span class="token keyword">rule</span> typeOf<span class="token punctuation">(</span>_<span class="token punctuation">:</span><span class="token keyword">String</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> string
+  <span class="token keyword">rule</span> typeOf<span class="token punctuation">(</span>array<span class="token punctuation">(</span>T<span class="token punctuation">,</span>_<span class="token punctuation">,</span>_<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">(</span>T<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span>   <span class="token comment">// () needed! K parses [] as &quot;no tags&quot;</span>
+  <span class="token keyword">rule</span> typeOf<span class="token punctuation">(</span>lambda<span class="token punctuation">(</span>T<span class="token punctuation">,</span>Ps<span class="token punctuation">,</span>_<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> getTypes<span class="token punctuation">(</span>Ps<span class="token punctuation">)</span> <span class="token operator">-</span>&gt; T
+  <span class="token keyword">rule</span> typeOf<span class="token punctuation">(</span>undefined<span class="token punctuation">(</span>T<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> T
+  <span class="token keyword">rule</span> typeOf<span class="token punctuation">(</span>nothing<span class="token punctuation">(</span>T<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> T
+</code></pre>
+<p>List of types of a parameter.</p>
+<pre class="language-k"><code>  <span class="token keyword">syntax</span> Types <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> getTypes<span class="token punctuation">(</span>Params<span class="token punctuation">)</span>  <span class="token punctuation">[</span>function<span class="token punctuation">]</span>
+  <span class="token keyword">rule</span> getTypes<span class="token punctuation">(</span>T<span class="token punctuation">:</span>Type _<span class="token punctuation">:</span><span class="token keyword">Id</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> T<span class="token punctuation">,</span> <span class="token punctuation">.</span>Types   <span class="token comment">// I would like to not use .Types</span>
+  <span class="token keyword">rule</span> getTypes<span class="token punctuation">(</span>T<span class="token punctuation">:</span>Type _<span class="token punctuation">:</span><span class="token keyword">Id</span><span class="token punctuation">,</span> P<span class="token punctuation">,</span> Ps<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> T<span class="token punctuation">,</span> getTypes<span class="token punctuation">(</span>P<span class="token punctuation">,</span>Ps<span class="token punctuation">)</span>
+  <span class="token keyword">rule</span> getTypes<span class="token punctuation">(</span><span class="token punctuation">.</span>Params<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> void<span class="token punctuation">,</span> <span class="token punctuation">.</span>Types
+<span class="token keyword">endmodule</span>
+</code></pre>
+</body></html></div>
+        </main>
+      </div>
+    </div>
+<footer class="app-footer text-md-left text-center">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-md-2 mb-md-0 mb-4">
+        <span class="pr-md-5 pr-0 py-3">
+          <a href="https://runtimeverification.com" target="_blank">
+            <picture>
+              <source
+                srcset="../../../../../../../assets/img/rv-logo-dark.png"
+                media="(prefers-color-scheme: dark)"
+              />
+              <img
+                class="pr-3 footer-logo"
+                src="../../../../../../../assets/img/rv-logo.png"
+                alt="Runtime Verification Inc logo"
+              />
+            </picture>
+          </a>
+        </span>
+      </div>
+      <div class="col-md-6 mb-md-0 mb-4"></div>
+      <div class="col-md-4 text-md-right">
+        <p class="copyright">
+          &copy; 2020 Runtime Verification Inc. All right reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Typist/1.2/typist.min.js"></script>
+    <script src="../../../../../../../assets/js/index.js"></script>
+    <script>
+      $(function () {
+        // Render youtube video
+        const anchorElements = document.querySelectorAll(".markdown-preview a");
+        for (let i = anchorElements.length - 1; i >= 0; i--) {
+          if (anchorElements.length - 1 - i > 3) {
+            break;
+          }
+          const anchorElement = anchorElements[i];
+          const href = anchorElement.getAttribute("href");
+          if (href.match(/^https?:\/\/youtu.be\//)) {
+            const match = href.match(/^https?:\/\/youtu.be\/(.+?)$/);
+            if (match && match[1]) {
+              const youtubeId = match[1];
+              const $iframe = $(`
+<div style="text-align:center;">
+  <iframe
+    width="560"
+    height="315"
+    src="https://www.youtube.com/embed/${youtubeId}"
+    frameborder="0"
+    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+    allowfullscreen
+    style="max-width: 100%;"
+  ></iframe>
+  <p>The video is out of date</p>
+</div>
+`);
+              $(anchorElement).replaceWith($iframe[0]);
+            }
+          }
+        }
+      });
+    </script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-9LBGDMRG32"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-9LBGDMRG32");
+    </script>
+  </body>
+</html>
