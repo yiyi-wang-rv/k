@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+<meta charset="utf-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+/>
+<meta
+  name="description"
+  content="Design and implement your programming language and software analysis tools with mathematical rigor."
+/>
+<meta name="keywords" content="runtime, verification, rv, k" />
+<meta name="author" content="K | Runtime Verification Inc" />
+<meta name="robots" content="index, follow" />
+
+<!--favicon icon-->
+<link rel="icon" type="image/png" href="../../../../../assets/img/favicon.ico" />
+
+<title>
+  K | Runtime Verification Inc
+</title>
+
+<!-- <base href="/k/" /> -->
+
+<!--web fonts-->
+<link
+  href="https://fonts.googleapis.com/css?family=Nunito:300,400,600,700,800"
+  rel="stylesheet"
+/>
+<link
+  href="https://fonts.googleapis.com/css?family=Lora:400i"
+  rel="stylesheet"
+/>
+
+<link
+  href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.14.0/css/all.min.css"
+  rel="stylesheet"
+/>
+
+<link href="../../../../../assets/css/index.css" rel="stylesheet" />
+
+<!--[if (gt IE 9) |!(IE)]><!-->
+<!--<link rel="stylesheet" href="/assets/vendor/custom-nav/css/effects/fade-menu.css"/>-->
+<!-- <link rel="stylesheet" href="../../../../../assets/k/vl-nav/css/effects/slide-menu.css" /> -->
+<!--<![endif]-->
+
+  </head>
+
+  <body>
+<header
+  class="navbar navbar-expand navbar-dark flex-column flex-md-row bd-navbar"
+>
+  <a class="logo-link" href="../../../../../index.html">
+    <img
+      class="logo-dark"
+      srcset="../../../../../assets/img/k-logo.png"
+      alt="K"
+      style="height: 48px;"
+    />
+    Semantic Framework
+  </a>
+  <ul class="navbar-nav ml-md-auto">
+    <li class="nav-item">
+      <a
+        class="nav-link pl-2 pr-1 mx-1 py-3 my-n2"
+        href="https://github.com/kframework/k"
+        target="_blank"
+        rel="noopener"
+        aria-label="GitHub"
+      >
+        <i class="fab fa-github"></i>
+      </a>
+    </li>
+  </ul>
+  <a
+    class="btn btn-rv-blue d-none d-lg-inline-block mb-3 mb-md-0 ml-md-3"
+    href="../../../../../downloads"
+    >Download</a
+  >
+</header>
+
+
+    <div class="container-fluid">
+      <div class="row flex-xl-nowrap">
+<div class="col-12 col-md-3 col-xl-2 bd-sidebar mb-3">
+  <form
+    role="search"
+    class="bd-search d-flex align-items-center justify-content-between"
+  >
+    <input
+      type="search"
+      class="form-control"
+      placeholder="Search..."
+      aria-label="Search for..."
+      autocomplete="false"
+      id="search-box"
+    />
+    <button
+      class="btn bd-search-docs-toggle d-md-none p-0 ml-3 collapsed"
+      type="button"
+      aria-label="Toggle docs navigation"
+      style="font-size: 1.4rem"
+    >
+      <i class="fas fa-bars"></i>
+    </button>
+  </form>
+  <nav class="collapse bd-links" aria-label="Main navigation">
+    <div class="bd-toc-item">
+      <a class="bd-toc-link" href="../../../../../">Homepage</a>
+      <a class="bd-toc-link" href="../../../../../downloads">Downloads</a>
+      <a class="bd-toc-link" href="../../../../../k-distribution/pl-tutorial"
+        >K Tutorial</a
+      >
+      <a class="bd-toc-link" href="../../../../../pending-documentation/"
+        >User documentation</a
+      >
+      <a
+        class="bd-toc-link"
+        href="../../../../../k-distribution/include/kframework/builtin/"
+        >Builtins</a
+      >
+      <a class="bd-toc-link" href="../../../../../projects">Projects using K</a>
+    </div>
+  </nav>
+</div>
+
+        <main
+          class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 bd-content"
+          role="main"
+        >
+          <div class="introduction markdown-preview"><!-- Copyright (c) 2010-2019 K Team. All Rights Reserved. --><html><head></head><body><h1 id="tagging%3B-transition-kompilation-option">Tagging; Transition Kompilation Option</h1>
+<p>In this lesson we add the semantics of variable increment. In doing so, we
+learn how to tag syntactic constructs and rules and then use such tags to
+instruct the <code>kompile</code> tool to generate the desired language model that is
+amenable for exhaustive analysis.</p>
+<p>The variable increment rule is self-explanatory:</p>
+<pre><code>rule &lt;k&gt; ++X =&gt; I +Int 1 ...&lt;/k&gt;
+     &lt;env&gt;... X |-&gt; N ...&lt;/env&gt;
+     &lt;store&gt;... N |-&gt; (I =&gt; I +Int 1) ...&lt;/store&gt;
+</code></pre>
+<p>We can now run programs like our <code>div.imp</code> program introduced in Lesson 1.
+Do it.</p>
+<p>The addition of increment makes the evaluation of expressions have side
+effects. That, in combination with the non-determinism allowed by the
+strictness attributes in how expression constructs evaluate their
+arguments, makes expressions in particular and programs in general have
+non-deterministic behaviors. One possible execution of the <code>div.imp</code> program
+assigns <code>1</code> to <code>y</code>&apos;s location, for example, but this program manifests several
+other behaviors, too.</p>
+<p>To see all the (final-state) behaviors that a program can have, you can call
+the <code>krun</code> tool with the option <code>--search</code>. For example:</p>
+<pre><code>krun div.imp --search
+</code></pre>
+<p>Oops, we see only one solution, the same as when we ran it without search.</p>
+<p>Here is what happens. <code>krun</code> can only explore as much of the transition
+system associated to a program as <code>kompile</code> allowed the generated language
+model to yield. Since most of the K users are interested in language models
+that execute efficiently, that is, in faster interpreters for the defined
+languages, by default <code>kompile</code> optimizes the generated language model for
+execution. In particular, it inserts no backtracking markers, which <code>krun</code>
+uses when called with the <code>--search</code> option in order to systematically generate
+the entire transition system associated to a program. This is why <code>krun</code>
+showed us only one solution when run with the <code>--search</code> option on <code>div.imp</code>.</p>
+<p>We next explain how to tell <code>kompile</code> what kind of language model we are
+interested in for analysis purposes. When you experiment with non-determinism
+in a language semantics, you should keep it in mind that the <code>--transition</code>
+option of <code>kompile</code> allows you to configure what counts as a transition in
+your language model. We here only discuss transitions due to the
+non-deterministic evaluation strategies of language constructs, but we will
+see in future lectures (see Lesson 6 of IMP++, where we add concurrency) that
+we can also have transitions due to non-deterministic applications of rewrite
+rules.</p>
+<p>If you want to explore the entire behavior space due to non-deterministic
+evaluation strategies, then you should include all the language constructs
+in the <code>--transition</code> option. This may sound like the obvious thing to
+always do, but as soon as you do it you soon realize that it is way too much
+in practice when you deal with large languages or programs. There are simply
+too many program behaviors to consider, and <code>krun</code> will likely hang
+on you or crush. For example, a small ten-statement program where each
+statement uses one strict expression construct already has 1000+ behaviors for
+<code>krun</code> to explore! Driven by practical needs of its users, the K tool
+therefore allows you to finely tune the generated language models using the
+<code>--transition</code> option.</p>
+<p>To state which constructs are to be considered to generate transitions in the
+generated language model, and for other reasons, too, the K tool allows you to
+tag any production and any rule. You can do this the same way we tagged
+rules with the <code>structural</code> keyword in earlier tutorials: put the tag in
+brackets. You can associate multiple tags to the same construct or rule, and
+more than one construct or rule can have the same tag. As an example, let us
+tag the division construct with <code>division</code>, the lookup rule with <code>lookup</code> and
+the increment rule with <code>increment</code>. The tags of the rules are not needed
+in this lesson, we do it only to demonstrate that rules can also be tagged.</p>
+<p>The least intrusive way to enforce our current language to explore the
+entire space of behaviors due to the strictness of division is to <code>kompile</code> it
+with the following option:</p>
+<pre><code>kompile imp.k --transition &quot;division&quot;
+</code></pre>
+<p>It is interesting to note that the <code>lookup</code> and <code>increment</code> rules are the only
+two rules which can trigger non-deterministic behaviors for division, because
+no other rule but these two can ever apply while a division operation is
+heated. Previous versions of K allowed you to also specify which rules could
+trigger non-deterministic behaviors of operator evaluation strategies,
+but that option was rarely used and is not available anymore.</p>
+<p>Note that it is highly non-trivial to say precisely whether a strict language
+construct may yield non-deterministic behaviors. For example, division&apos;s
+strictness would yield no non-determinism if the language had no side effects.
+It is even harder to say so for a particular program. Consequently, our K
+implementation makes no attempt to automatically detect which operations
+should be tagged as transitions. Instead, it provides the functionality to
+let you decide it.</p>
+<p>Now the command</p>
+<pre><code>krun div.imp --search
+</code></pre>
+<p>shows us all five behaviors of this program. Interestingly, one
+of the five behaviors yields a division by zero!</p>
+<p>The <code>--transition</code> option can be quite useful when you experiment with your
+language designs or when you formally analyze programs for certain kinds of
+errors. Please let us know if you ever need more finer-grained control over
+the non-determinism of your language models.</p>
+<p>Before we conclude this lesson, we&apos;d like to let you know one trick, which
+you will hopefully not overuse: you can tag elements in your K definition with
+<code>kompile</code> option names, and those elements will be automatically included in
+their corresponding options. For example, if you tag the division production
+with <code>transition</code> then the command</p>
+<pre><code>kompile imp
+</code></pre>
+<p>is completely equivalent to the previous <code>kompile</code> command.</p>
+<p>Please use this default behavior with caution, or even better, try to avoid
+using it! You may be tempted to add the <code>transition</code> tag to lots of elements
+and then forget about them; your language models will then be increasingly slower
+when you execute them and you may wonder why ... This convention is typically
+convenient when you want to quickly experiment with non-determinism and do not
+want to bother inventing tag names and calling <code>kompile</code> with options.</p>
+<p>In the next lesson we add input/output to our language and learn how to
+generate a model of it which behaves like an interactive interpreter!</p>
+<p>Go to <a href="../lesson_4/">Lesson 4, IMP++: Semantic Lists; Input/Output Streaming</a>.</p>
+<p><a href="http://youtu.be/uwCUfWt7n-o" target="_blank" rel="noopener">MOVIE (out of date) [06&apos;56&quot;]</a></p>
+</body></html></div>
+        </main>
+      </div>
+    </div>
+<footer class="app-footer text-md-left text-center">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-md-2 mb-md-0 mb-4">
+        <span class="pr-md-5 pr-0 py-3">
+          <a href="https://runtimeverification.com" target="_blank">
+            <picture>
+              <source
+                srcset="../../../../../assets/img/rv-logo-dark.png"
+                media="(prefers-color-scheme: dark)"
+              />
+              <img
+                class="pr-3 footer-logo"
+                src="../../../../../assets/img/rv-logo.png"
+                alt="Runtime Verification Inc logo"
+              />
+            </picture>
+          </a>
+        </span>
+      </div>
+      <div class="col-md-6 mb-md-0 mb-4"></div>
+      <div class="col-md-4 text-md-right">
+        <p class="copyright">
+          &copy; 2020 Runtime Verification Inc. All right reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Typist/1.2/typist.min.js"></script>
+    <script src="../../../../../assets/js/index.js"></script>
+    <script>
+      $(function () {
+        // Render youtube video
+        const anchorElements = document.querySelectorAll(".markdown-preview a");
+        for (let i = anchorElements.length - 1; i >= 0; i--) {
+          if (anchorElements.length - 1 - i > 3) {
+            break;
+          }
+          const anchorElement = anchorElements[i];
+          const href = anchorElement.getAttribute("href");
+          if (href.match(/^https?:\/\/youtu.be\//)) {
+            const match = href.match(/^https?:\/\/youtu.be\/(.+?)$/);
+            if (match && match[1]) {
+              const youtubeId = match[1];
+              const $iframe = $(`
+<div style="text-align:center;">
+  <iframe
+    width="560"
+    height="315"
+    src="https://www.youtube.com/embed/${youtubeId}"
+    frameborder="0"
+    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+    allowfullscreen
+    style="max-width: 100%;"
+  ></iframe>
+  <p>The video is out of date</p>
+</div>
+`);
+              $(anchorElement).replaceWith($iframe[0]);
+            }
+          }
+        }
+      });
+    </script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-9LBGDMRG32"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-9LBGDMRG32");
+    </script>
+  </body>
+</html>
