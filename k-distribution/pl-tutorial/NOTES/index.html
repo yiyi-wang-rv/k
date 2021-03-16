@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+<meta charset="utf-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+/>
+<meta
+  name="description"
+  content="Design and implement your programming language and software analysis tools with mathematical rigor."
+/>
+<meta name="keywords" content="runtime, verification, rv, k" />
+<meta name="author" content="K | Runtime Verification Inc" />
+<meta name="robots" content="index, follow" />
+
+<!--favicon icon-->
+<link rel="icon" type="image/png" href="../../../assets/img/favicon.ico" />
+
+<title>
+  K | Runtime Verification Inc
+</title>
+
+<!-- <base href="/k/" /> -->
+
+<!--web fonts-->
+<link
+  href="https://fonts.googleapis.com/css?family=Nunito:300,400,600,700,800"
+  rel="stylesheet"
+/>
+<link
+  href="https://fonts.googleapis.com/css?family=Lora:400i"
+  rel="stylesheet"
+/>
+
+<link
+  href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.14.0/css/all.min.css"
+  rel="stylesheet"
+/>
+
+<link href="../../../assets/css/index.css" rel="stylesheet" />
+
+<!--[if (gt IE 9) |!(IE)]><!-->
+<!--<link rel="stylesheet" href="/assets/vendor/custom-nav/css/effects/fade-menu.css"/>-->
+<!-- <link rel="stylesheet" href="../../../assets/k/vl-nav/css/effects/slide-menu.css" /> -->
+<!--<![endif]-->
+
+  </head>
+
+  <body>
+<header
+  class="navbar navbar-expand navbar-dark flex-column flex-md-row bd-navbar"
+>
+  <a class="logo-link" href="../../../index.html">
+    <img
+      class="logo-dark"
+      srcset="../../../assets/img/k-logo.png"
+      alt="K"
+      style="height: 48px;"
+    />
+    Semantic Framework
+  </a>
+  <ul class="navbar-nav ml-md-auto">
+    <li class="nav-item">
+      <a
+        class="nav-link pl-2 pr-1 mx-1 py-3 my-n2"
+        href="https://github.com/kframework/k"
+        target="_blank"
+        rel="noopener"
+        aria-label="GitHub"
+      >
+        <i class="fab fa-github"></i>
+      </a>
+    </li>
+  </ul>
+  <a
+    class="btn btn-rv-blue d-none d-lg-inline-block mb-3 mb-md-0 ml-md-3"
+    href="../../../downloads"
+    >Download</a
+  >
+</header>
+
+
+    <div class="container-fluid">
+      <div class="row flex-xl-nowrap">
+<div class="col-12 col-md-3 col-xl-2 bd-sidebar mb-3">
+  <form
+    role="search"
+    class="bd-search d-flex align-items-center justify-content-between"
+  >
+    <input
+      type="search"
+      class="form-control"
+      placeholder="Search..."
+      aria-label="Search for..."
+      autocomplete="false"
+      id="search-box"
+    />
+    <button
+      class="btn bd-search-docs-toggle d-md-none p-0 ml-3 collapsed"
+      type="button"
+      aria-label="Toggle docs navigation"
+      style="font-size: 1.4rem"
+    >
+      <i class="fas fa-bars"></i>
+    </button>
+  </form>
+  <nav class="collapse bd-links" aria-label="Main navigation">
+    <div class="bd-toc-item">
+      <a class="bd-toc-link" href="../../../">Homepage</a>
+      <a class="bd-toc-link" href="../../../downloads">Downloads</a>
+      <a class="bd-toc-link" href="../../../k-distribution/pl-tutorial"
+        >K Tutorial</a
+      >
+      <a class="bd-toc-link" href="../../../pending-documentation/"
+        >User documentation</a
+      >
+      <a
+        class="bd-toc-link"
+        href="../../../k-distribution/include/kframework/builtin/"
+        >Builtins</a
+      >
+      <a class="bd-toc-link" href="../../../projects">Projects using K</a>
+    </div>
+  </nav>
+</div>
+
+        <main
+          class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 bd-content"
+          role="main"
+        >
+          <div class="introduction markdown-preview"><!-- Copyright (c) 2014-2019 K Team. All Rights Reserved. --><html><head></head><body><p><em>Dear reader: these <code>NOTES.md</code> documents are mostly for myself (Grigore), to
+keep track of changes and updates that need to be made as things evolve
+in the K framework.  You can safely ignore them.  However, if you are curious
+how things will change and decide to read them, I would be grateful if you
+let me know whenever you find inconsistencies or things that I forgot to
+mention here.  Or even better, feel free to make pull requests with suggested
+changes or updates.</em></p>
+<p>Global changes that need to be made:</p>
+<ul>
+<li>Replace <code>when</code> in rules with <code>requires</code></li>
+</ul>
+<p>Things to revise each time the structure of the tutorial changes:</p>
+<ul>
+<li><code>1_k\2_imp\lesson_1\README.md</code> refers to Tutorial 1</li>
+<li><code>1_k\2_imp\lesson_4\README.md</code> refers to Lesson 1</li>
+<li><code>1_k\2_imp\lesson_4\README.md</code> refers to Tutorial 1, Lesson 2.5</li>
+<li><code>1_k\3_lambda++\lesson_1\README.md</code> refers to Lesson 8, Tutorial 1</li>
+<li>`1_k\3_lambda++\lesson_1\exercises refers to Lesson 1, tests/config.xml</li>
+<li><code>1_k\3_lambda++\lesson_2\README.md</code> Lesson 1, Tutorial 1; Tutorial 6; Part 1, 2</li>
+<li><code>1_k\3_lambda++\lesson_3\README.md</code> refers to Lesson 7, Tutorial 1</li>
+<li><code>1_k\3_lambda++\lesson_4\README.md</code> refers to Lesson 1</li>
+<li><code>1_k\3_lambda++\lesson_5\README.md</code> refers to Lesson 4, Lesson 8 and Lesson 7 of Tutorial 1</li>
+<li><code>1_k\3_lambda++\lesson_6\README.md</code> refers to Parts 3 and 4 of the tutorial</li>
+<li><code>1_k\4_imp++\lesson_1\README.md</code> refers to Lesson 4, Tutorial 2; also Tutorial 3 (at the end)</li>
+<li><code>1_k\4_imp++\lesson_2\README.md</code> refers to Tutorial 3; Tutorial 2</li>
+<li><code>1_k\4_imp++\lesson_3\README.md</code> refers to Lesson 1, Lesson 6</li>
+<li><code>1_k\4_imp++\lesson_4\README.md</code> refers to Tutorial 6</li>
+<li><code>1_k\4_imp++\lesson_5\README.md</code> refers to Lesson 4; Tutorial 3</li>
+<li><code>1_k\4_imp++\lesson_6\README.md</code> refers to Lesson 3</li>
+<li><code>1_k\4_imp++\lesson_7\README.md</code> refers to Lesson 1, 6</li>
+<li><code>1_k\5_types\lesson_1\README.md</code> refers to Part 4; SIMPLE</li>
+<li><code>1_k\5_types\lesson_2\NOTES/README.md</code> refer to Tutorial 1</li>
+<li><code>1_k\5_types\lesson_3\README.md</code> refers to Part 1; Lesson 1,2</li>
+<li><code>1_k\5_types\lesson_4\README.md</code> refers to Part 1, and to Lessons 2 and 3</li>
+<li><code>1_k\5_types\lesson_5\README.md</code> refers to Lessons 4, 3, 2</li>
+<li><code>1_k\5_types\lesson_6\README.md</code> refers to Lesson 5; SIMPLE, KOOL, IMP++</li>
+<li><code>1_k\5_types\lesson_7\README.md</code> refers to Lesson 4, 8, 9</li>
+<li><code>1_k\5_types\lesson_8\README.md</code> refers to Lessons 5, 7</li>
+<li><code>1_k\5_types\lesson_9\README.md</code> refers to Lessons 8, 5, 7, 4</li>
+<li></li>
+</ul>
+<p><code>1_k\4_imp++\lesson_2\README.md</code> states &quot;generates a term of the form
+<code>symNat(n)</code> of sort <code>Nat</code>&quot;, but the representation of symbolic numbers may
+have changed</p>
+<p>Describe/use/explain/justify the terminology &quot;the <code>&lt;k/&gt;</code> cell&quot; as opposed to &quot;the <code>k</code> cell&quot;.</p>
+<p>Would it be a good idea to make the README files self contained, that is,
+to include the entire <code>lang.k</code> code in them, spread over the entire README, as things
+are discussed?  In case we decide not to, make sure that the code snippets mentioned
+in the READMEs are in perfect correspondence to the code in the actual .k definitions.
+Maybe add a tag before each code snippet saying what file and what lines in that
+file comes from, then we can use a script to check them to be identical.</p>
+<p><code>1_k\5_types\lesson_4\README.md</code> refers to <em>polymorphism</em>, but some may say that is not precisely
+polymorphism, because the types are not universally quantified.  Explain that better.</p>
+<p>Modify the entire tutorial to use <code>.</code> or, if needed, <code>.::Map</code>, etc.,
+instead of <code>.Map</code>, etc..  Check for each instance specifically, because
+the surrounding text may also need to be modified.</p>
+<p>We sometimes use &quot;Kompile&quot;, or &quot;kompile&quot;, as a verb instead of &quot;Compile&quot;,
+or &quot;compile&quot;, to indicate that we mean compilation with K.  Similarly for
+&quot;Krun&quot;, or &quot;krun&quot;, instead of &quot;Run&quot; or &quot;run&quot;.</p>
+<p>Add citations to:</p>
+<ul>
+<li>chemical abstract machine</li>
+<li>logics, where the distinction between side condition and premise is explained</li>
+<li>reduction semantics with evaluation contexts</li>
+</ul>
+<p>Replace <code>I1 +Int I2</code>, <code>notBool B</code>, etc., with <code>(I1 + I2)@INT</code>, <code>(not B)@Bool</code>,
+etc., when we have module qualification in place and working.</p>
+<p>Explain <code>isSort(T)</code> for all sorts <code>Sort</code>, in one place, when it is first used.
+Explain also that <code>T:Sort</code> yields a side condition <code>isSort(T)</code>.</p>
+<p>Currently all the K collections are &quot;untyped&quot;, that is, over the sort <code>K</code>.
+In the future we want to have parametric collections.  Make sure the tutorial
+is systematically changed when this happens.</p>
+<p>See issue #2023 and modify pl-tutorial/1_k/2_imp/lesson_4 accordingly, if needed.</p>
+<p>All definitions, and corresponding READMEs, should be changed to take advantage
+of modules and module operations.  Ideally, we&apos;d like to have no code repetition
+in any examples, except for demonstration purposes.</p>
+<p>In the PL semantics book, define print(AExps) to have the same semantics as in
+IMP++: evaluates and prints each of its arguments in order (as opposed to
+first evaluate all of them and then print them---for example, if the second
+argument performs a division by zero, I still want to print the first argument.)</p>
+</body></html></div>
+        </main>
+      </div>
+    </div>
+<!-- The footer is now controlled by the k-web-theme git submodule -->
+<footer id="rvsite-footer" class="app-footer text-md-left text-center">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-md-4 mb-md-0 mb-4">
+        <a href="https://runtimeverification.com/" target="_blank">
+          <picture>
+            <source
+              srcset="
+                https://runtimeverification.com/assets/img/rv-logo-dark.png
+              "
+              media="(prefers-color-scheme: dark)"
+            />
+            <img
+              class="logo-dark"
+              src="https://runtimeverification.com/assets/img/rv-logo.png"
+              alt="Runtime Verification logo"
+              style="height: 32px"
+            /> </picture
+        ></a>
+      </div>
+      <div class="col-md-4 text-md-center mb-md-0 mb-4"></div>
+      <div class="col-md-4 mb-md-0 mb-4 text-md-right">
+        <p class="copyright">2021 © all rights reserved</p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Typist/1.2/typist.min.js"></script>
+    <script src="../../../assets/js/index.js"></script>
+    <script>
+      $(function () {
+        // Render youtube video
+        const anchorElements = document.querySelectorAll(".markdown-preview a");
+        for (let i = anchorElements.length - 1; i >= 0; i--) {
+          if (anchorElements.length - 1 - i > 3) {
+            break;
+          }
+          const anchorElement = anchorElements[i];
+          const href = anchorElement.getAttribute("href");
+          if (href.match(/^https?:\/\/youtu.be\//)) {
+            const match = href.match(/^https?:\/\/youtu.be\/(.+?)$/);
+            if (match && match[1]) {
+              const youtubeId = match[1];
+              const $iframe = $(`
+<div style="text-align:center;">
+  <iframe
+    width="560"
+    height="315"
+    src="https://www.youtube.com/embed/${youtubeId}"
+    frameborder="0"
+    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+    allowfullscreen
+    style="max-width: 100%;"
+  ></iframe>
+  <p>The video is out of date</p>
+</div>
+`);
+              $(anchorElement).replaceWith($iframe[0]);
+            }
+          }
+        }
+      });
+    </script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-9LBGDMRG32"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-9LBGDMRG32");
+    </script>
+  </body>
+</html>
