@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+<meta charset="utf-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+/>
+<meta
+  name="description"
+  content="Design and implement your programming language and software analysis tools with mathematical rigor."
+/>
+<meta name="keywords" content="runtime, verification, rv, k" />
+<meta name="author" content="K | Runtime Verification Inc" />
+<meta name="robots" content="index, follow" />
+<link rel="canonical" href="https://kframework.org/k-distribution/k-tutorial/1_basic/04_disambiguation/" />
+
+<!--favicon icon-->
+<link rel="icon" type="image/png" href="../../../../assets/img/favicon.ico" />
+
+<title>K | Runtime Verification Inc</title>
+
+<!-- <base href="/k/" /> -->
+
+<!--web fonts-->
+<link
+  href="https://fonts.googleapis.com/css?family=Nunito:300,400,600,700,800"
+  rel="stylesheet"
+/>
+<link
+  href="https://fonts.googleapis.com/css?family=Lora:400i"
+  rel="stylesheet"
+/>
+
+<link
+  href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.14.0/css/all.min.css"
+  rel="stylesheet"
+/>
+
+<link href="../../../../assets/css/index.css" rel="stylesheet" />
+
+<!--[if (gt IE 9) |!(IE)]><!-->
+<!--<link rel="stylesheet" href="/assets/vendor/custom-nav/css/effects/fade-menu.css"/>-->
+<!-- <link rel="stylesheet" href="../../../../assets/k/vl-nav/css/effects/slide-menu.css" /> -->
+<!--<![endif]-->
+
+  </head>
+
+  <body>
+<header
+  class="navbar navbar-expand navbar-dark flex-column flex-md-row bd-navbar"
+>
+  <a class="logo-link" href="../../../../index.html">
+    <img
+      class="logo-dark"
+      srcset="../../../../assets/img/k-logo.png"
+      alt="K"
+      style="height: 48px;"
+    />
+    Semantic Framework
+  </a>
+  <ul class="navbar-nav ml-md-auto">
+    <li class="nav-item">
+      <a
+        class="nav-link pl-2 pr-1 mx-1 py-3 my-n2"
+        href="https://github.com/kframework/k"
+        target="_blank"
+        rel="noopener"
+        aria-label="GitHub"
+      >
+        <i class="fab fa-github"></i>
+      </a>
+    </li>
+  </ul>
+  <a
+    class="btn btn-rv-blue d-none d-lg-inline-block mb-3 mb-md-0 ml-md-3"
+    href="../../../../downloads"
+    >Download</a
+  >
+</header>
+
+
+    <div class="container-fluid">
+      <div class="row flex-xl-nowrap">
+<div class="col-12 col-md-3 col-xl-2 bd-sidebar mb-3">
+  <form
+    role="search"
+    class="bd-search d-flex align-items-center justify-content-between"
+  >
+    <input
+      type="search"
+      class="form-control"
+      placeholder="Search..."
+      aria-label="Search for..."
+      autocomplete="false"
+      id="search-box"
+    />
+    <button
+      class="btn bd-search-docs-toggle d-md-none p-0 ml-3 collapsed"
+      type="button"
+      aria-label="Toggle docs navigation"
+      style="font-size: 1.4rem"
+    >
+      <i class="fas fa-bars"></i>
+    </button>
+  </form>
+  <nav class="collapse bd-links" aria-label="Main navigation">
+    <div class="bd-toc-item">
+      <a class="bd-toc-link" href="../../../../">Homepage</a>
+      <a class="bd-toc-link" href="../../../../downloads">Downloads</a>
+      <a class="bd-toc-link" href="../../../../k-distribution/pl-tutorial"
+        >K Tutorial</a
+      >
+      <a class="bd-toc-link" href="../../../../pending-documentation/"
+        >User documentation</a
+      >
+      <a
+        class="bd-toc-link"
+        href="../../../../k-distribution/include/kframework/builtin/"
+        >Builtins</a
+      >
+      <a class="bd-toc-link" href="../../../../projects">Projects using K</a>
+    </div>
+  </nav>
+</div>
+
+        <main
+          class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 bd-content"
+          role="main"
+        >
+          <div class="introduction markdown-preview"><html><head></head><body><h1 id="lesson-1.4%3A-disambiguating-parses">Lesson 1.4: Disambiguating Parses</h1>
+<p>The purpose of this lesson is to teach how to use K&apos;s builtin features for
+disambiguation to transform an ambiguous grammar into an unambiguous one that
+expresses the intended ASTs.</p>
+<h2 id="priority-blocks">Priority blocks</h2>
+<p>In practice, very few formal languages outside the domain of natural language
+processing are ambiguous. The main reason for this is that parsing unambiguous
+languages is asymptotically faster than parsing ambiguous languages.
+Programming language designers instead usually use the notions of operator
+precedence and associativity to make expression grammars unambiguous. These
+mechanisms work by instructing the parser to reject certain ASTs in favor of
+others in case of ambiguities; often it is possible to remove <em>all</em> ambiguities
+in a grammar with these techniques.</p>
+<p>While it is sometimes possible to explicitly rewrite the grammar to remove
+these parses, because K&apos;s grammar specification and AST generation are
+inextricably linked, this is generally discouraged. Instead, we use the
+approach of explicitly expressing the relative precedence of different
+operators in different situations in order to resolve the ambiguity.</p>
+<p>For example, in C, <code>&amp;&amp;</code> binds tighter in precedence than <code>||</code>, meaning that
+the expression <code>true &amp;&amp; false || false</code> has only one valid AST:
+<code>(true &amp;&amp; false) || false</code>.</p>
+<p>Consider, then, the third iteration on the grammar of this definition
+(<code>lesson-04-a.k</code>):</p>
+<pre class="language-k"><code><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">04</span><span class="token operator">-</span>A
+
+  <span class="token keyword">syntax</span> Boolean <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">&quot;true&quot;</span> <span class="token operator">|</span> <span class="token string">&quot;false&quot;</span>
+                   <span class="token operator">|</span> <span class="token string">&quot;(&quot;</span> Boolean <span class="token string">&quot;)&quot;</span> <span class="token punctuation">[</span><span class="token class-name">bracket</span><span class="token punctuation">]</span>
+                   &gt; <span class="token string">&quot;!&quot;</span> Boolean <span class="token punctuation">[</span>function<span class="token punctuation">]</span>
+                   &gt; Boolean <span class="token string">&quot;&amp;&amp;&quot;</span> Boolean <span class="token punctuation">[</span>function<span class="token punctuation">]</span>
+                   &gt; Boolean <span class="token string">&quot;^&quot;</span> Boolean <span class="token punctuation">[</span>function<span class="token punctuation">]</span>
+                   &gt; Boolean <span class="token string">&quot;||&quot;</span> Boolean <span class="token punctuation">[</span>function<span class="token punctuation">]</span>
+
+<span class="token keyword">endmodule</span>
+</code></pre>
+<p>In this example, some of the <code>|</code> symbols separating productions in a single
+block have been replaced with <code>&gt;</code>. This serves to describe the
+<strong>priority groups</strong> associated with this block of productions.</p>
+<p>In this example, the first priority group consists of the atoms of the
+language: <code>true</code>, <code>false</code>, and the bracket operator. In general, a priority
+group starts either at the <code>::=</code> or <code>&gt;</code> operator and extends until either the
+next <code>&gt;</code> operator or the end of the production block. Thus, we can see that the
+second, third, fourth, and fifth priority groups in this grammar all consist
+of a single production.</p>
+<p>The meaning of these priority groups becomes apparent when parsing programs:
+A symbol with a <strong>lesser priority</strong>, (i.e., one that <strong>binds looser</strong>), cannot
+appear as the <strong>direct child</strong> of a symbol with a <strong>greater priority</strong> (i.e.,
+one that <strong>binds tighter</strong>. In this case, the <code>&gt;</code> operator can be seen as a
+<strong>greater-than</strong> operator describing a transitive partial ordering on the
+productions in the production block, expressing their relative priority.</p>
+<p>To see this more concretely, let&apos;s look again at the program
+<code>true &amp;&amp; false || false</code>. As noted before, previously this program was
+ambiguous because the parser could either choose that <code>&amp;&amp;</code> was the child of <code>||</code>
+or vice versa. However, because a symbol with lesser priority (i.e., <code>||</code>)
+cannot appear as the direct child of a symbol with greater priority
+(i.e., <code>&amp;&amp;</code>), the parser will <strong>reject</strong> the parse where <code>||</code> is under the
+<code>&amp;&amp;</code> operator. As a result, we are left with the unambiguous parse
+<code>(true &amp;&amp; false) || false</code>. Similarly, <code>true || false &amp;&amp; false</code> parses
+unambiguously as <code>true || (false &amp;&amp; false)</code>. Conversely, if the user explicitly
+wants the other parse, they can express this using brackets by explicitly
+writing <code>true &amp;&amp; (false || false)</code>. This still parses successfully because the
+<code>||</code> operator is no longer the <strong>direct</strong> child of the <code>&amp;&amp;</code> operator, but is
+instead the direct child of the <code>()</code> operator, and the <code>&amp;&amp;</code> operator is an
+<strong>indirect</strong> parent, which is not subject to the priority restriction.</p>
+<p>Astute readers, however, will already have noticed what seems to be a
+contradiction: we have defined <code>()</code> as also having greater priority than <code>||</code>.
+One would think that this should mean that <code>||</code> cannot appear as a direct
+child of <code>()</code>. This is a problem because priority groups are applied to every
+possible parse separately. That is to say, even if the term is unambiguous
+prior to this disambiguation rule, we still reject that parse if it violates
+the rule of priority.</p>
+<p>In fact, however, we do not reject this program as a parse error. Why is that?
+Well, the rule for priority is slightly more complex than previously described.
+In actual fact, it applies only conditionally. Specifically, it applies in
+cases where the child is either the first or last production item in the
+parent&apos;s production. For example, in the production <code>Bool &quot;&amp;&amp;&quot; Bool</code>, the
+first <code>Bool</code> non-terminal is not preceded by any terminals, and the last <code>Bool</code>
+non-terminal is not followed by any terminals. As a result of this, we apply
+the priority rule to both children of <code>&amp;&amp;</code>. However, in the <code>()</code> operator,
+the sole non-terminal is both preceded by and followed by terminals. As a
+result, the priority rule is not applied when <code>()</code> is the parent. Because of
+this, the program we mentioned above successfully parses.</p>
+<h3 id="exercise">Exercise</h3>
+<p>Parse the program <code>true &amp;&amp; false || false</code> yourself, and confirm that the AST
+places <code>||</code> as the top level symbol. Then modify the definition so that you
+will get the alternative parse.</p>
+<h2 id="associativity">Associativity</h2>
+<p>Even having broken the expression grammar into priority blocks, the resulting
+grammar is still ambiguous. We can see this if we try to parse the following
+program (<code>assoc.bool</code>):</p>
+<pre class="language-text"><code>true &amp;&amp; false &amp;&amp; false
+</code></pre>
+<p>Priority blocks will not help us here: the problem comes between two parses
+where both possible parses have a direct parent and child which is within a
+single priority block (in this case, <code>&amp;&amp;</code> is in the same block as itself).</p>
+<p>This is where the notion of associativity comes into play. Associativity
+applies the following additional rules to parses:</p>
+<ul>
+<li>a left-associative symbol cannot appear as a direct rightmost child of a
+symbol with equal priority;</li>
+<li>a right-associative symbol cannot appear as a direct leftmost child of a
+symbol with equal priority; and</li>
+<li>a non-associative symbol cannot appear as a direct leftmost <strong>or</strong> rightmost
+child of a symbol with equal priority.</li>
+</ul>
+<p>In C, binary operators are all left-associative, meaning that the expression
+<code>true &amp;&amp; false &amp;&amp; false</code> parses unambiguously as <code>(true &amp;&amp; false) &amp;&amp; false</code>,
+because <code>&amp;&amp;</code> cannot appear as the rightmost child of itself.</p>
+<p>Consider, then, the fourth iteration on the grammar of this definition
+(<code>lesson-04-b.k</code>):</p>
+<pre class="language-k"><code><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">04</span><span class="token operator">-</span>B
+
+  <span class="token keyword">syntax</span> Boolean <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">&quot;true&quot;</span> <span class="token operator">|</span> <span class="token string">&quot;false&quot;</span>
+                   <span class="token operator">|</span> <span class="token string">&quot;(&quot;</span> Boolean <span class="token string">&quot;)&quot;</span> <span class="token punctuation">[</span><span class="token class-name">bracket</span><span class="token punctuation">]</span>
+                   &gt; <span class="token string">&quot;!&quot;</span> Boolean <span class="token punctuation">[</span>function<span class="token punctuation">]</span>
+                   &gt; <span class="token class-name">left</span><span class="token punctuation">:</span> Boolean <span class="token string">&quot;&amp;&amp;&quot;</span> Boolean <span class="token punctuation">[</span>function<span class="token punctuation">]</span>
+                   &gt; <span class="token class-name">left</span><span class="token punctuation">:</span> Boolean <span class="token string">&quot;^&quot;</span> Boolean <span class="token punctuation">[</span>function<span class="token punctuation">]</span>
+                   &gt; <span class="token class-name">left</span><span class="token punctuation">:</span> Boolean <span class="token string">&quot;||&quot;</span> Boolean <span class="token punctuation">[</span>function<span class="token punctuation">]</span>
+
+<span class="token keyword">endmodule</span>
+</code></pre>
+<p>Here each priority group, immediately after the <code>::=</code> or <code>&gt;</code> operator, can
+be followed by a symbol representing the associativity of that priority group:
+either <code>left:</code> for left associativity, <code>right:</code> for right associativity, or
+<code>non-assoc:</code> for non-associativity. In this example, each priority group we
+apply associativity to has only a single production, but we could equally well
+write a priority block with multiple productions and an associativity.</p>
+<p>For example, consider the following, different grammar (<code>lesson-04-c.k</code>):</p>
+<pre class="language-k"><code><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">04</span><span class="token operator">-</span>C
+
+  <span class="token keyword">syntax</span> Boolean <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">&quot;true&quot;</span> <span class="token operator">|</span> <span class="token string">&quot;false&quot;</span>
+                   <span class="token operator">|</span> <span class="token string">&quot;(&quot;</span> Boolean <span class="token string">&quot;)&quot;</span> <span class="token punctuation">[</span><span class="token class-name">bracket</span><span class="token punctuation">]</span>
+                   &gt; <span class="token string">&quot;!&quot;</span> Boolean <span class="token punctuation">[</span>function<span class="token punctuation">]</span>
+                   &gt; <span class="token class-name">left</span><span class="token punctuation">:</span> 
+                     Boolean <span class="token string">&quot;&amp;&amp;&quot;</span> Boolean <span class="token punctuation">[</span>function<span class="token punctuation">]</span>
+                   <span class="token operator">|</span> Boolean <span class="token string">&quot;^&quot;</span> Boolean <span class="token punctuation">[</span>function<span class="token punctuation">]</span>
+                   <span class="token operator">|</span> Boolean <span class="token string">&quot;||&quot;</span> Boolean <span class="token punctuation">[</span>function<span class="token punctuation">]</span>
+
+<span class="token keyword">endmodule</span>
+</code></pre>
+<p>In this example, unlike the one above, <code>&amp;&amp;</code>, <code>^</code>, and <code>||</code> have the same
+priority. However, viewed as a group, the entire group is left associative.
+This means that none of <code>&amp;&amp;</code>, <code>^</code>, and <code>||</code> can appear as the right child of
+any of <code>&amp;&amp;</code>, <code>^</code>, or <code>||</code>. As a result of this, this grammar is also not
+ambiguous. However, it expresses a different grammar, and you are encouraged
+to think about what the differences are in practice.</p>
+<h3 id="exercise-1">Exercise</h3>
+<p>Parse the program <code>true &amp;&amp; false &amp;&amp; false</code> yourself, and confirm that the AST
+places the rightmost <code>&amp;&amp;</code> at the top of the expression. Then modify the
+definition to generate the alternative parse.</p>
+<h2 id="explicit-priority-and-associativity-declarations">Explicit priority and associativity declarations</h2>
+<p>Previously we have only considered the case where all of the productions
+which you wish to express a priority or associativity relation over are
+co-located in the same block of productions. However, in practice this is not
+always feasible or desirable, especially as a definition grows in size across
+multiple modules.</p>
+<p>As a result of this, K provides a second way of declaring priority and
+associativity relations.</p>
+<p>Consider the following grammar, which we will name <code>lesson-04-D.k</code> and which
+will express the exact same grammar as <code>lesson-04-b.k</code></p>
+<pre class="language-k"><code><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">04</span><span class="token operator">-</span>D
+
+  <span class="token keyword">syntax</span> Boolean <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">&quot;true&quot;</span> <span class="token punctuation">[</span>literal<span class="token punctuation">]</span> <span class="token operator">|</span> <span class="token string">&quot;false&quot;</span> <span class="token punctuation">[</span>literal<span class="token punctuation">]</span>
+                   <span class="token operator">|</span> <span class="token string">&quot;(&quot;</span> Boolean <span class="token string">&quot;)&quot;</span> <span class="token punctuation">[</span>atom<span class="token punctuation">,</span> <span class="token class-name">bracket</span><span class="token punctuation">]</span>
+                   <span class="token operator">|</span> <span class="token string">&quot;!&quot;</span> Boolean <span class="token punctuation">[</span>not<span class="token punctuation">,</span> function<span class="token punctuation">]</span>
+                   <span class="token operator">|</span> Boolean <span class="token string">&quot;&amp;&amp;&quot;</span> Boolean <span class="token punctuation">[</span>and<span class="token punctuation">,</span> function<span class="token punctuation">]</span>
+                   <span class="token operator">|</span> Boolean <span class="token string">&quot;^&quot;</span> Boolean <span class="token punctuation">[</span>xor<span class="token punctuation">,</span> function<span class="token punctuation">]</span>
+                   <span class="token operator">|</span> Boolean <span class="token string">&quot;|&quot;</span> Boolean <span class="token punctuation">[</span>or<span class="token punctuation">,</span> function<span class="token punctuation">]</span>
+
+  <span class="token keyword">syntax priorities</span> literal atom &gt; not &gt; and &gt; xor &gt; or
+  <span class="token keyword">syntax left</span> and
+  <span class="token keyword">syntax left</span> xor
+  <span class="token keyword">syntax left</span> or
+<span class="token keyword">endmodule</span>
+</code></pre>
+<p>This introduces a couple of new features of K. First of all, we see a bunch of
+attributes we don&apos;t already recognize. These are actually not built-in
+attributes, but rather user-defined attributes that are used to group
+productions together conceptually. For example, <code>literal</code> in the
+<code>syntax priorities</code> sentence is used to refer to the productions with the
+<code>literal</code> attribute, i.e., <code>true</code> and <code>false</code>.</p>
+<p>Once we understand this, it becomes relatively straightforward to understand
+the meaning of this grammar. Each <code>syntax priorities</code> sentence defines a
+priority relation where each <code>&gt;</code> separates a priority group containing all
+the productions with at least one of the attributes in that group, and each
+<code>syntax left</code>, <code>syntax right</code>, or <code>syntax non-assoc</code> sentence defines an
+associativity relation connecting all the productions with one of the target
+attributes together into a left-, right-, or non-associative grouping.</p>
+<h2 id="prefer%2Favoid">Prefer/avoid</h2>
+<p>Sometimes priority and associativity proves insufficient to disambiguate a
+grammar. In particular, sometimes it is desirable to be able to choose between
+two ambiguous parses directly while still not rejecting any parses if the term
+parsed is unambiguous. A good example of this is the famous &quot;dangling else&quot;
+problem in imperative C-like languages.</p>
+<p>Consider the following definition (<code>lesson-04-E.k</code>):</p>
+<pre class="language-k"><code><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">04</span><span class="token operator">-</span>E
+
+  <span class="token keyword">syntax</span> Exp <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">&quot;true&quot;</span> <span class="token operator">|</span> <span class="token string">&quot;false&quot;</span>
+  <span class="token keyword">syntax</span> Stmt <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">&quot;if&quot;</span> <span class="token string">&quot;(&quot;</span> Exp <span class="token string">&quot;)&quot;</span> Stmt
+                <span class="token operator">|</span> <span class="token string">&quot;if&quot;</span> <span class="token string">&quot;(&quot;</span> Exp <span class="token string">&quot;)&quot;</span> Stmt <span class="token string">&quot;else&quot;</span> Stmt
+                <span class="token operator">|</span> <span class="token string">&quot;{&quot;</span> <span class="token string">&quot;}&quot;</span>
+<span class="token keyword">endmodule</span>
+</code></pre>
+<p>We can write the following program (<code>dangling-else.if</code>):</p>
+<pre class="language-text"><code>if (true) if (false) {} else {}
+</code></pre>
+<p>This is ambiguous because it is unclear whether the <code>else</code> clause is part of
+the outer <code>if</code> or the inner <code>if</code>. At first we might try to resolve this with
+priorities, saying that the <code>if</code> without an <code>else</code> cannot appear as a child of
+the <code>if</code> with an <code>else</code>. However, because the non-terminal in the parent symbol
+is both preceded and followed by a terminal, this will not work.</p>
+<p>Instead, we can resolve the ambiguity directly by telling the parser to
+&quot;prefer&quot; or &quot;avoid&quot; certain productions when ambiguities arise. For example,
+when we parse this program, we see the following ambiguity as an error message:</p>
+<pre class="language-text"><code>[Error] Inner Parser: Parsing ambiguity.
+1: syntax Stmt ::= &quot;if&quot; &quot;(&quot; Exp &quot;)&quot; Stmt
+
+`if(_)__LESSON-04-E_Stmt_Exp_Stmt`(`true_LESSON-04-E_Exp`(.KList),`if(_)_else__LESSON-04-E_Stmt_Exp_Stmt_Stmt`(`false_LESSON-04-E_Exp`(.KList),`;_LESSON-04-E_Stmt`(.KList),`;_LESSON-04-E_Stmt`(.KList)))
+2: syntax Stmt ::= &quot;if&quot; &quot;(&quot; Exp &quot;)&quot; Stmt &quot;else&quot; Stmt
+
+`if(_)_else__LESSON-04-E_Stmt_Exp_Stmt_Stmt`(`true_LESSON-04-E_Exp`(.KList),`if(_)__LESSON-04-E_Stmt_Exp_Stmt`(`false_LESSON-04-E_Exp`(.KList),`;_LESSON-04-E_Stmt`(.KList)),`;_LESSON-04-E_Stmt`(.KList))
+        Source(./dangling-else.if)
+        Location(1,1,1,30)
+</code></pre>
+<p>Roughly, we see that the ambiguity is between an <code>if</code> with an <code>else</code> or an <code>if</code>
+without an <code>else</code>. Since we want to pick the first parse, we can tell K to
+&quot;avoid&quot; the second parse with the <code>avoid</code> attribute. Consider the following
+modified definition (<code>lesson-04-f.k</code>):</p>
+<pre class="language-k"><code><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">04</span><span class="token operator">-</span>F
+
+  <span class="token keyword">syntax</span> Exp <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">&quot;true&quot;</span> <span class="token operator">|</span> <span class="token string">&quot;false&quot;</span>
+  <span class="token keyword">syntax</span> Stmt <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">&quot;if&quot;</span> <span class="token string">&quot;(&quot;</span> Exp <span class="token string">&quot;)&quot;</span> Stmt
+                <span class="token operator">|</span> <span class="token string">&quot;if&quot;</span> <span class="token string">&quot;(&quot;</span> Exp <span class="token string">&quot;)&quot;</span> Stmt <span class="token string">&quot;else&quot;</span> Stmt <span class="token punctuation">[</span><span class="token class-name">avoid</span><span class="token punctuation">]</span>
+                <span class="token operator">|</span> <span class="token string">&quot;{&quot;</span> <span class="token string">&quot;}&quot;</span>
+<span class="token keyword">endmodule</span>
+</code></pre>
+<p>Here we have added the <code>avoid</code> attribute to the <code>else</code> production. As a result,
+when an ambiguity occurs and one or more of the possible parses has that symbol
+at the top of the ambiguous part of the parse, we remove those parses from
+consideration and consider only those remaining. The <code>prefer</code> attribute behaves
+similarly, but instead removes all parses which do not have that attribute.
+In both cases, no action is taken if the parse is not ambiguous.</p>
+<h2 id="exercises">Exercises</h2>
+<ol>
+<li>
+<p>Parse the program <code>if (true) if (false) {} else {}</code> using <code>lesson-04-f.k</code>
+and confirm that else clause is part of the innermost <code>if</code> statement. Then
+modify the definition so that you will get the alternative parse.</p>
+</li>
+<li>
+<p>Modify your solution from lesson 3, problem 1 so that unary negation should
+bind tighter than multiplication and division, which should bind tighter than
+addition and subtraction, and each binary operator should be left associative.
+Write these priority and associativity declarations both inline and explicitly.</p>
+</li>
+<li>
+<p>Write a simple grammar containing at least one ambiguity that cannot be
+resolved via priority or associativity, and then use the <code>prefer</code> attribute to
+resolve that ambiguity.</p>
+</li>
+</ol>
+</body></html></div>
+        </main>
+      </div>
+    </div>
+<!-- The footer is now controlled by the k-web-theme git submodule -->
+<footer id="rvsite-footer" class="app-footer text-md-left text-center">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-md-4 mb-md-0 mb-4">
+        <a href="https://runtimeverification.com/" target="_blank">
+          <picture>
+            <source
+              srcset="
+                https://runtimeverification.com/assets/img/rv-logo-dark.png
+              "
+              media="(prefers-color-scheme: dark)"
+            />
+            <img
+              class="logo-dark"
+              src="https://runtimeverification.com/assets/img/rv-logo.png"
+              alt="Runtime Verification logo"
+              style="height: 32px"
+            /> </picture
+        ></a>
+      </div>
+      <div class="col-md-4 text-md-center mb-md-0 mb-4"></div>
+      <div class="col-md-4 mb-md-0 mb-4 text-md-right">
+        <p class="copyright">2021 © all rights reserved</p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Typist/1.2/typist.min.js"></script>
+    <script src="../../../../assets/js/index.js"></script>
+    <script>
+      $(function () {
+        // Render youtube video
+        const anchorElements = document.querySelectorAll(".markdown-preview a");
+        for (let i = anchorElements.length - 1; i >= 0; i--) {
+          if (anchorElements.length - 1 - i > 3) {
+            break;
+          }
+          const anchorElement = anchorElements[i];
+          const href = anchorElement.getAttribute("href");
+          if (href.match(/^https?:\/\/youtu.be\//)) {
+            const match = href.match(/^https?:\/\/youtu.be\/(.+?)$/);
+            if (match && match[1]) {
+              const youtubeId = match[1];
+              const $iframe = $(`
+<div style="text-align:center;">
+  <iframe
+    width="560"
+    height="315"
+    src="https://www.youtube.com/embed/${youtubeId}"
+    frameborder="0"
+    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+    allowfullscreen
+    style="max-width: 100%;"
+  ></iframe>
+  <p>The video is out of date</p>
+</div>
+`);
+              $(anchorElement).replaceWith($iframe[0]);
+            }
+          }
+        }
+      });
+    </script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-9LBGDMRG32"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-9LBGDMRG32");
+    </script>
+  </body>
+</html>
