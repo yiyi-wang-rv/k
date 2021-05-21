@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+<meta charset="utf-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+/>
+<meta
+  name="description"
+  content="Design and implement your programming language and software analysis tools with mathematical rigor."
+/>
+<meta name="keywords" content="runtime, verification, rv, k" />
+<meta name="author" content="K | Runtime Verification Inc" />
+<meta name="robots" content="index, follow" />
+<link rel="canonical" href="https://kframework.org/k-distribution/pl-tutorial/1_k/2_imp/lesson_2/" />
+
+<!--favicon icon-->
+<link rel="icon" type="image/png" href="../../../../../assets/img/favicon.ico" />
+
+<title>K | Runtime Verification Inc</title>
+
+<!-- <base href="/k/" /> -->
+
+<!--web fonts-->
+<link
+  href="https://fonts.googleapis.com/css?family=Nunito:300,400,600,700,800"
+  rel="stylesheet"
+/>
+<link
+  href="https://fonts.googleapis.com/css?family=Lora:400i"
+  rel="stylesheet"
+/>
+
+<link
+  href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.14.0/css/all.min.css"
+  rel="stylesheet"
+/>
+
+<link href="../../../../../assets/css/index.css" rel="stylesheet" />
+
+<!--[if (gt IE 9) |!(IE)]><!-->
+<!--<link rel="stylesheet" href="/assets/vendor/custom-nav/css/effects/fade-menu.css"/>-->
+<!-- <link rel="stylesheet" href="../../../../../assets/k/vl-nav/css/effects/slide-menu.css" /> -->
+<!--<![endif]-->
+
+  </head>
+
+  <body>
+<header
+  class="navbar navbar-expand navbar-dark flex-column flex-md-row bd-navbar"
+>
+  <a class="logo-link" href="../../../../../index.html">
+    <img
+      class="logo-dark"
+      srcset="../../../../../assets/img/k-logo.png"
+      alt="K"
+      style="height: 48px;"
+    />
+    Semantic Framework
+  </a>
+  <ul class="navbar-nav ml-md-auto">
+    <li class="nav-item">
+      <a
+        class="nav-link pl-2 pr-1 mx-1 py-3 my-n2"
+        href="https://github.com/kframework/k"
+        target="_blank"
+        rel="noopener"
+        aria-label="GitHub"
+      >
+        <i class="fab fa-github"></i>
+      </a>
+    </li>
+  </ul>
+  <a
+    class="btn btn-rv-blue d-none d-lg-inline-block mb-3 mb-md-0 ml-md-3"
+    href="../../../../../downloads"
+    >Download</a
+  >
+</header>
+
+
+    <div class="container-fluid">
+      <div class="row flex-xl-nowrap">
+<div class="col-12 col-md-3 col-xl-2 bd-sidebar mb-3">
+  <form
+    role="search"
+    class="bd-search d-flex align-items-center justify-content-between"
+  >
+    <input
+      type="search"
+      class="form-control"
+      placeholder="Search..."
+      aria-label="Search for..."
+      autocomplete="false"
+      id="search-box"
+    />
+    <button
+      class="btn bd-search-docs-toggle d-md-none p-0 ml-3 collapsed"
+      type="button"
+      aria-label="Toggle docs navigation"
+      style="font-size: 1.4rem"
+    >
+      <i class="fas fa-bars"></i>
+    </button>
+  </form>
+  <nav class="collapse bd-links" aria-label="Main navigation">
+    <div class="bd-toc-item">
+      <a class="bd-toc-link" href="../../../../../">Homepage</a>
+      <a class="bd-toc-link" href="../../../../../downloads">Downloads</a>
+      <a class="bd-toc-link" href="../../../../../k-distribution/pl-tutorial"
+        >K Tutorial</a
+      >
+      <a class="bd-toc-link" href="../../../../../pending-documentation/"
+        >User documentation</a
+      >
+      <a
+        class="bd-toc-link"
+        href="../../../../../k-distribution/include/kframework/builtin/"
+        >Builtins</a
+      >
+      <a class="bd-toc-link" href="../../../../../projects">Projects using K</a>
+    </div>
+  </nav>
+</div>
+
+        <main
+          class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 bd-content"
+          role="main"
+        >
+          <div class="introduction markdown-preview"><!-- Copyright (c) 2010-2019 K Team. All Rights Reserved. --><html><head></head><body><h1 id="defining-a-configuration">Defining a Configuration</h1>
+<p>Here we learn how to define a configuration in K. We also learn how to
+initialize and how to display it.</p>
+<p>As explained in the overview presentation on K, configurations are quite
+important, because all semantic rules match and apply on them.
+Moreover, they are the backbone of <em>configuration abstraction</em>, which allows
+you to only mention the relevant cells in each semantic rule, the rest of
+the configuration context being inferred automatically. The importance of
+configuration abstraction will become clear when we define more complex
+languages (even in IMP++). IMP does not really need it. K configurations
+are constructed making use of cells, which are labeled and can be arbitrarily
+nested.</p>
+<p>Configurations are defined with the keyword <code>configuration</code>. Cells are
+defined using an XML-ish notation stating clearly where the cell starts
+and where it ends.</p>
+<p>While not enforced by the tool, we typically like to put the entire
+configuration in a top-level cell, called <code>T</code>. So let&apos;s define it:</p>
+<pre><code>configuration &lt;T&gt;...&lt;/T&gt;
+</code></pre>
+<p>Cells can have other cells inside. In our case of IMP, we need a cell to
+hold the remaining program, cell which we typically call <code>k</code>, and a cell to
+hold the program state. Let us add them:</p>
+<pre><code>configuration &lt;T&gt; &lt;k&gt;...&lt;/k&gt; &lt;state&gt;...&lt;/state&gt; &lt;/T&gt;
+</code></pre>
+<p>K allows us to also specify how to initialize a configuration at the same
+time with declaring the configuration. All we have to do is to fill in
+the contents of the cells with some terms. The syntactic categories of
+those terms will also indirectly define the types of the corresponding
+cells.</p>
+<p>For example, we want the <code>k</code> cell to initially hold the program that is passed
+to <code>krun</code>. K provides a builtin configuration variable, called <code>$PGM</code>, which
+is specifically designed for this purpose: <code>krun</code> will place its program there
+(after it parses it, or course). The K tool allows users to define their own
+configuration variables, too, which can be used to develop custom
+initializations of program configurations with the help of <code>krun</code>; this can be
+quite useful when defining complex languages, but we do not discuss it in
+this tutorial.</p>
+<pre><code>configuration &lt;T&gt; &lt;k&gt; $PGM &lt;/k&gt; &lt;state&gt;...&lt;/state&gt;  &lt;/T&gt;
+</code></pre>
+<p>Moreover, we want the program to be a proper <code>Pgm</code> term (because we do not
+want to allow <code>krun</code> to take fragments of programs, for example, statements).
+Therefore, we tag <code>$PGM</code> with the desired syntactic category, <code>Pgm</code>:</p>
+<pre><code>configuration &lt;T&gt; &lt;k&gt; $PGM:Pgm &lt;/k&gt; &lt;state&gt;...&lt;/state&gt;  &lt;/T&gt;
+</code></pre>
+<p>Like for other variable tags in K, a run-time check will be performed and the
+semantics will get stuck if the passed term is not a well-formed program.</p>
+<p>We next tell K that the state cell should be initialized with the empty map:</p>
+<pre><code>configuration &lt;T&gt; &lt;k&gt; $PGM:Pgm &lt;/k&gt; &lt;state&gt; .Map &lt;/state&gt;  &lt;/T&gt;
+</code></pre>
+<p>Recall that in K <code>.</code> stands for <em>nothing</em>. However, since there are various
+types of nothing, to avoid confusion we can suffix the <code>.</code> with its desired
+type. K has several builtin data-types, including lists, sets, bags, and
+maps. <code>.Map</code> is the empty map.</p>
+<p>Kompile <code>imp.k</code> and run several programs to see how the configuration is
+initialized as desired.</p>
+<p>When configurations get large, and they do when defining large programming
+languages, you may want to color the cells in order to more easily distinguish
+them. This can be easily achieved using the <code>color</code> cell attribute, following
+again an XML-ish style:</p>
+<pre><code>configuration &lt;T color=&quot;yellow&quot;&gt;
+                &lt;k color=&quot;green&quot;&gt; $PGM:Pgm &lt;/k&gt;
+                &lt;state color=&quot;red&quot;&gt; .Map &lt;/state&gt;
+              &lt;/T&gt;
+</code></pre>
+<p>In the next lesson we will learn how to write rules that involve cells.</p>
+<p>Go to <a href="../lesson_3/">Lesson 3, IMP: Computations, Results, Strictness; Rules Involving Cells</a>.</p>
+<p><a href="http://youtu.be/jkwLyGdt70U" target="_blank" rel="noopener">MOVIE (out of date) [04&apos;21&quot;]</a></p>
+</body></html></div>
+        </main>
+      </div>
+    </div>
+<!-- The footer is now controlled by the k-web-theme git submodule -->
+<footer id="rvsite-footer" class="app-footer text-md-left text-center">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-md-4 mb-md-0 mb-4">
+        <a href="https://runtimeverification.com/" target="_blank">
+          <picture>
+            <source
+              srcset="
+                https://runtimeverification.com/assets/img/rv-logo-dark.png
+              "
+              media="(prefers-color-scheme: dark)"
+            />
+            <img
+              class="logo-dark"
+              src="https://runtimeverification.com/assets/img/rv-logo.png"
+              alt="Runtime Verification logo"
+              style="height: 32px"
+            /> </picture
+        ></a>
+        <p class="mt-2 text-md-left copyright">
+          <a href="https://goo.gl/maps/NYzr2iKpXMgEmQ2F6" target="_blank"
+            >102 E Main St #500, Urbana, IL 61801</a
+          >
+        </p>
+      </div>
+      <div class="col-md-4 text-md-center mb-md-0 mb-4"></div>
+      <div class="col-md-4 mb-md-0 mb-4 text-md-right">
+        <p class="copyright">2021 © all rights reserved</p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Typist/1.2/typist.min.js"></script>
+    <script src="../../../../../assets/js/index.js"></script>
+    <script>
+      $(function () {
+        // Render youtube video
+        const anchorElements = document.querySelectorAll(".markdown-preview a");
+        for (let i = anchorElements.length - 1; i >= 0; i--) {
+          if (anchorElements.length - 1 - i > 3) {
+            break;
+          }
+          const anchorElement = anchorElements[i];
+          const href = anchorElement.getAttribute("href");
+          if (href.match(/^https?:\/\/youtu.be\//)) {
+            const match = href.match(/^https?:\/\/youtu.be\/(.+?)$/);
+            if (match && match[1]) {
+              const youtubeId = match[1];
+              const $iframe = $(`
+<div style="text-align:center;">
+  <iframe
+    width="560"
+    height="315"
+    src="https://www.youtube.com/embed/${youtubeId}"
+    frameborder="0"
+    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+    allowfullscreen
+    style="max-width: 100%;"
+  ></iframe>
+  <p>The video is out of date</p>
+</div>
+`);
+              $(anchorElement).replaceWith($iframe[0]);
+            }
+          }
+        }
+      });
+    </script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-9LBGDMRG32"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-9LBGDMRG32");
+    </script>
+  </body>
+</html>
