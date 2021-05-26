@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+<meta charset="utf-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+/>
+<meta
+  name="description"
+  content="Design and implement your programming language and software analysis tools with mathematical rigor."
+/>
+<meta name="keywords" content="runtime, verification, rv, k" />
+<meta name="author" content="K | Runtime Verification Inc" />
+<meta name="robots" content="index, follow" />
+<link rel="canonical" href="https://kframework.org/k-distribution/pl-tutorial/1_k/1_lambda/lesson_5/" />
+
+<!--favicon icon-->
+<link rel="icon" type="image/png" href="../../../../../assets/img/favicon.ico" />
+
+<title>K | Runtime Verification Inc</title>
+
+<!-- <base href="/k/" /> -->
+
+<!--web fonts-->
+<link
+  href="https://fonts.googleapis.com/css?family=Nunito:300,400,600,700,800"
+  rel="stylesheet"
+/>
+<link
+  href="https://fonts.googleapis.com/css?family=Lora:400i"
+  rel="stylesheet"
+/>
+
+<link
+  href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.14.0/css/all.min.css"
+  rel="stylesheet"
+/>
+
+<link href="../../../../../assets/css/index.css" rel="stylesheet" />
+
+<!--[if (gt IE 9) |!(IE)]><!-->
+<!--<link rel="stylesheet" href="/assets/vendor/custom-nav/css/effects/fade-menu.css"/>-->
+<!-- <link rel="stylesheet" href="../../../../../assets/k/vl-nav/css/effects/slide-menu.css" /> -->
+<!--<![endif]-->
+
+  </head>
+
+  <body>
+<header
+  class="navbar navbar-expand navbar-dark flex-column flex-md-row bd-navbar"
+>
+  <a class="logo-link" href="../../../../../index.html">
+    <img
+      class="logo-dark"
+      srcset="../../../../../assets/img/k-logo.png"
+      alt="K"
+      style="height: 48px;"
+    />
+    Semantic Framework
+  </a>
+  <ul class="navbar-nav ml-md-auto">
+    <li class="nav-item">
+      <a
+        class="nav-link pl-2 pr-1 mx-1 py-3 my-n2"
+        href="https://github.com/kframework/k"
+        target="_blank"
+        rel="noopener"
+        aria-label="GitHub"
+      >
+        <i class="fab fa-github"></i>
+      </a>
+    </li>
+  </ul>
+  <a
+    class="btn btn-rv-blue d-none d-lg-inline-block mb-3 mb-md-0 ml-md-3"
+    href="../../../../../downloads"
+    >Download</a
+  >
+</header>
+
+
+    <div class="container-fluid">
+      <div class="row flex-xl-nowrap">
+<div class="col-12 col-md-3 col-xl-2 bd-sidebar mb-3">
+  <form
+    role="search"
+    class="bd-search d-flex align-items-center justify-content-between"
+  >
+    <input
+      type="search"
+      class="form-control"
+      placeholder="Search..."
+      aria-label="Search for..."
+      autocomplete="false"
+      id="search-box"
+    />
+    <button
+      class="btn bd-search-docs-toggle d-md-none p-0 ml-3 collapsed"
+      type="button"
+      aria-label="Toggle docs navigation"
+      style="font-size: 1.4rem"
+    >
+      <i class="fas fa-bars"></i>
+    </button>
+  </form>
+  <nav class="collapse bd-links" aria-label="Main navigation">
+    <div class="bd-toc-item">
+      <a class="bd-toc-link" href="../../../../../">Homepage</a>
+      <a class="bd-toc-link" href="../../../../../downloads">Downloads</a>
+      <a class="bd-toc-link" href="../../../../../k-distribution/pl-tutorial"
+        >K Tutorial</a
+      >
+      <a class="bd-toc-link" href="../../../../../pending-documentation/"
+        >User documentation</a
+      >
+      <a
+        class="bd-toc-link"
+        href="../../../../../k-distribution/include/kframework/builtin/"
+        >Builtins</a
+      >
+      <a class="bd-toc-link" href="../../../../../projects">Projects using K</a>
+    </div>
+  </nav>
+</div>
+
+        <main
+          class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 bd-content"
+          role="main"
+        >
+          <div class="introduction markdown-preview"><!-- Copyright (c) 2012-2019 K Team. All Rights Reserved. --><html><head></head><body><h1 id="adding-builtins%3B-side-conditions">Adding Builtins; Side Conditions</h1>
+<p>We have already added the builtin identifiers (sort <code>Id</code>) to LAMBDA expressions,
+but those had no operations on them.  In this lesson we add integers and
+Booleans to LAMBDA, and extend the builtin operations on them into
+corresponding operations on LAMBDA expressions.  We will also learn how to add
+side conditions to rules, to limit the number of instances where they can
+apply.</p>
+<p>The K tool provides several builtins, which are automatically included in all
+definitions.  These can be used in the languages that we define, typically by
+including them in the desired syntactic categories.  You can also define your
+own builtins in case the provided ones are not suitable for your language
+(e.g., the provided builtin integers and operations on them are arbitrary
+precision).</p>
+<p>For example, to add integers and Booleans as values to our LAMBDA, we have to
+add the productions</p>
+<pre><code>syntax Val ::= Int | Bool
+</code></pre>
+<p><code>Int</code> and <code>Bool</code> are the nonterminals that correspond to these builtins.</p>
+<p>To make use of these builtins, we have to add some arithmetic operation
+constructs to our language.  We prefer to use the conventional infix notation
+for these, and the usual precedences (i.e., multiplication and division bind
+tighter than addition, which binds tighter than relational operators).
+Inspired from <a href="http://www.syntax-definition.org/" target="_blank" rel="noopener">SDF</a>, we use <code>&gt;</code> instead of
+<code>|</code> to state that all the previous constructs bind tighter than all the
+subsequent ones.  See <code>lambda.k</code>.</p>
+<p>The only thing left is to link the LAMBDA arithmetic operations to the
+corresponding builtin operations, when their arguments are evaluated.
+This can be easily done using trivial rewrite rules, as shown in <code>lambda.k</code>.
+In general, the K tool attempts to uniformly add the corresponding builtin
+name as a suffix to all the operations over builtins.  For example, the
+addition over integers is an infix operation named <code>+Int</code>.</p>
+<p>Compile the new <code>lambda.k</code> definition and evaluate some simple arithmetic
+expressions.  For example, if <code>arithmetic.lambda</code> is <code>(1+2*3)/4 &lt;= 1</code>, then</p>
+<pre><code>krun arithmetic.lambda
+</code></pre>
+<p>yields, as expected, <code>true</code>.  Note that the parser took the desired operation
+precedence into account.</p>
+<p>Let us now try to evaluate an expression which performs a wrong computation,
+namely a division by zero.  Consider the expression <code>arithmetic-div-zero.lambda</code>
+which is <code>1/(2/3)</code>.  Since division is strict and <code>2/3</code> evaluates to <code>0</code>, this
+expression reduces to <code>1/0</code>, which further reduces to <code>1 /Int 0</code> by the rule for
+division, which is now stuck (with the current back-end to the K tool).</p>
+<p>In fact, depending upon the back-end that we use to execute K definitions and
+in particular to evaluate expressions over builtins, <code>1 /Int 0</code> can evaluate to
+anything.  It just happens that the current back-end keeps it as an
+irreducible term.  Other K back-ends may reduce it to an explicit error
+element, or issue a segmentation fault followed by a core dump, or throw an
+exception, etc.</p>
+<p>To avoid requesting the back-end to perform an illegal operation, we may use a
+side condition in the rule of division, to make sure it only applies when the
+denominator is non-zero.</p>
+<p>Like in other operational formalisms, the role of the K side
+conditions is to filter the number of instances of the rule.  The notion
+of a <em>side condition</em> comes from logics, where a sharp distinction is made
+between a side condition (cheap) and a <em>premise</em> (expensive).  Premises are
+usually resolved using further (expensive) logical derivations, while side
+conditions are simple (cheap) conditions over the rule meta-variables within
+the underlying mathematical domains (which in K can be extended by the user,
+as we will see in future lessons).  Regarded as a logic, K derives rewrite
+rules from other rewrite rules; therefore, the K side conditions cannot
+contain other rewrites in them (using <code>=&gt;</code>).  This contrasts other rewrite
+engines, for example <a href="http://maude.cs.illinois.edu/" target="_blank" rel="noopener">Maude</a>, which
+allow conditional rules with rewrites in conditions.
+The rationale behind this deliberate restriction in K is twofold:</p>
+<ul>
+<li>On the one hand, general conditional rules require a complex, and thus slower
+rewrite engine, which starts recursive (sometimes exhaustive) rewrite sessions
+to resolve the rewrites in conditions.  In contrast, the side conditions in K
+can be evaluated efficiently by back-ends, for example by evaluating builtin
+expressions and/or by calling builtin functions.</li>
+<li>On the other hand, the semantic definitional philosophy of K is that rule
+premises are unnecessary, so there is no need to provide support for them.</li>
+</ul>
+<p>Having builtin arithmetic is useful, but writing programs with just lambda
+and arithmetic constructs is still a pain.  In the next two lessons we will
+add conditional (<code>if_then_else</code>) and binding (<code>let</code> and <code>letrec</code>) constructs,
+which will allow us to write nicer programs.</p>
+<p>Go to <a href="../lesson_6/">Lesson 6, LAMBDA: Selective Strictness; Anonymous Variables</a>.</p>
+<p><a href="http://youtu.be/T1aI04q3l9U" target="_blank" rel="noopener">MOVIE (out of date) [4&apos;52&quot;]</a></p>
+</body></html></div>
+        </main>
+      </div>
+    </div>
+<!-- The footer is now controlled by the k-web-theme git submodule -->
+<footer id="rvsite-footer" class="app-footer text-md-left text-center">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-md-4 mb-md-0 mb-4">
+        <a href="https://runtimeverification.com/" target="_blank">
+          <picture>
+            <source
+              srcset="
+                https://runtimeverification.com/assets/img/rv-logo-dark.png
+              "
+              media="(prefers-color-scheme: dark)"
+            />
+            <img
+              class="logo-dark"
+              src="https://runtimeverification.com/assets/img/rv-logo.png"
+              alt="Runtime Verification logo"
+              style="height: 32px"
+            /> </picture
+        ></a>
+        <p class="mt-2 text-md-left copyright">
+          <a href="https://goo.gl/maps/NYzr2iKpXMgEmQ2F6" target="_blank"
+            >102 E Main St #500, Urbana, IL 61801</a
+          >
+        </p>
+      </div>
+      <div class="col-md-4 text-md-center mb-md-0 mb-4"></div>
+      <div class="col-md-4 mb-md-0 mb-4 text-md-right">
+        <p class="copyright">2021 © all rights reserved</p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Typist/1.2/typist.min.js"></script>
+    <script src="../../../../../assets/js/index.js"></script>
+    <script>
+      $(function () {
+        // Render youtube video
+        const anchorElements = document.querySelectorAll(".markdown-preview a");
+        for (let i = anchorElements.length - 1; i >= 0; i--) {
+          if (anchorElements.length - 1 - i > 3) {
+            break;
+          }
+          const anchorElement = anchorElements[i];
+          const href = anchorElement.getAttribute("href");
+          if (href.match(/^https?:\/\/youtu.be\//)) {
+            const match = href.match(/^https?:\/\/youtu.be\/(.+?)$/);
+            if (match && match[1]) {
+              const youtubeId = match[1];
+              const $iframe = $(`
+<div style="text-align:center;">
+  <iframe
+    width="560"
+    height="315"
+    src="https://www.youtube.com/embed/${youtubeId}"
+    frameborder="0"
+    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+    allowfullscreen
+    style="max-width: 100%;"
+  ></iframe>
+  <p>The video is out of date</p>
+</div>
+`);
+              $(anchorElement).replaceWith($iframe[0]);
+            }
+          }
+        }
+      });
+    </script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-9LBGDMRG32"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-9LBGDMRG32");
+    </script>
+  </body>
+</html>

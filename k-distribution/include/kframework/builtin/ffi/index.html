@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+<meta charset="utf-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+/>
+<meta
+  name="description"
+  content="Design and implement your programming language and software analysis tools with mathematical rigor."
+/>
+<meta name="keywords" content="runtime, verification, rv, k" />
+<meta name="author" content="K | Runtime Verification Inc" />
+<meta name="robots" content="index, follow" />
+<link rel="canonical" href="https://kframework.org/k-distribution/include/kframework/builtin/ffi/" />
+
+<!--favicon icon-->
+<link rel="icon" type="image/png" href="../../../../../assets/img/favicon.ico" />
+
+<title>K | Runtime Verification Inc</title>
+
+<!-- <base href="/k/" /> -->
+
+<!--web fonts-->
+<link
+  href="https://fonts.googleapis.com/css?family=Nunito:300,400,600,700,800"
+  rel="stylesheet"
+/>
+<link
+  href="https://fonts.googleapis.com/css?family=Lora:400i"
+  rel="stylesheet"
+/>
+
+<link
+  href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.14.0/css/all.min.css"
+  rel="stylesheet"
+/>
+
+<link href="../../../../../assets/css/index.css" rel="stylesheet" />
+
+<!--[if (gt IE 9) |!(IE)]><!-->
+<!--<link rel="stylesheet" href="/assets/vendor/custom-nav/css/effects/fade-menu.css"/>-->
+<!-- <link rel="stylesheet" href="../../../../../assets/k/vl-nav/css/effects/slide-menu.css" /> -->
+<!--<![endif]-->
+
+  </head>
+
+  <body>
+<header
+  class="navbar navbar-expand navbar-dark flex-column flex-md-row bd-navbar"
+>
+  <a class="logo-link" href="../../../../../index.html">
+    <img
+      class="logo-dark"
+      srcset="../../../../../assets/img/k-logo.png"
+      alt="K"
+      style="height: 48px;"
+    />
+    Semantic Framework
+  </a>
+  <ul class="navbar-nav ml-md-auto">
+    <li class="nav-item">
+      <a
+        class="nav-link pl-2 pr-1 mx-1 py-3 my-n2"
+        href="https://github.com/kframework/k"
+        target="_blank"
+        rel="noopener"
+        aria-label="GitHub"
+      >
+        <i class="fab fa-github"></i>
+      </a>
+    </li>
+  </ul>
+  <a
+    class="btn btn-rv-blue d-none d-lg-inline-block mb-3 mb-md-0 ml-md-3"
+    href="../../../../../downloads"
+    >Download</a
+  >
+</header>
+
+
+    <div class="container-fluid">
+      <div class="row flex-xl-nowrap">
+<div class="col-12 col-md-3 col-xl-2 bd-sidebar mb-3">
+  <form
+    role="search"
+    class="bd-search d-flex align-items-center justify-content-between"
+  >
+    <input
+      type="search"
+      class="form-control"
+      placeholder="Search..."
+      aria-label="Search for..."
+      autocomplete="false"
+      id="search-box"
+    />
+    <button
+      class="btn bd-search-docs-toggle d-md-none p-0 ml-3 collapsed"
+      type="button"
+      aria-label="Toggle docs navigation"
+      style="font-size: 1.4rem"
+    >
+      <i class="fas fa-bars"></i>
+    </button>
+  </form>
+  <nav class="collapse bd-links" aria-label="Main navigation">
+    <div class="bd-toc-item">
+      <a class="bd-toc-link" href="../../../../../">Homepage</a>
+      <a class="bd-toc-link" href="../../../../../downloads">Downloads</a>
+      <a class="bd-toc-link" href="../../../../../k-distribution/pl-tutorial"
+        >K Tutorial</a
+      >
+      <a class="bd-toc-link" href="../../../../../pending-documentation/"
+        >User documentation</a
+      >
+      <a
+        class="bd-toc-link"
+        href="../../../../../k-distribution/include/kframework/builtin/"
+        >Builtins</a
+      >
+      <a class="bd-toc-link" href="../../../../../projects">Projects using K</a>
+    </div>
+  </nav>
+</div>
+
+        <main
+          class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 bd-content"
+          role="main"
+        >
+          <div class="introduction markdown-preview"><html><head></head><body><h1 id="k-foreign-function-interface">K Foreign Function Interface</h1>
+<p>The K Foreign Function Interface (FFI) module provides a way to call native
+functions directly from a K semantics using the C ABI. It also provides
+utilities for allocating and deallocating byte buffers with static addresses
+that are suitable for being passed to native code.</p>
+<p>It is built off of the underlying libffi library
+(<a href="https://sourceware.org/libffi/" target="_blank" rel="noopener">https://sourceware.org/libffi/</a>) and is subject to some of the same
+limitations as that library. Bear in mind, because this library exposes
+a number of unsafe C APIs directly, misuse of the library is likely to lead
+to memory corruption in your interpreter and can cause segmentation faults or
+corrupted term representations that lead to undefined behavior at runtime.</p>
+<pre class="language-k"><code><span class="token keyword">require</span> <span class="token string">&quot;domains.md&quot;</span>
+
+<span class="token keyword">module</span> FFI<span class="token operator">-</span>SYNTAX
+  <span class="token keyword">imports</span> LIST
+</code></pre>
+<p>The FFIType sort is used to declare the native C ABI types of operands passed
+to the <code>#ffiCall</code> function. These types roughly correspond to the types
+declared in <code>ffi.h</code> by libffi.</p>
+<pre class="language-k"><code>  <span class="token keyword">syntax</span> FFIType <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">&quot;#void&quot;</span> <span class="token punctuation">[</span><span class="token class-name">klabel</span><span class="token punctuation">(</span>#ffi_void<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token class-name">symbol</span><span class="token punctuation">]</span>
+                  <span class="token operator">|</span> <span class="token string">&quot;#uint8&quot;</span> <span class="token punctuation">[</span><span class="token class-name">klabel</span><span class="token punctuation">(</span>#ffi_uint8<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token class-name">symbol</span><span class="token punctuation">]</span>
+                  <span class="token operator">|</span> <span class="token string">&quot;#sint8&quot;</span> <span class="token punctuation">[</span><span class="token class-name">klabel</span><span class="token punctuation">(</span>#ffi_sint8<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token class-name">symbol</span><span class="token punctuation">]</span>
+                  <span class="token operator">|</span> <span class="token string">&quot;#uint16&quot;</span> <span class="token punctuation">[</span><span class="token class-name">klabel</span><span class="token punctuation">(</span>#ffi_uint16<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token class-name">symbol</span><span class="token punctuation">]</span>
+                  <span class="token operator">|</span> <span class="token string">&quot;#sint16&quot;</span> <span class="token punctuation">[</span><span class="token class-name">klabel</span><span class="token punctuation">(</span>#ffi_sint16<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token class-name">symbol</span><span class="token punctuation">]</span>
+                  <span class="token operator">|</span> <span class="token string">&quot;#uint32&quot;</span> <span class="token punctuation">[</span><span class="token class-name">klabel</span><span class="token punctuation">(</span>#ffi_uint32<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token class-name">symbol</span><span class="token punctuation">]</span>
+                  <span class="token operator">|</span> <span class="token string">&quot;#sint32&quot;</span> <span class="token punctuation">[</span><span class="token class-name">klabel</span><span class="token punctuation">(</span>#ffi_sint32<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token class-name">symbol</span><span class="token punctuation">]</span>
+                  <span class="token operator">|</span> <span class="token string">&quot;#uint64&quot;</span> <span class="token punctuation">[</span><span class="token class-name">klabel</span><span class="token punctuation">(</span>#ffi_uint64<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token class-name">symbol</span><span class="token punctuation">]</span>
+                  <span class="token operator">|</span> <span class="token string">&quot;#sint64&quot;</span> <span class="token punctuation">[</span><span class="token class-name">klabel</span><span class="token punctuation">(</span>#ffi_sint64<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token class-name">symbol</span><span class="token punctuation">]</span>
+                  <span class="token operator">|</span> <span class="token string">&quot;#float&quot;</span> <span class="token punctuation">[</span><span class="token class-name">klabel</span><span class="token punctuation">(</span>#ffi_float<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token class-name">symbol</span><span class="token punctuation">]</span>
+                  <span class="token operator">|</span> <span class="token string">&quot;#double&quot;</span> <span class="token punctuation">[</span><span class="token class-name">klabel</span><span class="token punctuation">(</span>#ffi_double<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token class-name">symbol</span><span class="token punctuation">]</span>
+                  <span class="token operator">|</span> <span class="token string">&quot;#uchar&quot;</span> <span class="token punctuation">[</span><span class="token class-name">klabel</span><span class="token punctuation">(</span>#ffi_uchar<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token class-name">symbol</span><span class="token punctuation">]</span>
+                  <span class="token operator">|</span> <span class="token string">&quot;#schar&quot;</span> <span class="token punctuation">[</span><span class="token class-name">klabel</span><span class="token punctuation">(</span>#ffi_schar<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token class-name">symbol</span><span class="token punctuation">]</span>
+                  <span class="token operator">|</span> <span class="token string">&quot;#ushort&quot;</span> <span class="token punctuation">[</span><span class="token class-name">klabel</span><span class="token punctuation">(</span>#ffi_ushort<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token class-name">symbol</span><span class="token punctuation">]</span>
+                  <span class="token operator">|</span> <span class="token string">&quot;#sshort&quot;</span> <span class="token punctuation">[</span><span class="token class-name">klabel</span><span class="token punctuation">(</span>#ffi_sshort<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token class-name">symbol</span><span class="token punctuation">]</span>
+                  <span class="token operator">|</span> <span class="token string">&quot;#uint&quot;</span> <span class="token punctuation">[</span><span class="token class-name">klabel</span><span class="token punctuation">(</span>#ffi_uint<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token class-name">symbol</span><span class="token punctuation">]</span>
+                  <span class="token operator">|</span> <span class="token string">&quot;#sint&quot;</span> <span class="token punctuation">[</span><span class="token class-name">klabel</span><span class="token punctuation">(</span>#ffi_sint<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token class-name">symbol</span><span class="token punctuation">]</span>
+                  <span class="token operator">|</span> <span class="token string">&quot;#ulong&quot;</span> <span class="token punctuation">[</span><span class="token class-name">klabel</span><span class="token punctuation">(</span>#ffi_ulong<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token class-name">symbol</span><span class="token punctuation">]</span>
+                  <span class="token operator">|</span> <span class="token string">&quot;#slong&quot;</span> <span class="token punctuation">[</span><span class="token class-name">klabel</span><span class="token punctuation">(</span>#ffi_slong<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token class-name">symbol</span><span class="token punctuation">]</span>
+                  <span class="token operator">|</span> <span class="token string">&quot;#longdouble&quot;</span> <span class="token punctuation">[</span><span class="token class-name">klabel</span><span class="token punctuation">(</span>#ffi_longdouble<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token class-name">symbol</span><span class="token punctuation">]</span>
+                  <span class="token operator">|</span> <span class="token string">&quot;#pointer&quot;</span> <span class="token punctuation">[</span><span class="token class-name">klabel</span><span class="token punctuation">(</span>#ffi_pointer<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token class-name">symbol</span><span class="token punctuation">]</span>
+                  <span class="token operator">|</span> <span class="token string">&quot;#complexfloat&quot;</span> <span class="token punctuation">[</span><span class="token class-name">klabel</span><span class="token punctuation">(</span>#ffi_complexfloat<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token class-name">symbol</span><span class="token punctuation">]</span>
+                  <span class="token operator">|</span> <span class="token string">&quot;#complexdouble&quot;</span> <span class="token punctuation">[</span><span class="token class-name">klabel</span><span class="token punctuation">(</span>#ffi_complexdouble<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token class-name">symbol</span><span class="token punctuation">]</span>
+                  <span class="token operator">|</span> <span class="token string">&quot;#complexlongdouble&quot;</span> <span class="token punctuation">[</span><span class="token class-name">klabel</span><span class="token punctuation">(</span>#ffi_complexlongdouble<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token class-name">symbol</span><span class="token punctuation">]</span>
+                  <span class="token operator">|</span> <span class="token string">&quot;#struct&quot;</span> <span class="token string">&quot;(&quot;</span> List <span class="token string">&quot;)&quot;</span> <span class="token punctuation">[</span><span class="token class-name">klabel</span><span class="token punctuation">(</span>#ffi_struct<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token class-name">symbol</span><span class="token punctuation">]</span>
+<span class="token keyword">endmodule</span>
+
+<span class="token keyword">module</span> FFI
+  <span class="token keyword">imports</span> FFI<span class="token operator">-</span>SYNTAX
+  <span class="token keyword">imports</span> BYTES
+  <span class="token keyword">imports</span> STRING
+
+</code></pre>
+<h2 id="ffi-calls">FFI Calls</h2>
+<p>The <code>#ffiCall</code> functions are designed to call a native C ABI function and
+return a native result. They come in three variants:</p>
+<h3 id="non-variadic">Non-variadic</h3>
+<p>In the first variant, <code>#ffiCall(Address, Args, ArgTypes, ReturnType)</code> takes
+an integer address of a function (which can be obtained from
+<code>#functionAddress</code>), a <code>List</code> of <code>Bytes</code> containing the arguments of the
+function, a <code>List</code> of <code>FFIType</code>s containing the types of the parameters of the
+function, and an <code>FFIType</code> containing the return type of the function, and
+returns the return value of the function as a <code>Bytes</code>.</p>
+<pre class="language-k"><code>  <span class="token keyword">syntax</span> Bytes <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">&quot;#ffiCall&quot;</span> <span class="token string">&quot;(&quot;</span> <span class="token keyword">Int</span> <span class="token string">&quot;,&quot;</span> List <span class="token string">&quot;,&quot;</span> List <span class="token string">&quot;,&quot;</span> FFIType <span class="token string">&quot;)&quot;</span> <span class="token punctuation">[</span>function<span class="token punctuation">,</span> hook<span class="token punctuation">(</span>FFI<span class="token punctuation">.</span>call<span class="token punctuation">)</span><span class="token punctuation">]</span>
+</code></pre>
+<h3 id="variadic">Variadic</h3>
+<p>In the second variant,
+<code>#ffiCall(Address, Args, FixedTypes, VariadicTypes, ReturnType</code> takes an
+integer address of a function, a <code>List</code> of <code>Bytes</code> containing the arguments
+of the call, a <code>List</code> of <code>FFIType</code>s containing the types of the fixed
+parameters of the function, a <code>List</code> of <code>FFIType</code>s containing the types of the
+variadic parameters of the function, and an <code>FFIType</code> containing the return
+type of the function, and returns the return value of the function as a
+<code>Bytes</code>.</p>
+<pre class="language-k"><code>  <span class="token keyword">syntax</span> Bytes <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">&quot;#ffiCall&quot;</span> <span class="token string">&quot;(&quot;</span> <span class="token keyword">Int</span> <span class="token string">&quot;,&quot;</span> List <span class="token string">&quot;,&quot;</span> List <span class="token string">&quot;,&quot;</span> List <span class="token string">&quot;,&quot;</span> FFIType <span class="token string">&quot;)&quot;</span> <span class="token punctuation">[</span>function<span class="token punctuation">,</span> hook<span class="token punctuation">(</span>FFI<span class="token punctuation">.</span>call_variadic<span class="token punctuation">)</span><span class="token punctuation">]</span>
+</code></pre>
+<h3 id="generic">Generic</h3>
+<p>In the third variant,
+<code>#ffiCall(IsVariadic, Address, Args, ArgTypes, NFixed, ReturnType</code> takes
+a boolean indicating whether the function is variadic or not, an integer
+address of a function, a <code>List</code> of <code>Bytes</code> containing the arguments of the
+call, a <code>List</code> of <code>FFIType</code>s containing the parameter typess of the call
+followed by the types of the variadic arguments of the call, if any, an <code>Int</code>
+containing how many of the arguments of the call are fixed or not, and an
+<code>FFIType</code> containing the return type of the function, and returns the return
+value of the function as a <code>Bytes</code>.</p>
+<pre class="language-k"><code>  <span class="token keyword">syntax</span> Bytes <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">&quot;#ffiCall&quot;</span> <span class="token string">&quot;(&quot;</span> <span class="token keyword">Bool</span> <span class="token string">&quot;,&quot;</span> <span class="token keyword">Int</span> <span class="token string">&quot;,&quot;</span> List <span class="token string">&quot;,&quot;</span> List <span class="token string">&quot;,&quot;</span> <span class="token keyword">Int</span> <span class="token string">&quot;,&quot;</span> FFIType <span class="token string">&quot;)&quot;</span> <span class="token punctuation">[</span>function<span class="token punctuation">]</span>
+
+  <span class="token keyword">rule</span> #ffiCall<span class="token punctuation">(</span><span class="token boolean">false</span><span class="token punctuation">,</span> Addr<span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token keyword">Int</span><span class="token punctuation">,</span> Args<span class="token punctuation">:</span><span class="token punctuation">:</span>List<span class="token punctuation">,</span> Types<span class="token punctuation">:</span><span class="token punctuation">:</span>List<span class="token punctuation">,</span> _<span class="token punctuation">,</span> Ret<span class="token punctuation">:</span><span class="token punctuation">:</span>FFIType<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> #ffiCall<span class="token punctuation">(</span>Addr<span class="token punctuation">,</span> Args<span class="token punctuation">,</span> Types<span class="token punctuation">,</span> Ret<span class="token punctuation">)</span>
+  <span class="token keyword">rule</span> #ffiCall<span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">,</span> Addr<span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token keyword">Int</span><span class="token punctuation">,</span> Args<span class="token punctuation">:</span><span class="token punctuation">:</span>List<span class="token punctuation">,</span> Types<span class="token punctuation">:</span><span class="token punctuation">:</span>List<span class="token punctuation">,</span> NFixed<span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token keyword">Int</span><span class="token punctuation">,</span> Ret<span class="token punctuation">:</span><span class="token punctuation">:</span>FFIType<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> #ffiCall<span class="token punctuation">(</span>Addr<span class="token punctuation">,</span> Args<span class="token punctuation">,</span> range<span class="token punctuation">(</span>Types<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> size<span class="token punctuation">(</span>Types<span class="token punctuation">)</span> <span class="token operator">-</span><span class="token keyword">Int</span> NFixed<span class="token punctuation">)</span><span class="token punctuation">,</span> range<span class="token punctuation">(</span>Types<span class="token punctuation">,</span> NFixed<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">,</span> Ret<span class="token punctuation">)</span>
+</code></pre>
+<h2 id="symbol-lookup">Symbol Lookup</h2>
+<p>The FFI module provides a mechanism to look up any function symbol and return
+that function&apos;s address.</p>
+<pre class="language-k"><code>  <span class="token keyword">syntax</span> <span class="token keyword">Int</span> <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">&quot;#functionAddress&quot;</span> <span class="token string">&quot;(&quot;</span> <span class="token keyword">String</span> <span class="token string">&quot;)&quot;</span> <span class="token punctuation">[</span>function<span class="token punctuation">,</span> hook<span class="token punctuation">(</span>FFI<span class="token punctuation">.</span>address<span class="token punctuation">)</span><span class="token punctuation">]</span>
+</code></pre>
+<h2 id="direct-memory-management">Direct Memory Management</h2>
+<p>Most memory used by the LLVM backend to represent terms is managed
+automatically via garbage collection. However, a consequence of this is that
+a particular term does not have a fixed address across its entire lifetime
+in most cases. Sometimes this is undesirable, especially if you intend for
+the address of the memory to be taken by the semantics or if you intend
+to pass this memory directly to native code. As a result, the FFI module
+exposes the following unsafe APIs for memory management. Note that use of
+these APIs leaves the burden of memory management completely on the user,
+and thus misuse of these functions can lead to things like use-after-free
+and other memory corruption bugs.</p>
+<h3 id="allocation">Allocation</h3>
+<p><code>#alloc(Key, Size, Align)</code> will allocate <code>Size</code> bytes with an alignment
+requirement of <code>Align</code> (which must be a power of two), and return it as a
+<code>Bytes</code> term. The memory is uniquely identified by its key and that key will
+be used later to free the memory. The memory is not implicitly freed by garbage
+collection; failure to call <code>#free</code> on the memory at a later date can lead to
+memory leaks.</p>
+<pre class="language-k"><code>  <span class="token keyword">syntax</span> Bytes <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">&quot;#alloc&quot;</span> <span class="token string">&quot;(&quot;</span> KItem <span class="token string">&quot;,&quot;</span> <span class="token keyword">Int</span> <span class="token string">&quot;,&quot;</span> <span class="token keyword">Int</span> <span class="token string">&quot;)&quot;</span> <span class="token punctuation">[</span>function<span class="token punctuation">,</span> hook<span class="token punctuation">(</span>FFI<span class="token punctuation">.</span>alloc<span class="token punctuation">)</span><span class="token punctuation">]</span>
+</code></pre>
+<h3 id="addressing">Addressing</h3>
+<p><code>#addess(B)</code> will return an <code>Int</code> representing the address of the first byte of
+B, which must be a <code>Bytes</code>. Unless the <code>Bytes</code> term was allocated by <code>#alloc</code>,
+the return value is unspecified and may not be the same across multipl
+invocations on the same byte buffer. However, it is guaranteed that memory
+allocated by <code>#alloc</code> will have the same address throughout its lifetime.</p>
+<pre class="language-k"><code>  <span class="token keyword">syntax</span> <span class="token keyword">Int</span> <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">&quot;#address&quot;</span> <span class="token string">&quot;(&quot;</span> Bytes <span class="token string">&quot;)&quot;</span> <span class="token punctuation">[</span>function<span class="token punctuation">,</span> hook<span class="token punctuation">(</span>FFI<span class="token punctuation">.</span>bytes_address<span class="token punctuation">)</span><span class="token punctuation">]</span>
+</code></pre>
+<h3 id="deallocation">Deallocation</h3>
+<p><code>#free(Key)</code> will free the memory of the <code>Bytes</code> object that was allocated
+by a previous call to <code>#alloc</code>. If <code>Key</code> was not used in a previous call to
+<code>#alloc</code>, or the memory was already freed, no action is taken. It will generate
+undefined behavior if the <code>Bytes</code> term returned by the previous call to
+<code>#alloc</code> is still referenced by any other term in the configuration or a
+currently evaluating rule. The function returns <code>.K</code>.</p>
+<pre class="language-k"><code>  <span class="token keyword">syntax</span> K <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">&quot;#free&quot;</span> <span class="token string">&quot;(&quot;</span> KItem <span class="token string">&quot;)&quot;</span> <span class="token punctuation">[</span>function<span class="token punctuation">,</span> hook<span class="token punctuation">(</span>FFI<span class="token punctuation">.</span>free<span class="token punctuation">)</span><span class="token punctuation">]</span>
+</code></pre>
+<h3 id="reading">Reading</h3>
+<p><code>#nativeRead(Addr, Mem)</code> will read native memory at address <code>Addr</code> into <code>Mem</code>,
+reading exactly <code>lengthBytes(Mem)</code> bytes. This will generate undefined behavior
+if <code>Addr</code> does not point to a readable segment of memory at least
+<code>lengthBytes(Mem)</code> bytes long.</p>
+<pre class="language-k"><code>  <span class="token keyword">syntax</span> K <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">&quot;#nativeRead&quot;</span> <span class="token string">&quot;(&quot;</span> <span class="token keyword">Int</span> <span class="token string">&quot;,&quot;</span> Bytes <span class="token string">&quot;)&quot;</span> <span class="token punctuation">[</span>function<span class="token punctuation">,</span> hook<span class="token punctuation">(</span>FFI<span class="token punctuation">.</span>read<span class="token punctuation">)</span><span class="token punctuation">]</span>
+</code></pre>
+<h3 id="writing">Writing</h3>
+<p><code>#nativeWrite(Addr, Mem)</code> will write the contents of <code>Mem</code> to native memory at
+address <code>Addr</code>. The memory will be read prior to being written, and a write
+will only happen if the memory has a different value than the current value of
+<code>Mem</code>. This will generate undefined behavior if <code>Addr</code> does not point to a
+readable segment of memory at least <code>lengthBytes(Mem)</code> bytes long, or if the
+memory at address <code>Addr</code> has a different value than currently contained in
+<code>Mem</code>, and the memory in question is not writeable.</p>
+<pre class="language-k"><code>  <span class="token keyword">syntax</span> K <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">&quot;#nativeWrite&quot;</span> <span class="token string">&quot;(&quot;</span> <span class="token keyword">Int</span> <span class="token string">&quot;,&quot;</span> Bytes <span class="token string">&quot;)&quot;</span> <span class="token punctuation">[</span>function<span class="token punctuation">,</span> hook<span class="token punctuation">(</span>FFI<span class="token punctuation">.</span>write<span class="token punctuation">)</span><span class="token punctuation">]</span>
+<span class="token keyword">endmodule</span>
+</code></pre>
+</body></html></div>
+        </main>
+      </div>
+    </div>
+<!-- The footer is now controlled by the k-web-theme git submodule -->
+<footer id="rvsite-footer" class="app-footer text-md-left text-center">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-md-4 mb-md-0 mb-4">
+        <a href="https://runtimeverification.com/" target="_blank">
+          <picture>
+            <source
+              srcset="
+                https://runtimeverification.com/assets/img/rv-logo-dark.png
+              "
+              media="(prefers-color-scheme: dark)"
+            />
+            <img
+              class="logo-dark"
+              src="https://runtimeverification.com/assets/img/rv-logo.png"
+              alt="Runtime Verification logo"
+              style="height: 32px"
+            /> </picture
+        ></a>
+        <p class="mt-2 text-md-left copyright">
+          <a href="https://goo.gl/maps/NYzr2iKpXMgEmQ2F6" target="_blank"
+            >102 E Main St #500, Urbana, IL 61801</a
+          >
+        </p>
+      </div>
+      <div class="col-md-4 text-md-center mb-md-0 mb-4"></div>
+      <div class="col-md-4 mb-md-0 mb-4 text-md-right">
+        <p class="copyright">2021 © all rights reserved</p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Typist/1.2/typist.min.js"></script>
+    <script src="../../../../../assets/js/index.js"></script>
+    <script>
+      $(function () {
+        // Render youtube video
+        const anchorElements = document.querySelectorAll(".markdown-preview a");
+        for (let i = anchorElements.length - 1; i >= 0; i--) {
+          if (anchorElements.length - 1 - i > 3) {
+            break;
+          }
+          const anchorElement = anchorElements[i];
+          const href = anchorElement.getAttribute("href");
+          if (href.match(/^https?:\/\/youtu.be\//)) {
+            const match = href.match(/^https?:\/\/youtu.be\/(.+?)$/);
+            if (match && match[1]) {
+              const youtubeId = match[1];
+              const $iframe = $(`
+<div style="text-align:center;">
+  <iframe
+    width="560"
+    height="315"
+    src="https://www.youtube.com/embed/${youtubeId}"
+    frameborder="0"
+    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+    allowfullscreen
+    style="max-width: 100%;"
+  ></iframe>
+  <p>The video is out of date</p>
+</div>
+`);
+              $(anchorElement).replaceWith($iframe[0]);
+            }
+          }
+        }
+      });
+    </script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-9LBGDMRG32"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-9LBGDMRG32");
+    </script>
+  </body>
+</html>
