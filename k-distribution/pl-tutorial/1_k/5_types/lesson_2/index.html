@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+<meta charset="utf-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+/>
+<meta
+  name="description"
+  content="Design and implement your programming language and software analysis tools with mathematical rigor."
+/>
+<meta name="keywords" content="runtime, verification, rv, k" />
+<meta name="author" content="K | Runtime Verification Inc" />
+<meta name="robots" content="index, follow" />
+<link rel="canonical" href="https://kframework.org/k-distribution/pl-tutorial/1_k/5_types/lesson_2/" />
+
+<!--favicon icon-->
+<link rel="icon" type="image/png" href="../../../../../assets/img/favicon.ico" />
+
+<title>K | Runtime Verification Inc</title>
+
+<!-- <base href="/k/" /> -->
+
+<!--web fonts-->
+<link
+  href="https://fonts.googleapis.com/css?family=Nunito:300,400,600,700,800"
+  rel="stylesheet"
+/>
+<link
+  href="https://fonts.googleapis.com/css?family=Lora:400i"
+  rel="stylesheet"
+/>
+
+<link
+  href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.14.0/css/all.min.css"
+  rel="stylesheet"
+/>
+
+<link href="../../../../../assets/css/index.css" rel="stylesheet" />
+
+<!--[if (gt IE 9) |!(IE)]><!-->
+<!--<link rel="stylesheet" href="/assets/vendor/custom-nav/css/effects/fade-menu.css"/>-->
+<!-- <link rel="stylesheet" href="../../../../../assets/k/vl-nav/css/effects/slide-menu.css" /> -->
+<!--<![endif]-->
+
+  </head>
+
+  <body>
+<header
+  class="navbar navbar-expand navbar-dark flex-column flex-md-row bd-navbar"
+>
+  <a class="logo-link" href="../../../../../index.html">
+    <img
+      class="logo-dark"
+      srcset="../../../../../assets/img/k-logo.png"
+      alt="K"
+      style="height: 48px;"
+    />
+    Semantic Framework
+  </a>
+  <ul class="navbar-nav ml-md-auto">
+    <li class="nav-item">
+      <a
+        class="nav-link pl-2 pr-1 mx-1 py-3 my-n2"
+        href="https://github.com/kframework/k"
+        target="_blank"
+        rel="noopener"
+        aria-label="GitHub"
+      >
+        <i class="fab fa-github"></i>
+      </a>
+    </li>
+  </ul>
+  <a
+    class="btn btn-rv-blue d-none d-lg-inline-block mb-3 mb-md-0 ml-md-3"
+    href="../../../../../downloads"
+    >Download</a
+  >
+</header>
+
+
+    <div class="container-fluid">
+      <div class="row flex-xl-nowrap">
+<div class="col-12 col-md-3 col-xl-2 bd-sidebar mb-3">
+  <form
+    role="search"
+    class="bd-search d-flex align-items-center justify-content-between"
+  >
+    <input
+      type="search"
+      class="form-control"
+      placeholder="Search..."
+      aria-label="Search for..."
+      autocomplete="false"
+      id="search-box"
+    />
+    <button
+      class="btn bd-search-docs-toggle d-md-none p-0 ml-3 collapsed"
+      type="button"
+      aria-label="Toggle docs navigation"
+      style="font-size: 1.4rem"
+    >
+      <i class="fas fa-bars"></i>
+    </button>
+  </form>
+  <nav class="collapse bd-links" aria-label="Main navigation">
+    <div class="bd-toc-item">
+      <a class="bd-toc-link" href="../../../../../">Homepage</a>
+      <a class="bd-toc-link" href="../../../../../downloads">Downloads</a>
+      <a class="bd-toc-link" href="../../../../../k-distribution/k-tutorial"
+        >K Tutorial</a
+      >
+      <a class="bd-toc-link" href="../../../../../k-distribution/pl-tutorial"
+        >K PL Tutorial</a
+      >
+      <a class="bd-toc-link" href="../../../../../pending-documentation/"
+        >User documentation</a
+      >
+      <a
+        class="bd-toc-link"
+        href="../../../../../k-distribution/include/kframework/builtin/"
+        >Builtins</a
+      >
+      <a class="bd-toc-link" href="../../../../../projects">Projects using K</a>
+    </div>
+  </nav>
+</div>
+
+        <main
+          class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 bd-content"
+          role="main"
+        >
+          <div class="introduction markdown-preview"><!-- Copyright (c) 2014-2019 K Team. All Rights Reserved. --><html><head></head><body><h1 id="substitution-based-higher-order-type-systems">Substitution-Based Higher-Order Type Systems</h1>
+<p>In this lesson you learn how to define a substitution-based type system for
+a higher-order language, namely the LAMBDA language defined in Part 1 of the
+tutorial.</p>
+<p>Let us copy the definition of LAMBDA from Part 1 of the tutorial, Lesson 8.
+We are going to modify it into a type systems for LAMBDA.</p>
+<p>Before we start, it is important to clarify an important detail, namely that
+our type system will yield a type checker when executed, not a type
+inferencer.  In particular, we are going to change the LAMBDA syntax
+to allow us to associate a type to each declared variable.  The
+constructs which declare variables are <code>lambda</code>, <code>let</code>, <code>letrec</code> and <code>mu</code>.
+The syntax of all these will therefore change.</p>
+<p>Since here we are not interested in a LAMBDA semantics anymore, we take the
+freedom to eliminate the <code>Val</code> syntactic category, our previous results.
+Our new results are going to be the types, because programs will now reduce
+to their types.</p>
+<p>As explained, the syntax of the <code>lambda</code> construct needs to change, to also
+declare the type of the variable that it binds.  We add the new syntactic
+category <code>Type</code>, with the following constructs: <code>int</code>, <code>bool</code>, the function
+type (which gives it its higher-order status), and parentheses as bracket.
+Also, we make types our K results.</p>
+<p>We are now ready to define the typing rules.</p>
+<p>Let us start with the typing rule for lambda abstraction: <code>lambda X : T . E</code>
+types to the function type <code>T -&gt; T&apos;</code>, where <code>T&apos;</code> is the type obtained by further
+typing <code>E[T/X]</code>.  This can be elegantly achieved by reducing the lambda
+abstraction to <code>T -&gt; E[T/X]</code>, provided that we extend the function type construct
+to take expressions, not only types, as arguments, and to be strict.
+This can be easily achieved by redeclaring it as a strict expression construct
+(strictness in the second argument would suffice in this example, but it is
+more uniform to define it strict overall).</p>
+<p>The typing rule for application is as simple as it can get: <code>(T1-&gt;T2) T1 =&gt; T2</code>.</p>
+<p>Let us now give the typing rules of arithmetic and Boolean expression
+constructs.  First, let us get rid of <code>Val</code>.  Second, rewrite each value to its
+type, similarly to the type system for IMP++ in the previous lesson.  Third,
+replace each semantic rule by its typing rule.  Fourth, make sure you
+do not forget to subsort <code>Type</code> to <code>Exp</code>, so your rules above will parse.</p>
+<p>The typing policy of the conditional statement is that its first argument
+should type to <code>bool</code> and its other two arguments should type to the same type
+<code>T</code>, which will also be the result type of the conditional.  So we make the
+conditional construct <code>strict</code> in all its three arguments and we write the
+obvious rule: <code>if bool then T:Type else T =&gt; T</code>.  We want a runtime check that
+the latter arguments are actually typed, so we write <code>T:Type</code>.</p>
+<p>There is nothing special about <code>let</code>, except that we have to make sure we
+change its syntax to account for the type of the variable that it binds.
+This rule is a macro, so the <code>let</code> is desugared statically.</p>
+<p>Similarly, the syntax of <code>letrec</code> and <code>mu</code> needs to change to account for the
+type of the variable that they bind.  The typing of <code>letrec</code> remains based on
+its desugaring to <code>mu</code>; we have to make sure the types are also included now.</p>
+<p>The typing policy of <code>mu</code> is that its body should type to the same type <code>T</code> of
+its variable, which is also the type of the entire <code>mu</code> expression.  This can
+be elegantly achieved by rewriting it to <code>(T -&gt; T) E[T/X]</code>.  Recall that
+application is strict, so <code>E[T/X]</code> will be eventually reduced to its type.
+Then the application types correctly only if that type is also <code>T</code>, and in
+that case the result type will also be <code>T</code>.</p>
+<p><code>kompile</code> and <code>krun</code> some programs.  You can, for example, take the LAMBDA
+programs from the first tutorial, modify them by adding types to their
+variable declarations, and then type check them using <code>krun</code>.</p>
+<p>In the next lesson we will discuss an environment-based type system
+for LAMBDA.</p>
+<p>Go to <a href="../lesson_3/">Lesson 3, Type Systems: Environment-Based Higher-Order Type Systems</a>.</p>
+<p><a href="https://youtu.be/7P2QtR9jM2o" target="_blank" rel="noopener">MOVIE (out of date) [6&apos;52&quot;]</a></p>
+</body></html></div>
+        </main>
+      </div>
+    </div>
+<!-- The footer is now controlled by the k-web-theme git submodule -->
+<footer id="rvsite-footer" class="app-footer text-md-left text-center">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-md-4 mb-md-0 mb-4">
+        <a href="https://runtimeverification.com/" target="_blank">
+          <picture>
+            <source
+              srcset="
+                https://runtimeverification.com/assets/img/rv-logo-dark.png
+              "
+              media="(prefers-color-scheme: dark)"
+            />
+            <img
+              class="logo-dark"
+              src="https://runtimeverification.com/assets/img/rv-logo.png"
+              alt="Runtime Verification logo"
+              style="height: 32px"
+            /> </picture
+        ></a>
+        <p class="mt-2 text-md-left copyright">
+          <a href="https://goo.gl/maps/NYzr2iKpXMgEmQ2F6" target="_blank"
+            >102 E Main St #500, Urbana, IL 61801</a
+          >
+        </p>
+      </div>
+      <div class="col-md-4 text-md-center mb-md-0 mb-4"></div>
+      <div class="col-md-4 mb-md-0 mb-4 text-md-right">
+        <p class="copyright">2021 © all rights reserved</p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Typist/1.2/typist.min.js"></script>
+    <script src="../../../../../assets/js/index.js"></script>
+    <script>
+      $(function () {
+        // Render youtube video
+        const anchorElements = document.querySelectorAll(".markdown-preview a");
+        for (let i = anchorElements.length - 1; i >= 0; i--) {
+          if (anchorElements.length - 1 - i > 3) {
+            break;
+          }
+          const anchorElement = anchorElements[i];
+          const href = anchorElement.getAttribute("href");
+          if (href.match(/^https?:\/\/youtu.be\//)) {
+            const match = href.match(/^https?:\/\/youtu.be\/(.+?)$/);
+            if (match && match[1]) {
+              const youtubeId = match[1];
+              const $iframe = $(`
+<div style="text-align:center;">
+  <iframe
+    width="560"
+    height="315"
+    src="https://www.youtube.com/embed/${youtubeId}"
+    frameborder="0"
+    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+    allowfullscreen
+    style="max-width: 100%;"
+  ></iframe>
+  <p>The video is out of date</p>
+</div>
+`);
+              $(anchorElement).replaceWith($iframe[0]);
+            }
+          }
+        }
+      });
+    </script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-9LBGDMRG32"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-9LBGDMRG32");
+    </script>
+  </body>
+</html>

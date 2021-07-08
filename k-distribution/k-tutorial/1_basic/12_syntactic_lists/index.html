@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+<meta charset="utf-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+/>
+<meta
+  name="description"
+  content="Design and implement your programming language and software analysis tools with mathematical rigor."
+/>
+<meta name="keywords" content="runtime, verification, rv, k" />
+<meta name="author" content="K | Runtime Verification Inc" />
+<meta name="robots" content="index, follow" />
+<link rel="canonical" href="https://kframework.org/k-distribution/k-tutorial/1_basic/12_syntactic_lists/" />
+
+<!--favicon icon-->
+<link rel="icon" type="image/png" href="../../../../assets/img/favicon.ico" />
+
+<title>K | Runtime Verification Inc</title>
+
+<!-- <base href="/k/" /> -->
+
+<!--web fonts-->
+<link
+  href="https://fonts.googleapis.com/css?family=Nunito:300,400,600,700,800"
+  rel="stylesheet"
+/>
+<link
+  href="https://fonts.googleapis.com/css?family=Lora:400i"
+  rel="stylesheet"
+/>
+
+<link
+  href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.14.0/css/all.min.css"
+  rel="stylesheet"
+/>
+
+<link href="../../../../assets/css/index.css" rel="stylesheet" />
+
+<!--[if (gt IE 9) |!(IE)]><!-->
+<!--<link rel="stylesheet" href="/assets/vendor/custom-nav/css/effects/fade-menu.css"/>-->
+<!-- <link rel="stylesheet" href="../../../../assets/k/vl-nav/css/effects/slide-menu.css" /> -->
+<!--<![endif]-->
+
+  </head>
+
+  <body>
+<header
+  class="navbar navbar-expand navbar-dark flex-column flex-md-row bd-navbar"
+>
+  <a class="logo-link" href="../../../../index.html">
+    <img
+      class="logo-dark"
+      srcset="../../../../assets/img/k-logo.png"
+      alt="K"
+      style="height: 48px;"
+    />
+    Semantic Framework
+  </a>
+  <ul class="navbar-nav ml-md-auto">
+    <li class="nav-item">
+      <a
+        class="nav-link pl-2 pr-1 mx-1 py-3 my-n2"
+        href="https://github.com/kframework/k"
+        target="_blank"
+        rel="noopener"
+        aria-label="GitHub"
+      >
+        <i class="fab fa-github"></i>
+      </a>
+    </li>
+  </ul>
+  <a
+    class="btn btn-rv-blue d-none d-lg-inline-block mb-3 mb-md-0 ml-md-3"
+    href="../../../../downloads"
+    >Download</a
+  >
+</header>
+
+
+    <div class="container-fluid">
+      <div class="row flex-xl-nowrap">
+<div class="col-12 col-md-3 col-xl-2 bd-sidebar mb-3">
+  <form
+    role="search"
+    class="bd-search d-flex align-items-center justify-content-between"
+  >
+    <input
+      type="search"
+      class="form-control"
+      placeholder="Search..."
+      aria-label="Search for..."
+      autocomplete="false"
+      id="search-box"
+    />
+    <button
+      class="btn bd-search-docs-toggle d-md-none p-0 ml-3 collapsed"
+      type="button"
+      aria-label="Toggle docs navigation"
+      style="font-size: 1.4rem"
+    >
+      <i class="fas fa-bars"></i>
+    </button>
+  </form>
+  <nav class="collapse bd-links" aria-label="Main navigation">
+    <div class="bd-toc-item">
+      <a class="bd-toc-link" href="../../../../">Homepage</a>
+      <a class="bd-toc-link" href="../../../../downloads">Downloads</a>
+      <a class="bd-toc-link" href="../../../../k-distribution/k-tutorial"
+        >K Tutorial</a
+      >
+      <a class="bd-toc-link" href="../../../../k-distribution/pl-tutorial"
+        >K PL Tutorial</a
+      >
+      <a class="bd-toc-link" href="../../../../pending-documentation/"
+        >User documentation</a
+      >
+      <a
+        class="bd-toc-link"
+        href="../../../../k-distribution/include/kframework/builtin/"
+        >Builtins</a
+      >
+      <a class="bd-toc-link" href="../../../../projects">Projects using K</a>
+    </div>
+  </nav>
+</div>
+
+        <main
+          class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 bd-content"
+          role="main"
+        >
+          <div class="introduction markdown-preview"><html><head></head><body><h1 id="lesson-1.12%3A-syntactic-lists">Lesson 1.12: Syntactic Lists</h1>
+<p>The purpose of this lesson is to explain how K provides support for syntactic
+repetition through the use of the <code>List{}</code> and <code>NeList{}</code> constructs,
+generally called <strong>syntactic lists</strong>.</p>
+<h2 id="the-list%7B%7D-construct">The <code>List{}</code> construct</h2>
+<p>Sometimes, when defining a grammar in K, it is useful to define a syntactic
+construct consisting of an arbitrary-length sequence of items. For example,
+you might wish to define a function call construct, and need to express a way
+of passing arguments to the function. You can in theory simply define these
+productions using ordinary constructors, but it can be tricky to get the syntax
+exactly right in K without a lot of tedious glue code.</p>
+<p>For this reason, K provides a way of specifying that a non-terminal represents
+a syntactic list (<code>lesson-12-a.k</code>):</p>
+<pre class="language-k"><code><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">12</span><span class="token operator">-</span>A<span class="token operator">-</span>SYNTAX
+  <span class="token keyword">imports</span> INT<span class="token operator">-</span>SYNTAX
+
+  <span class="token keyword">syntax</span> Ints <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> List<span class="token punctuation">{</span><span class="token keyword">Int</span><span class="token punctuation">,</span><span class="token string">&quot;,&quot;</span><span class="token punctuation">}</span>
+<span class="token keyword">endmodule</span>
+
+<span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">12</span><span class="token operator">-</span>A
+  <span class="token keyword">imports</span> LESSON<span class="token operator">-</span><span class="token number">12</span><span class="token operator">-</span>A<span class="token operator">-</span>SYNTAX
+<span class="token keyword">endmodule</span>
+</code></pre>
+<p>Note that instead of a sequence of terminals and non-terminals, the right hand
+side of the <code>Ints</code> production contains the symbol <code>List</code> followed by two items
+in curly braces. The first item is the non-terminal which is the element type
+of the list, and the second item is a terminal representing the separator of
+the list. As a special case, lists which are separated only by whitespace can
+be specified with a separator of <code>&quot;&quot;</code>.</p>
+<p>This <code>List{}</code> construct is roughly equivalent to the following definition
+(<code>lesson-12-b.k</code>):</p>
+<pre class="language-k"><code><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">12</span><span class="token operator">-</span>B<span class="token operator">-</span>SYNTAX
+  <span class="token keyword">imports</span> INT<span class="token operator">-</span>SYNTAX
+
+  <span class="token keyword">syntax</span> Ints <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token keyword">Int</span> <span class="token string">&quot;,&quot;</span> Ints <span class="token operator">|</span> <span class="token string">&quot;.Ints&quot;</span>
+<span class="token keyword">endmodule</span>
+
+<span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">12</span><span class="token operator">-</span>B
+  <span class="token keyword">imports</span> LESSON<span class="token operator">-</span><span class="token number">12</span><span class="token operator">-</span>B<span class="token operator">-</span>SYNTAX
+<span class="token keyword">endmodule</span>
+</code></pre>
+<p>As you can see, the <code>List{}</code> construct represents a cons-list with an element
+at the head and another list at the tail. The empty list is represented by
+a <code>.</code> followed by the sort of the list.</p>
+<p>However, the <code>List{}</code> construct provides several key syntactic conveniences
+over the above definition. First of all, when writing a list in a rule,
+explicitly writing the terminator is not always required. For example, consider
+the following additional module (<code>lesson-12-c.k</code>):</p>
+<pre class="language-k"><code><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">12</span><span class="token operator">-</span>C
+  <span class="token keyword">imports</span> LESSON<span class="token operator">-</span><span class="token number">12</span><span class="token operator">-</span>A
+  <span class="token keyword">imports</span> INT
+
+  <span class="token keyword">syntax</span> <span class="token keyword">Int</span> <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> sum<span class="token punctuation">(</span>Ints<span class="token punctuation">)</span> <span class="token punctuation">[</span>function<span class="token punctuation">]</span>
+  <span class="token keyword">rule</span> sum<span class="token punctuation">(</span>I<span class="token punctuation">:</span><span class="token keyword">Int</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> I
+  <span class="token keyword">rule</span> sum<span class="token punctuation">(</span>I1<span class="token punctuation">:</span><span class="token keyword">Int</span><span class="token punctuation">,</span> I2<span class="token punctuation">:</span><span class="token keyword">Int</span><span class="token punctuation">,</span> Is<span class="token punctuation">:</span>Ints<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> sum<span class="token punctuation">(</span>I1 <span class="token operator">+</span><span class="token keyword">Int</span> I2<span class="token punctuation">,</span> Is<span class="token punctuation">)</span>
+<span class="token keyword">endmodule</span>
+</code></pre>
+<p>Here we see a function that sums together a non-empty list of integers. Note in
+particular the first rule. We do not explicitly mention <code>.Ints</code>, but in fact,
+the rule in question is equivalent to the following rule:</p>
+<pre class="language-text"><code>  rule sum(I:Int, .Ints) =&gt; I
+</code></pre>
+<p>The reason for this is that K will automatically insert a list terminator
+anywhere a syntactic list is expected, but an element of that list appears
+instead. This works even with lists of more than one element:</p>
+<pre class="language-text"><code>  rule sum(I1:Int, I2:Int) =&gt; I1 +Int I2
+</code></pre>
+<p>This rule is redundant, but here we explicitly match a list of exactly two
+elements, because the <code>.Ints</code> is implicitly added after <code>I2</code>.</p>
+<h3 id="exercise">Exercise</h3>
+<p>Write a funtion <code>concat</code> which takes a list of <code>String</code> and concatenates them
+all together. Do not worry if the function is O(n^2).</p>
+<h2 id="parsing-syntactic-lists-in-programs">Parsing Syntactic Lists in Programs</h2>
+<p>An additional syntactic convenience takes place when you want to express a
+syntactic list in the input to <code>krun</code>. In this case, K will automatically
+transform the grammar in <code>LESSON-12-B-SYNTAX</code> into the following
+(<code>lesson-12-d.k</code>):</p>
+<pre class="language-k"><code><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">12</span><span class="token operator">-</span>D
+  <span class="token keyword">imports</span> INT<span class="token operator">-</span>SYNTAX
+
+  <span class="token keyword">syntax</span> Ints <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> #NonEmptyInts <span class="token operator">|</span> #IntsTerminator
+  <span class="token keyword">syntax</span> #NonEmptyInts <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token keyword">Int</span> <span class="token string">&quot;,&quot;</span> #NonEmptyInts
+                         <span class="token operator">|</span> <span class="token keyword">Int</span> #IntsTerminator
+  <span class="token keyword">syntax</span> #IntsTerminator <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">&quot;&quot;</span>
+<span class="token keyword">endmodule</span>
+</code></pre>
+<p>This allows you to express the usual comma-separated list of arguments where
+an empty list is represented by the empty string, and you don&apos;t have to
+explicitly terminate the list. Because of this, we can write the syntax
+of function calls in C very easily (<code>lesson-12-e.k</code>):</p>
+<pre class="language-k"><code><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">12</span><span class="token operator">-</span>E
+  <span class="token keyword">syntax</span> <span class="token keyword">Id</span> <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">&quot;[a-zA-Z_][a-zA-Z0-9_]*&quot;</span> <span class="token punctuation">[</span><span class="token class-name">token</span><span class="token punctuation">]</span>
+  <span class="token keyword">syntax</span> Exp <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token keyword">Id</span> <span class="token operator">|</span> Exp <span class="token string">&quot;(&quot;</span> Exps <span class="token string">&quot;)&quot;</span>
+  <span class="token keyword">syntax</span> Exps <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> List<span class="token punctuation">{</span>Exp<span class="token punctuation">,</span><span class="token string">&quot;,&quot;</span><span class="token punctuation">}</span>
+<span class="token keyword">endmodule</span>
+</code></pre>
+<h3 id="exercise-1">Exercise</h3>
+<p>Write some function call expressions using identifiers in C and verify with
+<code>kast</code> that the above grammar captures the intended syntax. Make sure to test
+with function calls with zero, one, and two or more arguments.</p>
+<h2 id="the-nelist%7B%7D-construct">The <code>NeList{}</code> construct</h2>
+<p>One limitation of the <code>List{}</code> construct is that it is always possible to
+write a list of zero elements where a <code>List{}</code> is expected. While this is
+desirable in a number of cases, it is sometimes not what the grammar expects.</p>
+<p>For example, in C, it is not allowable for an <code>enum</code> definition to have zero
+members. In other words, if we were to write the grammar for enumerations like
+so (<code>lesson-12-f.k</code>):</p>
+<pre class="language-k"><code><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">12</span><span class="token operator">-</span>F
+  <span class="token keyword">syntax</span> <span class="token keyword">Id</span> <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">&quot;[a-zA-Z_][a-zA-Z0-9_]*&quot;</span> <span class="token punctuation">[</span><span class="token class-name">token</span><span class="token punctuation">]</span>
+  <span class="token keyword">syntax</span> Exp <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token keyword">Id</span>
+
+  <span class="token keyword">syntax</span> EnumSpecifier <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">&quot;enum&quot;</span> <span class="token keyword">Id</span> <span class="token string">&quot;{&quot;</span> Ids <span class="token string">&quot;}&quot;</span>
+  <span class="token keyword">syntax</span> Ids <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> List<span class="token punctuation">{</span><span class="token keyword">Id</span><span class="token punctuation">,</span><span class="token string">&quot;,&quot;</span><span class="token punctuation">}</span>
+<span class="token keyword">endmodule</span>
+</code></pre>
+<p>Then we would be syntactically allowed to write <code>enum X {}</code>, which instead,
+ought to be a syntax error.</p>
+<p>For this reason, we introduce the additional <code>NeList{}</code> construct. The syntax
+is identical to <code>List{}</code>, except with <code>NeList</code> instead of <code>List</code> before the
+curly braces. When parsing rules, it behaves identically to the <code>List{}</code>
+construct. However, when parsing inputs to <code>krun</code>, the above grammar (if we
+replaced <code>Ids</code> with an <code>NeList{}</code>, would become equivalent to the following
+(<code>lesson-12-g.k</code>):</p>
+<pre class="language-k"><code><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">12</span><span class="token operator">-</span>G
+  <span class="token keyword">syntax</span> <span class="token keyword">Id</span> <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">&quot;[a-zA-Z_][a-zA-Z0-9_]*&quot;</span> <span class="token punctuation">[</span><span class="token class-name">token</span><span class="token punctuation">]</span>
+  <span class="token keyword">syntax</span> Exp <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token keyword">Id</span>
+
+  <span class="token keyword">syntax</span> EnumSpecifier <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">&quot;enum&quot;</span> <span class="token keyword">Id</span> <span class="token string">&quot;{&quot;</span> Ids <span class="token string">&quot;}&quot;</span>
+  <span class="token keyword">syntax</span> Ids <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token keyword">Id</span> <span class="token operator">|</span> <span class="token keyword">Id</span> <span class="token string">&quot;,&quot;</span> Ids
+<span class="token keyword">endmodule</span>
+</code></pre>
+<p>In other words, only non-empty lists of <code>Id</code> would be allowed.</p>
+<h2 id="exercises">Exercises</h2>
+<ol>
+<li>
+<p>Modify the <code>sum</code> function in <code>LESSON-12-C</code> so that the <code>Ints</code> sort is an
+<code>NeList{}</code>. Verify that calling <code>sum()</code> with no arguments is now a syntax
+error.</p>
+</li>
+<li>
+<p>Write a modified <code>sum</code> function with the <code>List</code> construct that can also sum
+up an empty list of arguments. In such a case, the sum ought to be 0.</p>
+</li>
+</ol>
+<h2 id="next-lesson">Next lesson</h2>
+<p>Once you have completed the above exercises, you can continue to
+<a href="../13_rewrite_rules/">Lesson 1.13: Basics of K Rewriting</a>.</p>
+</body></html></div>
+        </main>
+      </div>
+    </div>
+<!-- The footer is now controlled by the k-web-theme git submodule -->
+<footer id="rvsite-footer" class="app-footer text-md-left text-center">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-md-4 mb-md-0 mb-4">
+        <a href="https://runtimeverification.com/" target="_blank">
+          <picture>
+            <source
+              srcset="
+                https://runtimeverification.com/assets/img/rv-logo-dark.png
+              "
+              media="(prefers-color-scheme: dark)"
+            />
+            <img
+              class="logo-dark"
+              src="https://runtimeverification.com/assets/img/rv-logo.png"
+              alt="Runtime Verification logo"
+              style="height: 32px"
+            /> </picture
+        ></a>
+        <p class="mt-2 text-md-left copyright">
+          <a href="https://goo.gl/maps/NYzr2iKpXMgEmQ2F6" target="_blank"
+            >102 E Main St #500, Urbana, IL 61801</a
+          >
+        </p>
+      </div>
+      <div class="col-md-4 text-md-center mb-md-0 mb-4"></div>
+      <div class="col-md-4 mb-md-0 mb-4 text-md-right">
+        <p class="copyright">2021 © all rights reserved</p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Typist/1.2/typist.min.js"></script>
+    <script src="../../../../assets/js/index.js"></script>
+    <script>
+      $(function () {
+        // Render youtube video
+        const anchorElements = document.querySelectorAll(".markdown-preview a");
+        for (let i = anchorElements.length - 1; i >= 0; i--) {
+          if (anchorElements.length - 1 - i > 3) {
+            break;
+          }
+          const anchorElement = anchorElements[i];
+          const href = anchorElement.getAttribute("href");
+          if (href.match(/^https?:\/\/youtu.be\//)) {
+            const match = href.match(/^https?:\/\/youtu.be\/(.+?)$/);
+            if (match && match[1]) {
+              const youtubeId = match[1];
+              const $iframe = $(`
+<div style="text-align:center;">
+  <iframe
+    width="560"
+    height="315"
+    src="https://www.youtube.com/embed/${youtubeId}"
+    frameborder="0"
+    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+    allowfullscreen
+    style="max-width: 100%;"
+  ></iframe>
+  <p>The video is out of date</p>
+</div>
+`);
+              $(anchorElement).replaceWith($iframe[0]);
+            }
+          }
+        }
+      });
+    </script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-9LBGDMRG32"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-9LBGDMRG32");
+    </script>
+  </body>
+</html>
