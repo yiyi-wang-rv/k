@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+<meta charset="utf-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+/>
+<meta
+  name="description"
+  content="Design and implement your programming language and software analysis tools with mathematical rigor."
+/>
+<meta name="keywords" content="runtime, verification, rv, k" />
+<meta name="author" content="K | Runtime Verification Inc" />
+<meta name="robots" content="index, follow" />
+<link rel="canonical" href="https://kframework.org/k-distribution/k-tutorial/1_basic/10_strings/" />
+
+<!--favicon icon-->
+<link rel="icon" type="image/png" href="../../../../assets/img/favicon.ico" />
+
+<title>K | Runtime Verification Inc</title>
+
+<!-- <base href="/k/" /> -->
+
+<!--web fonts-->
+<link
+  href="https://fonts.googleapis.com/css?family=Nunito:300,400,600,700,800"
+  rel="stylesheet"
+/>
+<link
+  href="https://fonts.googleapis.com/css?family=Lora:400i"
+  rel="stylesheet"
+/>
+
+<link
+  href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.14.0/css/all.min.css"
+  rel="stylesheet"
+/>
+
+<link href="../../../../assets/css/index.css" rel="stylesheet" />
+
+<!--[if (gt IE 9) |!(IE)]><!-->
+<!--<link rel="stylesheet" href="/assets/vendor/custom-nav/css/effects/fade-menu.css"/>-->
+<!-- <link rel="stylesheet" href="../../../../assets/k/vl-nav/css/effects/slide-menu.css" /> -->
+<!--<![endif]-->
+
+  </head>
+
+  <body>
+<header
+  class="navbar navbar-expand navbar-dark flex-column flex-md-row bd-navbar"
+>
+  <a class="logo-link" href="../../../../index.html">
+    <img
+      class="logo-dark"
+      srcset="../../../../assets/img/k-logo.png"
+      alt="K"
+      style="height: 48px;"
+    />
+    Semantic Framework
+  </a>
+  <ul class="navbar-nav ml-md-auto">
+    <li class="nav-item">
+      <a
+        class="nav-link pl-2 pr-1 mx-1 py-3 my-n2"
+        href="https://github.com/kframework/k"
+        target="_blank"
+        rel="noopener"
+        aria-label="GitHub"
+      >
+        <i class="fab fa-github"></i>
+      </a>
+    </li>
+  </ul>
+  <a
+    class="btn btn-rv-blue d-none d-lg-inline-block mb-3 mb-md-0 ml-md-3"
+    href="../../../../downloads"
+    >Download</a
+  >
+</header>
+
+
+    <div class="container-fluid">
+      <div class="row flex-xl-nowrap">
+<div class="col-12 col-md-3 col-xl-2 bd-sidebar mb-3">
+  <form
+    role="search"
+    class="bd-search d-flex align-items-center justify-content-between"
+  >
+    <input
+      type="search"
+      class="form-control"
+      placeholder="Search..."
+      aria-label="Search for..."
+      autocomplete="false"
+      id="search-box"
+    />
+    <button
+      class="btn bd-search-docs-toggle d-md-none p-0 ml-3 collapsed"
+      type="button"
+      aria-label="Toggle docs navigation"
+      style="font-size: 1.4rem"
+    >
+      <i class="fas fa-bars"></i>
+    </button>
+  </form>
+  <nav class="collapse bd-links" aria-label="Main navigation">
+    <div class="bd-toc-item">
+      <a class="bd-toc-link" href="../../../../">Homepage</a>
+      <a class="bd-toc-link" href="../../../../downloads">Downloads</a>
+      <a class="bd-toc-link" href="../../../../k-distribution/k-tutorial"
+        >K Tutorial</a
+      >
+      <a class="bd-toc-link" href="../../../../k-distribution/pl-tutorial"
+        >K PL Tutorial</a
+      >
+      <a class="bd-toc-link" href="../../../../USER_MANUAL/"
+        >User documentation</a
+      >
+      <a
+        class="bd-toc-link"
+        href="../../../../k-distribution/include/kframework/builtin/"
+        >Builtins</a
+      >
+      <a class="bd-toc-link" href="../../../../projects">Projects using K</a>
+    </div>
+  </nav>
+</div>
+
+        <main
+          class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 bd-content"
+          role="main"
+        >
+          <div class="introduction markdown-preview"><html><head></head><body><h1 id="lesson-1.10%3A-strings">Lesson 1.10: Strings</h1>
+<p>The purpose of this lesson is to explain how to use the <code>String</code> sort in K to
+represent <strong>sequences of characters</strong>, and explain where to find additional
+information about builtin functions over strings.</p>
+<h2 id="the-string-sort">The <code>String</code> Sort</h2>
+<p>In addition to the <code>Int</code> and <code>Bool</code> sorts covered in
+<a href="../06_ints_and_bools/">Lesson 1.6</a>, K provides, among others, the
+<code>String</code> sort to represent sequences of characters. You can import this
+functionality via the <code>STRING-SYNTAX</code> module, which contains the syntax of
+string literals in K, and the <code>STRING</code> module, which contains all the functions
+that operate over the <code>String</code> type.</p>
+<p>Strings in K are double-quoted. The following list of escape sequences is
+supported:</p>
+<table class="table">
+<thead>
+<tr>
+<th>Escape Sequence</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>&quot;</td>
+<td>The literal character &quot;</td>
+</tr>
+<tr>
+<td>\</td>
+<td>The literal character \</td>
+</tr>
+<tr>
+<td>\n</td>
+<td>The newline character (ASCII code 0x0a)</td>
+</tr>
+<tr>
+<td>\r</td>
+<td>The carriage return character (ASCII code 0x0d)</td>
+</tr>
+<tr>
+<td>\t</td>
+<td>The tab character (ASCII code 0x09)</td>
+</tr>
+<tr>
+<td>\f</td>
+<td>The form feed character (ASCII code 0x0c)</td>
+</tr>
+<tr>
+<td>\x00</td>
+<td>\x followed by 2 hexadecimal digits indicates a code point</td>
+</tr>
+</tbody>
+</table>
+<pre><code>                between 0x00 and 0xFF                                     |
+</code></pre>
+<p>| \u0000          | \u followed by 4 hexadecimal digits indicates a code point
+between 0x0000 and 0xFFFF                                 |
+| \U00000000      | \U followed by 8 hexadecimal digits indicates a code point
+between 0x0000 and 0x10FFFF                               |</p>
+<p>Please note that as of the current moment, K&apos;s unicode support is not fully
+complete, so you may run into errors using code points greater than 0xff.</p>
+<p>As an example, you can construct a string literal containing the following
+block of text:</p>
+<pre class="language-text"><code>This is an example block of text.
+Here is a quotation: &quot;Hello world.&quot;
+	This line is indented.
+&#xC1;&#xC9;&#xCD;&#xD3;&#xDA;
+</code></pre>
+<p>Like so:</p>
+<pre class="language-text"><code>&quot;This is an example block of text.\nHere is a quotation: \&quot;Hello world.\&quot;\n\tThis line is indented.\n\xc1\xc9\xcd\xd3\xda\n&quot;
+</code></pre>
+<h2 id="basic-string-functions">Basic String Functions</h2>
+<p>The full list of functions provided for the <code>String</code> sort can be found in
+<a href="../../../include/kframework/builtin/domains/">domains.md</a>, but here we
+describe a few of the more basic ones.</p>
+<h3 id="string-concatenation">String concatenation</h3>
+<p>The concatenation operator for strings is <code>+String</code>. For example, consider
+the following K rule that constructs a string from component parts
+(<code>lesson-10.k</code>):</p>
+<pre class="language-k"><code><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">10</span>
+  <span class="token keyword">imports</span> STRING
+
+  <span class="token keyword">syntax</span> <span class="token keyword">String</span> <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> msg<span class="token punctuation">(</span><span class="token keyword">String</span><span class="token punctuation">)</span> <span class="token punctuation">[</span>function<span class="token punctuation">]</span>
+  <span class="token keyword">rule</span> msg<span class="token punctuation">(</span>S<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token string">&quot;The string you provided: &quot;</span> <span class="token operator">+</span><span class="token keyword">String</span> S <span class="token operator">+</span><span class="token keyword">String</span> <span class="token string">&quot;\nHave a nice day!&quot;</span>
+<span class="token keyword">endmodule</span>
+</code></pre>
+<p>Note that this operator is <code>O(N)</code>, so repeated concatenations are inefficient.
+For information about efficient string concatenation, refer to
+<a href="../../2_intermediate/14_string_buffers_and_bytes/">Lesson 2.14</a>.</p>
+<h3 id="string-length">String length</h3>
+<p>The function to return the length of a string is <code>lengthString</code>. For example,
+<code>lengthString(&quot;foo&quot;)</code> will return 3, and <code>lengthString(&quot;&quot;)</code> will return 0.
+The return value is the length of the string in <strong>code points</strong>.</p>
+<h3 id="substring-computation">Substring computation</h3>
+<p>The function to compute the substring of a string is <code>substrString</code>. It
+takes two string indices, startin from 0, and returns the substring within the
+range [start..end). It is only defined if <code>end =&gt; start</code>, <code>start &gt;= 0</code>, and
+<code>end &lt;= length of string</code>. Here, for example, we return the first 5 characters
+of a string:</p>
+<pre class="language-text"><code>substrString(S, 0, 5)
+</code></pre>
+<p>Here we return all but the first 3 characters:</p>
+<pre class="language-text"><code>substrString(S, 3, lengthString(S))
+</code></pre>
+<h2 id="exercises">Exercises</h2>
+<ol>
+<li>Write a function that takes a paragraph of text (i.e., a sequence of
+sentences, each ending in a period), and constructs a new (nonsense) sentence
+composed of the first word of each sentence, followed by a period. Do not
+worry about capitalization or periods within the sentence which do not end the
+sentence (e.g. &quot;Dr.&quot;). For more information about the functions over strings
+required to implement such a function, refer to <code>domains.md</code>.</li>
+</ol>
+<h2 id="next-lesson">Next lesson</h2>
+<p>Once you have completed the above exercises, you can continue to
+<a href="../11_casts/">Lesson 1.11: Casting Terms</a>.</p>
+</body></html></div>
+        </main>
+      </div>
+    </div>
+<!-- The footer is now controlled by the k-web-theme git submodule -->
+<footer id="rvsite-footer" class="app-footer text-md-left text-center">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-md-4 mb-md-0 mb-4">
+        <a href="https://runtimeverification.com/" target="_blank">
+          <picture>
+            <source
+              srcset="
+                https://runtimeverification.com/assets/img/rv-logo-dark.png
+              "
+              media="(prefers-color-scheme: dark)"
+            />
+            <img
+              class="logo-dark"
+              src="https://runtimeverification.com/assets/img/rv-logo.png"
+              alt="Runtime Verification logo"
+              style="height: 32px"
+            /> </picture
+        ></a>
+        <p class="mt-2 text-md-left copyright">
+          <a href="https://goo.gl/maps/NYzr2iKpXMgEmQ2F6" target="_blank"
+            >102 E Main St #500, Urbana, IL 61801</a
+          >
+        </p>
+      </div>
+      <div class="col-md-4 text-md-center mb-md-0 mb-4"></div>
+      <div class="col-md-4 mb-md-0 mb-4 text-md-right">
+        <p class="copyright">2021 © all rights reserved</p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Typist/1.2/typist.min.js"></script>
+    <script src="../../../../assets/js/index.js"></script>
+    <script>
+      $(function () {
+        // Render youtube video
+        const anchorElements = document.querySelectorAll(".markdown-preview a");
+        for (let i = anchorElements.length - 1; i >= 0; i--) {
+          if (anchorElements.length - 1 - i > 3) {
+            break;
+          }
+          const anchorElement = anchorElements[i];
+          const href = anchorElement.getAttribute("href");
+          if (href.match(/^https?:\/\/youtu.be\//)) {
+            const match = href.match(/^https?:\/\/youtu.be\/(.+?)$/);
+            if (match && match[1]) {
+              const youtubeId = match[1];
+              const $iframe = $(`
+<div style="text-align:center;">
+  <iframe
+    width="560"
+    height="315"
+    src="https://www.youtube.com/embed/${youtubeId}"
+    frameborder="0"
+    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+    allowfullscreen
+    style="max-width: 100%;"
+  ></iframe>
+  <p>The video is out of date</p>
+</div>
+`);
+              $(anchorElement).replaceWith($iframe[0]);
+            }
+          }
+        }
+      });
+    </script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-9LBGDMRG32"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-9LBGDMRG32");
+    </script>
+  </body>
+</html>
