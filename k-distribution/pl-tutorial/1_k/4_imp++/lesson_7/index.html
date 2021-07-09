@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+<meta charset="utf-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+/>
+<meta
+  name="description"
+  content="Design and implement your programming language and software analysis tools with mathematical rigor."
+/>
+<meta name="keywords" content="runtime, verification, rv, k" />
+<meta name="author" content="K | Runtime Verification Inc" />
+<meta name="robots" content="index, follow" />
+<link rel="canonical" href="https://kframework.org/k-distribution/pl-tutorial/1_k/4_imp++/lesson_7/" />
+
+<!--favicon icon-->
+<link rel="icon" type="image/png" href="../../../../../assets/img/favicon.ico" />
+
+<title>K | Runtime Verification Inc</title>
+
+<!-- <base href="/k/" /> -->
+
+<!--web fonts-->
+<link
+  href="https://fonts.googleapis.com/css?family=Nunito:300,400,600,700,800"
+  rel="stylesheet"
+/>
+<link
+  href="https://fonts.googleapis.com/css?family=Lora:400i"
+  rel="stylesheet"
+/>
+
+<link
+  href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.14.0/css/all.min.css"
+  rel="stylesheet"
+/>
+
+<link href="../../../../../assets/css/index.css" rel="stylesheet" />
+
+<!--[if (gt IE 9) |!(IE)]><!-->
+<!--<link rel="stylesheet" href="/assets/vendor/custom-nav/css/effects/fade-menu.css"/>-->
+<!-- <link rel="stylesheet" href="../../../../../assets/k/vl-nav/css/effects/slide-menu.css" /> -->
+<!--<![endif]-->
+
+  </head>
+
+  <body>
+<header
+  class="navbar navbar-expand navbar-dark flex-column flex-md-row bd-navbar"
+>
+  <a class="logo-link" href="../../../../../index.html">
+    <img
+      class="logo-dark"
+      srcset="../../../../../assets/img/k-logo.png"
+      alt="K"
+      style="height: 48px;"
+    />
+    Semantic Framework
+  </a>
+  <ul class="navbar-nav ml-md-auto">
+    <li class="nav-item">
+      <a
+        class="nav-link pl-2 pr-1 mx-1 py-3 my-n2"
+        href="https://github.com/kframework/k"
+        target="_blank"
+        rel="noopener"
+        aria-label="GitHub"
+      >
+        <i class="fab fa-github"></i>
+      </a>
+    </li>
+  </ul>
+  <a
+    class="btn btn-rv-blue d-none d-lg-inline-block mb-3 mb-md-0 ml-md-3"
+    href="../../../../../downloads"
+    >Download</a
+  >
+</header>
+
+
+    <div class="container-fluid">
+      <div class="row flex-xl-nowrap">
+<div class="col-12 col-md-3 col-xl-2 bd-sidebar mb-3">
+  <form
+    role="search"
+    class="bd-search d-flex align-items-center justify-content-between"
+  >
+    <input
+      type="search"
+      class="form-control"
+      placeholder="Search..."
+      aria-label="Search for..."
+      autocomplete="false"
+      id="search-box"
+    />
+    <button
+      class="btn bd-search-docs-toggle d-md-none p-0 ml-3 collapsed"
+      type="button"
+      aria-label="Toggle docs navigation"
+      style="font-size: 1.4rem"
+    >
+      <i class="fas fa-bars"></i>
+    </button>
+  </form>
+  <nav class="collapse bd-links" aria-label="Main navigation">
+    <div class="bd-toc-item">
+      <a class="bd-toc-link" href="../../../../../">Homepage</a>
+      <a class="bd-toc-link" href="../../../../../downloads">Downloads</a>
+      <a class="bd-toc-link" href="../../../../../k-distribution/k-tutorial"
+        >K Tutorial</a
+      >
+      <a class="bd-toc-link" href="../../../../../k-distribution/pl-tutorial"
+        >K PL Tutorial</a
+      >
+      <a class="bd-toc-link" href="../../../../../USER_MANUAL/"
+        >User documentation</a
+      >
+      <a
+        class="bd-toc-link"
+        href="../../../../../k-distribution/include/kframework/builtin/"
+        >Builtins</a
+      >
+      <a class="bd-toc-link" href="../../../../../projects">Projects using K</a>
+    </div>
+  </nav>
+</div>
+
+        <main
+          class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 bd-content"
+          role="main"
+        >
+          <div class="introduction markdown-preview"><!-- Copyright (c) 2010-2019 K Team. All Rights Reserved. --><html><head></head><body><h1 id="everything-changes%3A-syntax%2C-configuration%2C-semantics">Everything Changes: Syntax, Configuration, Semantics</h1>
+<p>In this lesson we add thread joining, one of the simplest thread
+synchronization mechanisms. In doing so, we need to add unique ids
+to threads in the configuration, and to modify the syntax to allow <code>spawn</code>
+to return the id of the newly created thread. This gives us an opportunity
+to make several other small syntactic and semantics changes to the language,
+which make it more powerful or more compact at a rather low cost.</p>
+<p>Before we start, let us first copy and modify the previous <code>spawn.imp</code> program
+from Lesson 1 to make use of thread joining. Recall from Lesson 6 that in some
+runs of this program the main thread completed before the child threads,
+printing a possibly undesired value of <code>x</code>. What we want now is to assign
+unique ids to the two spawned threads, and then to modify the main thread to
+join the two child threads before printing. To avoid adding a new type to
+the language, let&apos;s assume that thread ids are integer numbers. So we declare
+two integers, <code>t1</code> and <code>t2</code>, and assign them the two spawn commands. In order
+for this to parse, we will have to change the syntax of <code>spawn</code> to be an
+arithmetic expression construct instead of a statement. Once we do that,
+we have a slight syntactic annoyance: we need to put two consecutive <code>;</code>
+after the spawn assignment, one for the assignment statement inside the spawn,
+and another for the outer assignment. To avoid the two consecutive semicolons,
+we can syntactically enforce spawn to take a block as argument, instead of a
+statement. Now it looks better. The new <code>spawn.imp</code> program is still
+non-deterministic, because the two threads can execute in any order and even
+continue to have a data-race on the shared variable <code>x</code>, but we should see fewer
+behaviors when we use the <code>join</code> statements. If we want to fully synchronize
+this program, we can have the second thread start with a <code>join(t1)</code> statement.
+Then we should only see one behavior for this program.</p>
+<p>Let us now modify the language semantics. First, we move the <code>spawn</code>
+construct from statements to expressions, and make it take a block.
+Second, we add one more sub-cell to the thread cell in the configuration,
+<code>&lt;id/&gt;</code>, to hold the unique identifier of the thread. We want the main
+thread to have id <code>0</code>, so we initialize this cell with <code>0</code>. Third, we modify
+the spawn rule to generate a fresh integer identifier, which is put in the
+<code>&lt;id/&gt;</code> cell of the child thread and returned as a result of <code>spawn</code> in the
+parent thread. Fourth, let us add the <code>join</code> statement to the language,
+both syntactically and semantically. So in order for the <code>join(T)</code> statement
+to execute, thread <code>T</code> must have its computation empty. However, in order
+for this to work we have to get rid of the thread termination cleanup rule.
+Indeed, we need to store somewhere the information that thread <code>T</code> terminated;
+the simplest way to do it is to not remove the terminated threads. Feel free
+to experiment with other possibilities, too, here. For example, you may add
+another cell, <code>&lt;done/&gt;</code>, in which you can store all the thread ids of the
+terminated and garbage-collected threads.</p>
+<p>Let us now <code>kompile imp.k</code> and convince ourselves that the new <code>spawn.imp</code>
+with <code>join</code> statements indeed has fewer behaviors than its variant without
+<code>join</code> statements. Also, let us convince ourselves that the fully synchronized
+variant of it indeed has only one behavior.</p>
+<p>Note that now spawn, like variable increment, makes the evaluation of
+expressions to have side effects. Many programming languages in fact allow
+expressions to be evaluated only for their side effects, and not for their
+value. This is typically done by simply adding a <code>;</code> after the expression
+and thus turning it into a statement. For example, <code>++x;</code>. Let as also
+allow arithmetic expressions in our language to be used as statements, by
+simply adding the production <code>AExp &quot;;&quot;</code> to <code>Stmt</code>, with evaluation strategy
+<code>strict</code> and with the expected semantics discarding the value of the <code>AExp</code>.</p>
+<p>Another simple change in syntax and semantics which gives our language more
+power, is to remove the <code>;</code> from the syntax of variable assignments and to make
+them expression instead of statement constructs. This change, combined with
+the previous one, will still allow us to parse all the programs that we could
+parse before, but will also allow us to parse more programs. For example, we
+can now do sequence assignments like in C: <code>x = y = z = 0</code>. The semantics
+of assignment now has to return the assigned value also to the computation,
+because we want the assignment expression to evaluate to the assigned value.</p>
+<p>Let us also make another change, but this time one which only makes the
+definition more compact. Instead of defining statement sequential
+composition as a binary construct for statements, let us define a new
+syntactic construct, <code>Stmts</code>, as whitespace-separated lists of <code>Stmt</code>. This
+allows us to get rid of the empty blocks, because we can change the syntax of
+blocks to <code>{Stmts}</code> and <code>Stmts</code> also allows the empty sequence of statements.
+However, we do have to make sure that <code>.Stmts</code> dissolves.</p>
+<p>In general, unless you are defining a well-established programming language,
+it is quite likely that your definitions will suffer lots of changes like the
+ones seen in this lecture. You add a new construct, which suggests changes
+in the existing syntax making in fact your language parse more programs,
+which then requires corresponding changes in the semantics, and so on.
+Also, compact definitions are desirable in general, because they are easier
+to read and easier to change if needed later.</p>
+<p>In the next lesson we wrap up and document the definition of IMP++.</p>
+<p>Go to <a href="../lesson_8/">Lesson 8, IMP++: Wrapping up Larger Languages</a>.</p>
+</body></html></div>
+        </main>
+      </div>
+    </div>
+<!-- The footer is now controlled by the k-web-theme git submodule -->
+<footer id="rvsite-footer" class="app-footer text-md-left text-center">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-md-4 mb-md-0 mb-4">
+        <a href="https://runtimeverification.com/" target="_blank">
+          <picture>
+            <source
+              srcset="
+                https://runtimeverification.com/assets/img/rv-logo-dark.png
+              "
+              media="(prefers-color-scheme: dark)"
+            />
+            <img
+              class="logo-dark"
+              src="https://runtimeverification.com/assets/img/rv-logo.png"
+              alt="Runtime Verification logo"
+              style="height: 32px"
+            /> </picture
+        ></a>
+        <p class="mt-2 text-md-left copyright">
+          <a href="https://goo.gl/maps/NYzr2iKpXMgEmQ2F6" target="_blank"
+            >102 E Main St #500, Urbana, IL 61801</a
+          >
+        </p>
+      </div>
+      <div class="col-md-4 text-md-center mb-md-0 mb-4"></div>
+      <div class="col-md-4 mb-md-0 mb-4 text-md-right">
+        <p class="copyright">2021 © all rights reserved</p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Typist/1.2/typist.min.js"></script>
+    <script src="../../../../../assets/js/index.js"></script>
+    <script>
+      $(function () {
+        // Render youtube video
+        const anchorElements = document.querySelectorAll(".markdown-preview a");
+        for (let i = anchorElements.length - 1; i >= 0; i--) {
+          if (anchorElements.length - 1 - i > 3) {
+            break;
+          }
+          const anchorElement = anchorElements[i];
+          const href = anchorElement.getAttribute("href");
+          if (href.match(/^https?:\/\/youtu.be\//)) {
+            const match = href.match(/^https?:\/\/youtu.be\/(.+?)$/);
+            if (match && match[1]) {
+              const youtubeId = match[1];
+              const $iframe = $(`
+<div style="text-align:center;">
+  <iframe
+    width="560"
+    height="315"
+    src="https://www.youtube.com/embed/${youtubeId}"
+    frameborder="0"
+    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+    allowfullscreen
+    style="max-width: 100%;"
+  ></iframe>
+  <p>The video is out of date</p>
+</div>
+`);
+              $(anchorElement).replaceWith($iframe[0]);
+            }
+          }
+        }
+      });
+    </script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-9LBGDMRG32"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-9LBGDMRG32");
+    </script>
+  </body>
+</html>

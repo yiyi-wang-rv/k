@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+<meta charset="utf-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+/>
+<meta
+  name="description"
+  content="Design and implement your programming language and software analysis tools with mathematical rigor."
+/>
+<meta name="keywords" content="runtime, verification, rv, k" />
+<meta name="author" content="K | Runtime Verification Inc" />
+<meta name="robots" content="index, follow" />
+<link rel="canonical" href="https://kframework.org/k-distribution/pl-tutorial/1_k/1_lambda/lesson_7/" />
+
+<!--favicon icon-->
+<link rel="icon" type="image/png" href="../../../../../assets/img/favicon.ico" />
+
+<title>K | Runtime Verification Inc</title>
+
+<!-- <base href="/k/" /> -->
+
+<!--web fonts-->
+<link
+  href="https://fonts.googleapis.com/css?family=Nunito:300,400,600,700,800"
+  rel="stylesheet"
+/>
+<link
+  href="https://fonts.googleapis.com/css?family=Lora:400i"
+  rel="stylesheet"
+/>
+
+<link
+  href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.14.0/css/all.min.css"
+  rel="stylesheet"
+/>
+
+<link href="../../../../../assets/css/index.css" rel="stylesheet" />
+
+<!--[if (gt IE 9) |!(IE)]><!-->
+<!--<link rel="stylesheet" href="/assets/vendor/custom-nav/css/effects/fade-menu.css"/>-->
+<!-- <link rel="stylesheet" href="../../../../../assets/k/vl-nav/css/effects/slide-menu.css" /> -->
+<!--<![endif]-->
+
+  </head>
+
+  <body>
+<header
+  class="navbar navbar-expand navbar-dark flex-column flex-md-row bd-navbar"
+>
+  <a class="logo-link" href="../../../../../index.html">
+    <img
+      class="logo-dark"
+      srcset="../../../../../assets/img/k-logo.png"
+      alt="K"
+      style="height: 48px;"
+    />
+    Semantic Framework
+  </a>
+  <ul class="navbar-nav ml-md-auto">
+    <li class="nav-item">
+      <a
+        class="nav-link pl-2 pr-1 mx-1 py-3 my-n2"
+        href="https://github.com/kframework/k"
+        target="_blank"
+        rel="noopener"
+        aria-label="GitHub"
+      >
+        <i class="fab fa-github"></i>
+      </a>
+    </li>
+  </ul>
+  <a
+    class="btn btn-rv-blue d-none d-lg-inline-block mb-3 mb-md-0 ml-md-3"
+    href="../../../../../downloads"
+    >Download</a
+  >
+</header>
+
+
+    <div class="container-fluid">
+      <div class="row flex-xl-nowrap">
+<div class="col-12 col-md-3 col-xl-2 bd-sidebar mb-3">
+  <form
+    role="search"
+    class="bd-search d-flex align-items-center justify-content-between"
+  >
+    <input
+      type="search"
+      class="form-control"
+      placeholder="Search..."
+      aria-label="Search for..."
+      autocomplete="false"
+      id="search-box"
+    />
+    <button
+      class="btn bd-search-docs-toggle d-md-none p-0 ml-3 collapsed"
+      type="button"
+      aria-label="Toggle docs navigation"
+      style="font-size: 1.4rem"
+    >
+      <i class="fas fa-bars"></i>
+    </button>
+  </form>
+  <nav class="collapse bd-links" aria-label="Main navigation">
+    <div class="bd-toc-item">
+      <a class="bd-toc-link" href="../../../../../">Homepage</a>
+      <a class="bd-toc-link" href="../../../../../downloads">Downloads</a>
+      <a class="bd-toc-link" href="../../../../../k-distribution/k-tutorial"
+        >K Tutorial</a
+      >
+      <a class="bd-toc-link" href="../../../../../k-distribution/pl-tutorial"
+        >K PL Tutorial</a
+      >
+      <a class="bd-toc-link" href="../../../../../USER_MANUAL/"
+        >User documentation</a
+      >
+      <a
+        class="bd-toc-link"
+        href="../../../../../k-distribution/include/kframework/builtin/"
+        >Builtins</a
+      >
+      <a class="bd-toc-link" href="../../../../../projects">Projects using K</a>
+    </div>
+  </nav>
+</div>
+
+        <main
+          class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 bd-content"
+          role="main"
+        >
+          <div class="introduction markdown-preview"><!-- Copyright (c) 2012-2019 K Team. All Rights Reserved. --><html><head></head><body><h1 id="derived-constructs%2C-extending-predefined-syntax">Derived Constructs, Extending Predefined Syntax</h1>
+<p>In this lesson we will learn how to define derived language constructs, that
+is, ones whose semantics is defined completely in terms of other language
+constructs.  We will also learn how to add new constructs to predefined
+syntactic categories.</p>
+<p>When defining a language, we often want certain language constructs to be
+defined in terms of other constructs.  For example, a let-binding construct
+of the form</p>
+<pre><code>let x = e in e&apos;
+</code></pre>
+<p>is nothing but syntactic sugar for</p>
+<pre><code>(lambda x . e&apos;) e
+</code></pre>
+<p>This can be easily achieved with a rule, as shown in <code>lambda.k</code>.</p>
+<p>As a side point, which is not very relevant here but good to know, we may
+want the <em>desugaring</em> of <code>let</code> to not even count as a computational step, but
+as a mere <em>structural rearrangement</em> of the program so that other semantic
+rules (beta reduction, in our case) can match and apply.</p>
+<p>The K tool allows us to tag rules with the attribute <code>structural</code>, with
+precisely the intuition above.  You can think of structural rules as a kind
+of light rules, almost like macros, or like ones which apply <em>under the hood</em>,
+instantaneously.  There are several other uses for structural rules in K,
+which we will discuss later in this tutorial.</p>
+<p>Compile <code>lambda.k</code> and write some programs using <code>let</code> binders.</p>
+<p>For example, consider a <code>lets.lambda</code> program which takes <code>arithmetic.lambda</code>
+and replaces each integer by a let-bound variable.  It should evaluate to
+<code>true</code>, just like the original <code>arithmetic.lambda</code>.</p>
+<p>Let us now consider a more interesting program, namely one that calculates the
+factorial of 10:</p>
+<pre><code>let f = lambda x . (
+        (lambda t . lambda x . (t t x))
+        (lambda f . lambda x . (if x &lt;= 1 then 1 else (x * (f f (x + -1)))))
+        x
+      )
+in (f 10)
+</code></pre>
+<p>This program follows a common technique to define fixed points in untyped
+lambda calculus, based on passing a function to itself.</p>
+<p>We may not like to define fixed-points following the approach above, because
+it requires global changes in the body of the function meant to be recursive,
+basically to pass it to itself (<code>f f</code> in our case above).  The approach below
+isolates the fixed-point aspect of the function in a so-called <em>fixed-point
+combinator</em>, which we call <code>fix</code> below, and then apply it to the function
+defining the body of the factorial, without any changes to it:</p>
+<pre><code>let fix = lambda f . (
+          (lambda x . (f (lambda y . (x x y))))
+          (lambda x . (f (lambda y . (x x y))))
+        )
+in let f = fix (lambda f . lambda x .
+                (if x &lt;= 1 then 1 else (x * (f (x + -1)))))
+   in (f 10)
+</code></pre>
+<p>Although the above techniques are interesting and powerful (indeed, untyped
+lambda calculus is in fact Turing complete), programmers will probably not
+like to write programs this way.</p>
+<p>We can easily define a more complex derived construct, called <code>letrec</code> and
+conventionally encountered in functional programming languages, whose semantics
+captures the fixed-point idea above.  In order to keep its definition simple
+and intuitive, we define a simplified variant of <code>letrec</code>, namely one which only
+allows to define one recursive one-argument function.  See <code>lambda.k</code>.</p>
+<p>There are two interesting observations here.</p>
+<p>First, note that we have already in-lined the definition of the <code>fix</code>
+combinator in the definition of the factorial, to save one application of the
+beta reduction rule (and the involved substitution steps).  We could have
+in-lined the definition of the remaining <code>let</code>, too, but we believe that the
+current definition is easier to read.</p>
+<p>Second, note that we extended the predefined <code>Id</code> syntactic category with two
+new constants, <code>$x</code> and <code>$y</code>.  The predefined identifiers cannot start with
+<code>$</code>, so programs that will be executed with this semantics cannot possibly
+contain the identifiers $x and $y.  In other words, by adding them to Id they
+become indirectly reserved for the semantics.  This is indeed desirable,
+because any possible uses of $x in the body of the function defined
+using <code>letrec</code> would be captured by the <code>lambda $x</code> declaration in the
+definition of <code>letrec</code>.</p>
+<p>Using <code>letrec</code>, we can now write the factorial program as elegantly as it can
+be written in a functional language:</p>
+<pre><code>letrec f x = if x &lt;= 1 then 1 else (x * (f (x + -1)))
+in (f 10)
+</code></pre>
+<p>In the next lesson we will discuss an alternative definition of <code>letrec</code>, based
+on another binder, <code>mu</code>, specifically designed to define fixed points.</p>
+<p>Go to <a href="../lesson_8/">Lesson 8, LAMBDA: Multiple Binding Constructs</a>.</p>
+<p><a href="https://youtu.be/qZWiBaN7zrw" target="_blank" rel="noopener">MOVIE (out of date) [5&apos;10&quot;]</a></p>
+</body></html></div>
+        </main>
+      </div>
+    </div>
+<!-- The footer is now controlled by the k-web-theme git submodule -->
+<footer id="rvsite-footer" class="app-footer text-md-left text-center">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-md-4 mb-md-0 mb-4">
+        <a href="https://runtimeverification.com/" target="_blank">
+          <picture>
+            <source
+              srcset="
+                https://runtimeverification.com/assets/img/rv-logo-dark.png
+              "
+              media="(prefers-color-scheme: dark)"
+            />
+            <img
+              class="logo-dark"
+              src="https://runtimeverification.com/assets/img/rv-logo.png"
+              alt="Runtime Verification logo"
+              style="height: 32px"
+            /> </picture
+        ></a>
+        <p class="mt-2 text-md-left copyright">
+          <a href="https://goo.gl/maps/NYzr2iKpXMgEmQ2F6" target="_blank"
+            >102 E Main St #500, Urbana, IL 61801</a
+          >
+        </p>
+      </div>
+      <div class="col-md-4 text-md-center mb-md-0 mb-4"></div>
+      <div class="col-md-4 mb-md-0 mb-4 text-md-right">
+        <p class="copyright">2021 © all rights reserved</p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Typist/1.2/typist.min.js"></script>
+    <script src="../../../../../assets/js/index.js"></script>
+    <script>
+      $(function () {
+        // Render youtube video
+        const anchorElements = document.querySelectorAll(".markdown-preview a");
+        for (let i = anchorElements.length - 1; i >= 0; i--) {
+          if (anchorElements.length - 1 - i > 3) {
+            break;
+          }
+          const anchorElement = anchorElements[i];
+          const href = anchorElement.getAttribute("href");
+          if (href.match(/^https?:\/\/youtu.be\//)) {
+            const match = href.match(/^https?:\/\/youtu.be\/(.+?)$/);
+            if (match && match[1]) {
+              const youtubeId = match[1];
+              const $iframe = $(`
+<div style="text-align:center;">
+  <iframe
+    width="560"
+    height="315"
+    src="https://www.youtube.com/embed/${youtubeId}"
+    frameborder="0"
+    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+    allowfullscreen
+    style="max-width: 100%;"
+  ></iframe>
+  <p>The video is out of date</p>
+</div>
+`);
+              $(anchorElement).replaceWith($iframe[0]);
+            }
+          }
+        }
+      });
+    </script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-9LBGDMRG32"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-9LBGDMRG32");
+    </script>
+  </body>
+</html>
