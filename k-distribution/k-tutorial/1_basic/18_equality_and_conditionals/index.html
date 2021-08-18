@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+<meta charset="utf-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+/>
+<meta
+  name="description"
+  content="Design and implement your programming language and software analysis tools with mathematical rigor."
+/>
+<meta name="keywords" content="runtime, verification, rv, k" />
+<meta name="author" content="K | Runtime Verification Inc" />
+<meta name="robots" content="index, follow" />
+<link rel="canonical" href="https://kframework.org/k-distribution/k-tutorial/1_basic/18_equality_and_conditionals/" />
+
+<!--favicon icon-->
+<link rel="icon" type="image/png" href="../../../../assets/img/favicon.ico" />
+
+<title>K | Runtime Verification Inc</title>
+
+<!-- <base href="/k/" /> -->
+
+<!--web fonts-->
+<link
+  href="https://fonts.googleapis.com/css?family=Nunito:300,400,600,700,800"
+  rel="stylesheet"
+/>
+<link
+  href="https://fonts.googleapis.com/css?family=Lora:400i"
+  rel="stylesheet"
+/>
+
+<link
+  href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.14.0/css/all.min.css"
+  rel="stylesheet"
+/>
+
+<link href="../../../../assets/css/index.css" rel="stylesheet" />
+
+<!--[if (gt IE 9) |!(IE)]><!-->
+<!--<link rel="stylesheet" href="/assets/vendor/custom-nav/css/effects/fade-menu.css"/>-->
+<!-- <link rel="stylesheet" href="../../../../assets/k/vl-nav/css/effects/slide-menu.css" /> -->
+<!--<![endif]-->
+
+  </head>
+
+  <body>
+<header
+  class="navbar navbar-expand navbar-dark flex-column flex-md-row bd-navbar"
+>
+  <a class="logo-link" href="../../../../index.html">
+    <img
+      class="logo-dark"
+      srcset="../../../../assets/img/k-logo.png"
+      alt="K"
+      style="height: 48px;"
+    />
+    Semantic Framework
+  </a>
+  <ul class="navbar-nav ml-md-auto">
+    <li class="nav-item">
+      <a
+        class="nav-link pl-2 pr-1 mx-1 py-3 my-n2"
+        href="https://github.com/kframework/k"
+        target="_blank"
+        rel="noopener"
+        aria-label="GitHub"
+      >
+        <i class="fab fa-github"></i>
+      </a>
+    </li>
+  </ul>
+  <a
+    class="btn btn-rv-blue d-none d-lg-inline-block mb-3 mb-md-0 ml-md-3"
+    href="../../../../downloads"
+    >Download</a
+  >
+</header>
+
+
+    <div class="container-fluid">
+      <div class="row flex-xl-nowrap">
+<div class="col-12 col-md-3 col-xl-2 bd-sidebar mb-3">
+  <form
+    role="search"
+    class="bd-search d-flex align-items-center justify-content-between"
+  >
+    <input
+      type="search"
+      class="form-control"
+      placeholder="Search..."
+      aria-label="Search for..."
+      autocomplete="false"
+      id="search-box"
+    />
+    <button
+      class="btn bd-search-docs-toggle d-md-none p-0 ml-3 collapsed"
+      type="button"
+      aria-label="Toggle docs navigation"
+      style="font-size: 1.4rem"
+    >
+      <i class="fas fa-bars"></i>
+    </button>
+  </form>
+  <nav class="collapse bd-links" aria-label="Main navigation">
+    <div class="bd-toc-item">
+      <a class="bd-toc-link" href="../../../../">Homepage</a>
+      <a class="bd-toc-link" href="../../../../downloads">K Tool Binaries </a>
+      <a class="bd-toc-link" href="../../../../k-distribution/k-tutorial"
+        >K Tutorial</a
+      >
+      <a class="bd-toc-link" href="../../../../k-distribution/pl-tutorial"
+        >K PL Tutorial</a
+      >
+      <a class="bd-toc-link" href="../../../../USER_MANUAL/">K User Manual </a>
+      <a
+        class="bd-toc-link"
+        href="../../../../k-distribution/include/kframework/builtin/"
+        >K Builtins
+      </a>
+      <a class="bd-toc-link" href="../../../../projects">Projects using K</a>
+    </div>
+  </nav>
+</div>
+
+        <main
+          class="col-12 col-md-6 col-xl-8 py-md-3 pl-md-5 bd-content"
+          role="main"
+        >
+          <div class="introduction markdown-preview"><html><head></head><body><h1 id="lesson-1.18%3A-term-equality-and-the-ternary-operator">Lesson 1.18: Term Equality and the Ternary Operator</h1>
+<p>The purpose of this lesson is to introduce how to compare equality of terms in
+K, and how to put conditional expressions directly into the right-hand side of
+rules.</p>
+<h2 id="term-equality">Term Equality</h2>
+<p>One major way you can compare whether two terms are equal in K is to simply
+match both terms with a variable with the same name. This will only succeed
+in matching if the two terms are equal structurally. However, sometimes this
+is impractical, and it is useful to have access to a way to actually compare
+whether two terms in K are equal. The operator for this is found in
+<a href="../../../include/kframework/builtin/domains/">domains.md</a> in the <code>K-EQUAL</code>
+module. The operator is <code>==K</code> and takes two terms of sort <code>K</code> and returns a
+<code>Bool</code>. It returns true if they are equal. This includes equality over builtin
+types such as <code>Map</code> and <code>Set</code> where equality is not purely structural in
+nature. However, it does not include any notion of semantic equality over
+user-defined syntax. The inverse symbol for inequality is <code>=/=K</code>.</p>
+<h2 id="ternary-operator">Ternary Operator</h2>
+<p>One way to introduce conditional logic in K is to have two separate rules,
+each with a side condition (or one rule with a side condition and another with
+the <code>owise</code> attribute). However, sometimes it is useful to explicitly write
+a conditional expression directly in the right-hand side of a rule. For this
+purpose, K defines one more operator in the <code>K-EQUAL</code> module, which corresponds
+to the usual ternary operator in many languages. Here is an example of its
+usage (<code>lesson-18.k</code>):</p>
+<pre class="language-k"><code><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">18</span>
+  <span class="token keyword">imports</span> INT
+  <span class="token keyword">imports</span> BOOL
+  <span class="token keyword">imports</span> K<span class="token operator">-</span>EQUAL
+
+  <span class="token keyword">syntax</span> Exp <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token keyword">Int</span> <span class="token operator">|</span> <span class="token keyword">Bool</span> <span class="token operator">|</span> <span class="token string">&quot;if&quot;</span> <span class="token string">&quot;(&quot;</span> Exp <span class="token string">&quot;)&quot;</span> Exp <span class="token string">&quot;else&quot;</span> Exp <span class="token punctuation">[</span><span class="token class-name">strict</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">]</span>
+
+  <span class="token keyword">syntax</span> <span class="token keyword">Bool</span> <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> isKResult<span class="token punctuation">(</span>K<span class="token punctuation">)</span> <span class="token punctuation">[</span>function<span class="token punctuation">,</span> <span class="token class-name">symbol</span><span class="token punctuation">]</span>
+  <span class="token keyword">rule</span> isKResult<span class="token punctuation">(</span>_<span class="token punctuation">:</span><span class="token keyword">Int</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token boolean">true</span>
+  <span class="token keyword">rule</span> isKResult<span class="token punctuation">(</span>_<span class="token punctuation">:</span><span class="token keyword">Bool</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token boolean">true</span>
+
+  <span class="token keyword">rule</span> if <span class="token punctuation">(</span>B<span class="token punctuation">:</span><span class="token keyword">Bool</span><span class="token punctuation">)</span> E1<span class="token punctuation">:</span>Exp else E2<span class="token punctuation">:</span>Exp <span class="token operator">=&gt;</span> #if B #then E1 #else E2 #fi
+<span class="token keyword">endmodule</span>
+</code></pre>
+<p>Note the symbol on the right-hand side of the final rule. This symbol is
+polymorphic: <code>B</code> must be of sort <code>Bool</code>, but <code>E1</code> and <code>E2</code> could have been
+any sort so long as both were of the same sort, and the sort of the entire
+expression becomes equal to that sort. K supports polymorphic built-in
+operators, but does not yet allow users to write their own polymorphic
+productions.</p>
+<p>The behavior of this function is to evaluate the Boolean expression to a
+Boolean, then pick one of the two children and return it based on whether the
+Boolean is true or false. Please note that it is not a good idea to use this
+symbol in cases where one or both of the children is potentially undefined
+(for example, an integer expression that divides by zero). While the default
+implementation is smart enough to only evaluate the branch that happens to be
+picked, this will not be true when we begin to do program verification. If
+you need short circuiting behavior, it is better to use a side condition.</p>
+<h2 id="exercises">Exercises</h2>
+<ol>
+<li>
+<p>Write a function in K that takes two terms of sort <code>K</code> and returns an
+<code>Int</code>: the <code>Int</code> should be 0 if the terms are equal and 1 if the terms are
+unequal.</p>
+</li>
+<li>
+<p>Modify your solution to Lesson 1.16, Problem 1 and introduce an <code>if</code>
+<code>Stmt</code> to the syntax of the language, then implement it using the <code>#if</code> symbol.
+Make sure to write tests for the resulting interpreter.</p>
+</li>
+</ol>
+</body></html></div>
+        </main>
+
+        <!-- Page ToC -->
+        <div class="col-12 col-md-3 col-xl-2 py-md-3 bd-sidebar page-toc mb-3">
+          
+<div>
+<details style="padding:0.25rem 0;;padding-left: 0px;" open>
+            <summary class="bd-toc-link-wrapper">
+              <a href="#lesson-1.18%3A-term-equality-and-the-ternary-operator" class="bd-toc-link">Lesson 1.18: Term Equality and the Ternary Operator</a>
+              </summary>
+            <div>
+              <div class="bd-toc-link-wrapper" style="padding:0.25rem 0;">
+              <a
+                href="#term-equality"
+                class="bd-toc-link"
+                style="padding-left: 8px;;"
+              >
+                Term Equality
+              </a></div><div class="bd-toc-link-wrapper" style="padding:0.25rem 0;">
+              <a
+                href="#ternary-operator"
+                class="bd-toc-link"
+                style="padding-left: 8px;;"
+              >
+                Ternary Operator
+              </a></div><div class="bd-toc-link-wrapper" style="padding:0.25rem 0;">
+              <a
+                href="#exercises"
+                class="bd-toc-link"
+                style="padding-left: 8px;;"
+              >
+                Exercises
+              </a></div>
+            </div>
+          </details>
+        
+</div>
+
+        </div>
+        <div class="btn btn-rv-blue page-toc-toggle-btn"></div>
+        <!-- End Page ToC -->
+      </div>
+    </div>
+<!-- The footer is now controlled by the k-web-theme git submodule -->
+<footer id="rvsite-footer" class="app-footer text-md-left text-center">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-md-4 mb-md-0 mb-4">
+        <a href="https://runtimeverification.com/" target="_blank">
+          <picture>
+            <source
+              srcset="
+                https://runtimeverification.com/assets/img/rv-logo-dark.png
+              "
+              media="(prefers-color-scheme: dark)"
+            />
+            <img
+              class="logo-dark"
+              src="https://runtimeverification.com/assets/img/rv-logo.png"
+              alt="Runtime Verification logo"
+              style="height: 32px"
+            /> </picture
+        ></a>
+        <p class="mt-2 text-md-left copyright">
+          <a href="https://goo.gl/maps/NYzr2iKpXMgEmQ2F6" target="_blank"
+            >102 E Main St #500, Urbana, IL 61801</a
+          >
+        </p>
+      </div>
+      <div class="col-md-4 text-md-center mb-md-0 mb-4"></div>
+      <div class="col-md-4 mb-md-0 mb-4 text-md-right">
+        <p class="copyright">2021 © all rights reserved</p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Typist/1.2/typist.min.js"></script>
+    <script src="../../../../assets/js/index.js"></script>
+    <script>
+      $(function () {
+        // Render youtube video
+        const anchorElements = document.querySelectorAll(".markdown-preview a");
+        for (let i = anchorElements.length - 1; i >= 0; i--) {
+          if (anchorElements.length - 1 - i > 3) {
+            break;
+          }
+          const anchorElement = anchorElements[i];
+          const href = anchorElement.getAttribute("href");
+          if (href.match(/^https?:\/\/youtu.be\//)) {
+            const match = href.match(/^https?:\/\/youtu.be\/(.+?)$/);
+            if (match && match[1]) {
+              const youtubeId = match[1];
+              const $iframe = $(`
+<div style="text-align:center;">
+  <iframe
+    width="560"
+    height="315"
+    src="https://www.youtube.com/embed/${youtubeId}"
+    frameborder="0"
+    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+    allowfullscreen
+    style="max-width: 100%;"
+  ></iframe>
+  <p>The video is out of date</p>
+</div>
+`);
+              $(anchorElement).replaceWith($iframe[0]);
+            }
+          }
+        }
+      });
+    </script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-9LBGDMRG32"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-9LBGDMRG32");
+    </script>
+  </body>
+</html>
