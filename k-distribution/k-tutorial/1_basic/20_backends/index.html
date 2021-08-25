@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+<meta charset="utf-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+/>
+<meta
+  name="description"
+  content="Design and implement your programming language and software analysis tools with mathematical rigor."
+/>
+<meta name="keywords" content="runtime, verification, rv, k" />
+<meta name="author" content="K | Runtime Verification Inc" />
+<meta name="robots" content="index, follow" />
+<link rel="canonical" href="https://kframework.org/k-distribution/k-tutorial/1_basic/20_backends/" />
+
+<!--favicon icon-->
+<link rel="icon" type="image/png" href="../../../../assets/img/favicon.ico" />
+
+<title>K | Runtime Verification Inc</title>
+
+<!-- <base href="/k/" /> -->
+
+<!--web fonts-->
+<link
+  href="https://fonts.googleapis.com/css?family=Nunito:300,400,600,700,800"
+  rel="stylesheet"
+/>
+<link
+  href="https://fonts.googleapis.com/css?family=Lora:400i"
+  rel="stylesheet"
+/>
+
+<link
+  href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.14.0/css/all.min.css"
+  rel="stylesheet"
+/>
+
+<link href="../../../../assets/css/index.css" rel="stylesheet" />
+
+<!--[if (gt IE 9) |!(IE)]><!-->
+<!--<link rel="stylesheet" href="/assets/vendor/custom-nav/css/effects/fade-menu.css"/>-->
+<!-- <link rel="stylesheet" href="../../../../assets/k/vl-nav/css/effects/slide-menu.css" /> -->
+<!--<![endif]-->
+
+  </head>
+
+  <body>
+<header
+  class="navbar navbar-expand navbar-dark flex-column flex-md-row bd-navbar"
+>
+  <a class="logo-link" href="../../../../index.html">
+    <img
+      class="logo-dark"
+      srcset="../../../../assets/img/k-logo.png"
+      alt="K"
+      style="height: 48px;"
+    />
+    Semantic Framework
+  </a>
+  <ul class="navbar-nav ml-md-auto">
+    <li class="nav-item">
+      <a
+        class="nav-link pl-2 pr-1 mx-1 py-3 my-n2"
+        href="https://github.com/kframework/k"
+        target="_blank"
+        rel="noopener"
+        aria-label="GitHub"
+      >
+        <i class="fab fa-github"></i>
+      </a>
+    </li>
+  </ul>
+  <a
+    class="btn btn-rv-blue d-none d-lg-inline-block mb-3 mb-md-0 ml-md-3"
+    href="../../../../downloads"
+    >Download</a
+  >
+</header>
+
+
+    <div class="container-fluid">
+      <div class="row flex-xl-nowrap">
+<div class="col-12 col-md-3 col-xl-2 bd-sidebar mb-3">
+  <form
+    role="search"
+    class="bd-search d-flex align-items-center justify-content-between"
+  >
+    <input
+      type="search"
+      class="form-control"
+      placeholder="Search..."
+      aria-label="Search for..."
+      autocomplete="false"
+      id="search-box"
+    />
+    <button
+      class="btn bd-search-docs-toggle d-md-none p-0 ml-3 collapsed"
+      type="button"
+      aria-label="Toggle docs navigation"
+      style="font-size: 1.4rem"
+    >
+      <i class="fas fa-bars"></i>
+    </button>
+  </form>
+  <nav class="collapse bd-links" aria-label="Main navigation">
+    <div class="bd-toc-item">
+      <a class="bd-toc-link" href="../../../../">Homepage</a>
+      <a class="bd-toc-link" href="../../../../downloads">K Tool Binaries </a>
+      <a class="bd-toc-link" href="../../../../k-distribution/k-tutorial"
+        >K Tutorial</a
+      >
+      <a class="bd-toc-link" href="../../../../k-distribution/pl-tutorial"
+        >K PL Tutorial</a
+      >
+      <a class="bd-toc-link" href="../../../../USER_MANUAL/">K User Manual </a>
+      <a
+        class="bd-toc-link"
+        href="../../../../k-distribution/include/kframework/builtin/"
+        >K Builtins
+      </a>
+      <a class="bd-toc-link" href="../../../../projects">Projects using K</a>
+    </div>
+  </nav>
+</div>
+
+        <main
+          class="col-12 col-md-6 col-xl-8 py-md-3 pl-md-5 bd-content"
+          role="main"
+        >
+          <div class="introduction markdown-preview"><html><head></head><body><h1 id="lesson-1.20%3A-k-backends-and-the-haskell-backend">Lesson 1.20: K Backends and the Haskell Backend</h1>
+<p>The purpose of this lesson is to teach about the multiple backends of K,
+in particular the Haskell Backend which is the complement of the backend we
+have been using so far.</p>
+<h2 id="k-backends">K Backends</h2>
+<p>Thus far, we have not discussed the distinction between the K frontend and
+the K backends at all. We have simply assumed that if you run <code>kompile</code> on a
+K definition, there will be a compiler backend that will allow you to execute
+the K definition you have compiled.</p>
+<p>K actually has multiple different backends. The one we have been using so far
+implicitly, the default backend, is called the <strong>LLVM Backend</strong>. It is
+designed to support efficient, optimized concrete execution and search. It
+does this by compiling your K definition to LLVM bitcode and then using LLVM
+to generate machine code for it that is compiled and linked and executed.
+However, K is a formal methods toolkit at the end of the day, and the primary
+goal many people have when defining a programming language in K is to
+ultimately be able to perform more advanced verification on programs in their
+programming language.</p>
+<p>It is for this purpose that K also provides the <strong>Haskell Backend</strong>, so called
+because it is implemented in Haskell. While we will cover the features of the
+Haskell Backend in more detail in the next two lessons, the important thing to
+understand is that it is a separate backend which is optimized for more formal
+reasoning about programming languages. While it is capable of performing
+concrete execution, it does not do so as efficiently as the LLVM Backend.
+In exchange, it provides more advanced features.</p>
+<h2 id="choosing-a-backend">Choosing a backend</h2>
+<p>You can choose which backend to use to compile a K definition by means of the
+<code>--backend</code> flag to <code>kompile</code>. By default, if you do not specify this flag, it
+is equivalent to if you had specified <code>--backend llvm</code>. However, to use the
+Haskell Backend instead, you can simply say <code>kompile --backend haskell</code> on a
+particular K definition.</p>
+<p>As an example, here is a simple K definition that we have seen before in the
+previous lesson (<code>lesson-20.k</code>):</p>
+<pre class="language-k"><code><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">20</span>
+  <span class="token keyword">imports</span> INT
+
+  <span class="token keyword">rule</span> I <span class="token operator">=&gt;</span> I <span class="token operator">+</span><span class="token keyword">Int</span> <span class="token number">1</span>
+    <span class="token keyword">requires</span> I &lt;<span class="token keyword">Int</span> <span class="token number">100</span>
+<span class="token keyword">endmodule</span>
+</code></pre>
+<p>Previously we compiled this definition using the LLVM Backend, but if we
+instead execute the command <code>kompile lesson-20.k --backend haskell</code>, we
+will get an interpreter for this K definition that is implemented in Haskell
+instead. Unlike the default LLVM Backend, the Haskell Backend is not a
+compiler per se. It does not generate new Haskell code corresponding to your
+programming language and then compile and execute it. Instead, it is an
+interpreter which reads the generated IR from <code>kompile</code> and implements in
+Haskell an interpreter that is capable of interpreting any K definition.</p>
+<h3 id="exercise">Exercise</h3>
+<p>Try running the program <code>0</code> in this K definition on the Haskell Backend and
+compare the final configuration to what you would get compiling the same
+definition with the LLVM Backend.</p>
+<h2 id="legacy-backends">Legacy backends</h2>
+<p>As a quick note, K does provide two other backends, which exist primarily
+as legacy code which should be considered deprecated. These are the
+<strong>Java Backend</strong> and the <strong>OCAML Backend</strong>. The Java Backend is essentially
+a precursor to the Haskell Backend, and the OCAML Backend is essentially a
+precursor to the LLVM Backend. We will not cover these backends in any detail
+since they are deprecated, but we still mention them here for the purposes
+of understanding.</p>
+<h2 id="exercises">Exercises</h2>
+<p>Compile your solution to Lesson 1.18, Problem 2 with the Haskell Backend
+and execute some programs. Compare the resulting configurations with the
+output of the same program on the LLVM Backend.</p>
+</body></html></div>
+        </main>
+
+        <!-- Page ToC -->
+        <div class="col-12 col-md-3 col-xl-2 py-md-3 bd-sidebar page-toc mb-3">
+          
+<div>
+<details style="padding:0.25rem 0;;padding-left: 0px;" open>
+            <summary class="bd-toc-link-wrapper">
+              <a href="#lesson-1.20%3A-k-backends-and-the-haskell-backend" class="bd-toc-link">Lesson 1.20: K Backends and the Haskell Backend</a>
+              </summary>
+            <div>
+              <div class="bd-toc-link-wrapper" style="padding:0.25rem 0;">
+              <a
+                href="#k-backends"
+                class="bd-toc-link"
+                style="padding-left: 8px;;"
+              >
+                K Backends
+              </a></div><details style="padding:0.25rem 0;;padding-left: 8px;" open>
+            <summary class="bd-toc-link-wrapper">
+              <a href="#choosing-a-backend" class="bd-toc-link">Choosing a backend</a>
+              </summary>
+            <div>
+              <div class="bd-toc-link-wrapper" style="padding:0.25rem 0;">
+              <a
+                href="#exercise"
+                class="bd-toc-link"
+                style="padding-left: 16px;;"
+              >
+                Exercise
+              </a></div>
+            </div>
+          </details>
+        <div class="bd-toc-link-wrapper" style="padding:0.25rem 0;">
+              <a
+                href="#legacy-backends"
+                class="bd-toc-link"
+                style="padding-left: 8px;;"
+              >
+                Legacy backends
+              </a></div><div class="bd-toc-link-wrapper" style="padding:0.25rem 0;">
+              <a
+                href="#exercises"
+                class="bd-toc-link"
+                style="padding-left: 8px;;"
+              >
+                Exercises
+              </a></div>
+            </div>
+          </details>
+        
+</div>
+
+        </div>
+        <div class="btn btn-rv-blue page-toc-toggle-btn"></div>
+        <!-- End Page ToC -->
+      </div>
+    </div>
+<!-- The footer is now controlled by the k-web-theme git submodule -->
+<footer id="rvsite-footer" class="app-footer text-md-left text-center">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-md-4 mb-md-0 mb-4">
+        <a href="https://runtimeverification.com/" target="_blank">
+          <picture>
+            <source
+              srcset="
+                https://runtimeverification.com/assets/img/rv-logo-dark.png
+              "
+              media="(prefers-color-scheme: dark)"
+            />
+            <img
+              class="logo-dark"
+              src="https://runtimeverification.com/assets/img/rv-logo.png"
+              alt="Runtime Verification logo"
+              style="height: 32px"
+            /> </picture
+        ></a>
+        <p class="mt-2 text-md-left copyright">
+          <a href="https://goo.gl/maps/NYzr2iKpXMgEmQ2F6" target="_blank"
+            >102 E Main St #500, Urbana, IL 61801</a
+          >
+        </p>
+      </div>
+      <div class="col-md-4 text-md-center mb-md-0 mb-4"></div>
+      <div class="col-md-4 mb-md-0 mb-4 text-md-right">
+        <p class="copyright">2021 © all rights reserved</p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Typist/1.2/typist.min.js"></script>
+    <script src="../../../../assets/js/index.js"></script>
+    <script>
+      $(function () {
+        // Render youtube video
+        const anchorElements = document.querySelectorAll(".markdown-preview a");
+        for (let i = anchorElements.length - 1; i >= 0; i--) {
+          if (anchorElements.length - 1 - i > 3) {
+            break;
+          }
+          const anchorElement = anchorElements[i];
+          const href = anchorElement.getAttribute("href");
+          if (href.match(/^https?:\/\/youtu.be\//)) {
+            const match = href.match(/^https?:\/\/youtu.be\/(.+?)$/);
+            if (match && match[1]) {
+              const youtubeId = match[1];
+              const $iframe = $(`
+<div style="text-align:center;">
+  <iframe
+    width="560"
+    height="315"
+    src="https://www.youtube.com/embed/${youtubeId}"
+    frameborder="0"
+    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+    allowfullscreen
+    style="max-width: 100%;"
+  ></iframe>
+  <p>The video is out of date</p>
+</div>
+`);
+              $(anchorElement).replaceWith($iframe[0]);
+            }
+          }
+        }
+      });
+    </script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-9LBGDMRG32"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-9LBGDMRG32");
+    </script>
+  </body>
+</html>

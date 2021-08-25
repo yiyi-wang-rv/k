@@ -1,3 +1,0 @@
-[Error] Compiler: Circular lists are not allowed.
-	Source(checkListDecl2.k)
-	Location(12,16,12,27)
