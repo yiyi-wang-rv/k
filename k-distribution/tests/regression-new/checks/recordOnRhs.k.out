@@ -1,4 +1,0 @@
-[Error] Compiler: Found variable _Gen1 on right hand side of rule, not bound on left hand side. Did you mean "?_Gen1"?
-	Source(recordOnRhs.k)
-	Location(6,15,6,23)
-[Error] Compiler: Had 1 structural errors.
