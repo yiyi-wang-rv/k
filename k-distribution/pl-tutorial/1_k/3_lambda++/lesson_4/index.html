@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+<meta charset="utf-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+/>
+<meta
+  name="description"
+  content="Design and implement your programming language and software analysis tools with mathematical rigor."
+/>
+<meta name="keywords" content="runtime, verification, rv, k" />
+<meta name="author" content="K | Runtime Verification Inc" />
+<meta name="robots" content="index, follow" />
+<link rel="canonical" href="https://kframework.org/k-distribution/pl-tutorial/1_k/3_lambda++/lesson_4/" />
+
+<!--favicon icon-->
+<link rel="icon" type="image/png" href="../../../../../assets/img/favicon.ico" />
+
+<title>K | Runtime Verification Inc</title>
+
+<!-- <base href="/k/" /> -->
+
+<!--web fonts-->
+<link
+  href="https://fonts.googleapis.com/css?family=Nunito:300,400,600,700,800"
+  rel="stylesheet"
+/>
+<link
+  href="https://fonts.googleapis.com/css?family=Lora:400i"
+  rel="stylesheet"
+/>
+
+<link
+  href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.14.0/css/all.min.css"
+  rel="stylesheet"
+/>
+
+<link href="../../../../../assets/css/index.css" rel="stylesheet" />
+
+<!--[if (gt IE 9) |!(IE)]><!-->
+<!--<link rel="stylesheet" href="/assets/vendor/custom-nav/css/effects/fade-menu.css"/>-->
+<!-- <link rel="stylesheet" href="../../../../../assets/k/vl-nav/css/effects/slide-menu.css" /> -->
+<!--<![endif]-->
+
+  </head>
+
+  <body>
+<header
+  class="navbar navbar-expand navbar-dark flex-column flex-md-row bd-navbar"
+>
+  <a class="logo-link" href="../../../../../index.html">
+    <img
+      class="logo-dark"
+      srcset="../../../../../assets/img/k-logo.png"
+      alt="K"
+      style="height: 48px;"
+    />
+    Semantic Framework
+  </a>
+  <ul class="navbar-nav ml-md-auto">
+    <li class="nav-item">
+      <a
+        class="nav-link pl-2 pr-1 mx-1 py-3 my-n2"
+        href="https://github.com/kframework/k"
+        target="_blank"
+        rel="noopener"
+        aria-label="GitHub"
+      >
+        <i class="fab fa-github"></i>
+      </a>
+    </li>
+  </ul>
+  <a
+    class="btn btn-rv-blue d-none d-lg-inline-block mb-3 mb-md-0 ml-md-3"
+    href="../../../../../downloads"
+    >Download</a
+  >
+</header>
+
+
+    <div class="container-fluid">
+      <div class="row flex-xl-nowrap">
+<div class="col-12 col-md-3 col-xl-2 bd-sidebar mb-3">
+  <form
+    role="search"
+    class="bd-search d-flex align-items-center justify-content-between"
+  >
+    <input
+      type="search"
+      class="form-control"
+      placeholder="Search..."
+      aria-label="Search for..."
+      autocomplete="false"
+      id="search-box"
+    />
+    <button
+      class="btn bd-search-docs-toggle d-md-none p-0 ml-3 collapsed"
+      type="button"
+      aria-label="Toggle docs navigation"
+      style="font-size: 1.4rem"
+    >
+      <i class="fas fa-bars"></i>
+    </button>
+  </form>
+  <nav class="collapse bd-links" aria-label="Main navigation">
+    <div class="bd-toc-item">
+      <a class="bd-toc-link" href="../../../../../">Homepage</a>
+      <a class="bd-toc-link" href="../../../../../downloads">K Tool Binaries </a>
+      <a class="bd-toc-link" href="../../../../../k-distribution/k-tutorial"
+        >K Tutorial</a
+      >
+      <a class="bd-toc-link" href="../../../../../k-distribution/pl-tutorial"
+        >K PL Tutorial</a
+      >
+      <a class="bd-toc-link" href="../../../../../USER_MANUAL/">K User Manual </a>
+      <a
+        class="bd-toc-link"
+        href="../../../../../k-distribution/include/kframework/builtin/"
+        >K Builtins
+      </a>
+      <a class="bd-toc-link" href="../../../../../projects">Projects using K</a>
+    </div>
+  </nav>
+</div>
+
+        <main
+          class="col-12 col-md-6 col-xl-8 py-md-3 pl-md-5 bd-content"
+          role="main"
+        >
+          <div class="introduction markdown-preview"><!-- Copyright (c) 2014-2019 K Team. All Rights Reserved. --><html><head></head><body><h1 id="do-not-reuse-blindly!">Do Not Reuse Blindly!</h1>
+<p>It may be tempting to base your decision to reuse an existing semantics of
+a language feature solely on syntactic considerations; for example, to reuse
+whenever the parser does not complain.  As seen in this lesson, this could
+be quite risky.</p>
+<p>Let&apos;s try (and fail) to reuse the definition of <code>callcc</code> from Lesson 1:</p>
+<pre><code>syntax Exp ::= &quot;callcc&quot; Exp  [strict]
+syntax Val ::= cc(K)
+rule &lt;k&gt; (callcc V:Val =&gt; V cc(K)) ~&gt; K &lt;/k&gt;
+rule &lt;k&gt; cc(K) V ~&gt; _ =&gt;  V ~&gt; K &lt;/k&gt;
+</code></pre>
+<p>The <code>callcc</code> examples that we tried in Lesson 1 work, so it may look it works.</p>
+<p>However, the problem is that <code>cc(K)</code> should also include an environment,
+and that environment should also be restored when <code>cc(K)</code> is invoked.
+Let&apos;s try to illustrate this bug with <code>callcc-env1.lambda</code></p>
+<pre><code>let x = 1 in
+  ((callcc lambda k . (let x = 2 in (k x))) + x)
+</code></pre>
+<p>where the second argument of <code>+</code>, <code>x</code>, should be bound to the top <code>x</code>, which
+is 1.  However, since <code>callcc</code> does not restore the environment, that <code>x</code>
+should be looked up in the wrong, callcc-inner environment, so we should see
+the overall result 4.</p>
+<p>Hm, we get the right result, 3 ... (Note: you may get 4, depending on
+your version of K and platform; but both 3 and 4 are possible results, as
+explained below and seen in the tests).  How can we get 3?  Well, recall that
+<code>+</code> is strict, which means that it can evaluate its arguments in any order.
+It just happened that in the execution that took place above its second
+argument was evaluated first, to 1, and then the <code>callcc</code> was evaluated, but
+its <code>cc</code> value K had already included the 1 instead of <code>x</code> ...  In Part 4 of
+the tutorial we will see how to explore all the non-deterministic behaviors of
+a program; we could use that feature of K to debug semantics, too.
+For example, in this case, we could search for all behaviors of this program
+and we would indeed get two possible value results: 3 and 4.</p>
+<p>One may think that the problem is the non-deterministic evaluation order
+of <code>+</code>, and thus that all we need to do is to enforce a deterministic order
+in which the arguments of + are evaluated.  Let us follow this path to
+see what happens.  There are two simple ways to make the evaluation order
+of <code>+</code>&apos;s arguments deterministic.  One is to make <code>+</code> <code>seqstrict</code> in the
+semantics, to enforce its evaluation from left-to-right.  Do it and then
+run the program above again; you should get only one behavior for the
+program above, 4, which therefore shows that copying-and-pasting our old
+definition of <code>callcc</code> was incorrect.  However, as seen shortly, that only
+fixed the problem for the particular example above, but not in general.
+Another conventional approach to enforce the desired evaluation order is to
+modify the program to enforce the left-to-right evaluation order using let
+binders, as we do in <code>callcc-env2.lambda</code>:</p>
+<pre><code>let x = 1 in
+  let a = callcc lambda k . (let x = 2 in (k x)) in
+    let b = x in
+      (a + b)
+</code></pre>
+<p>With your installation of K you may get the &quot;expected&quot; result 4 when you
+execute this program, so it may look like our non-deterministic problem is
+fixed.  Unfortunately, it is not.  Using the K tool to search for all the
+behaviors in the program above reveals that the final result 3 is still
+possible.  Moreover, both the 3 and the 4 behaviors are possible regardless
+of whether <code>+</code> is declared to be <code>seqstrict</code> or just <code>strict</code>.  How is that
+possible?  The problem is now the non-deterministic evaluation strategy of
+the function application construct.  Indeed, recall that the semantics of
+the let-in construct is defined by desugaring to lambda application:</p>
+<pre><code>rule let X = E in E&apos; =&gt; (lambda X . E&apos;) E     [macro]
+</code></pre>
+<p>With this, the program above eventually reduces to</p>
+<pre><code>(lambda a . ((lambda b . a + b) x))
+(callcc lambda k . (let x = 2 in (k x)))
+</code></pre>
+<p>in an environment where <code>x</code> is 1.  If the first expression evaluates first,
+then it does so to a closure in which <code>x</code> is bound to a location holding 1,
+so when applied later on to the <code>x</code> inside the argument of <code>callcc</code> (which is
+2), it will correctly lookup <code>x</code> in its enclosed environment and thus the
+program will evaluate to 3.  On the other hand, if the second expression
+evaluates first, then the <code>cc</code> value will freeze the first expression as is,
+breaking the relationship between its <code>x</code> and the current environment in which
+it is bound to 1, being inadvertently captured by the environment of the
+let-in construct inside the <code>callcc</code> and thus making the entire expression
+evaluate to 4.</p>
+<p>So the morale is: Do not reuse blindly.  <em>Think!</em></p>
+<p>In the next lesson we fix the environment-based semantics of <code>callcc</code> by having
+<code>cc</code> also wrap an environment, besides a computation.  We will also give a more
+direct semantics to recursion, based on environments instead of fixed-point
+combinators.</p>
+<p>Go to <a href="../lesson_5/">Lesson 5, LAMBDA++: More Semantic Computation Items</a>.</p>
+<p><a href="https://youtu.be/OXvtklaSaSQ" target="_blank" rel="noopener">MOVIE (out of date) [3&apos;37&quot;]</a></p>
+</body></html></div>
+        </main>
+
+        <!-- Page ToC -->
+        <div class="col-12 col-md-3 col-xl-2 py-md-3 bd-sidebar page-toc mb-3">
+          
+<div>
+<div class="bd-toc-link-wrapper" style="padding:0.25rem 0;">
+              <a
+                href="#do-not-reuse-blindly!"
+                class="bd-toc-link"
+                style="padding-left: 0px;;"
+              >
+                Do Not Reuse Blindly!
+              </a></div>
+</div>
+
+        </div>
+        <div class="btn btn-rv-blue page-toc-toggle-btn"></div>
+        <!-- End Page ToC -->
+      </div>
+    </div>
+<!-- The footer is now controlled by the k-web-theme git submodule -->
+<footer id="rvsite-footer" class="app-footer text-md-left text-center">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-md-4 mb-md-0 mb-4">
+        <a href="https://runtimeverification.com/" target="_blank">
+          <picture>
+            <source
+              srcset="
+                https://runtimeverification.com/assets/img/rv-logo-dark.png
+              "
+              media="(prefers-color-scheme: dark)"
+            />
+            <img
+              class="logo-dark"
+              src="https://runtimeverification.com/assets/img/rv-logo.png"
+              alt="Runtime Verification logo"
+              style="height: 32px"
+            /> </picture
+        ></a>
+        <p class="mt-2 text-md-left copyright">
+          <a href="https://goo.gl/maps/NYzr2iKpXMgEmQ2F6" target="_blank"
+            >102 E Main St #500, Urbana, IL 61801</a
+          >
+        </p>
+      </div>
+      <div class="col-md-4 text-md-center mb-md-0 mb-4"></div>
+      <div class="col-md-4 mb-md-0 mb-4 text-md-right">
+        <p class="copyright">2022 © all rights reserved</p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Typist/1.2/typist.min.js"></script>
+    <script src="../../../../../assets/js/index.js"></script>
+    <script>
+      $(function () {
+        // Render youtube video
+        const anchorElements = document.querySelectorAll(".markdown-preview a");
+        for (let i = anchorElements.length - 1; i >= 0; i--) {
+          if (anchorElements.length - 1 - i > 3) {
+            break;
+          }
+          const anchorElement = anchorElements[i];
+          const href = anchorElement.getAttribute("href");
+          if (href.match(/^https?:\/\/youtu.be\//)) {
+            const match = href.match(/^https?:\/\/youtu.be\/(.+?)$/);
+            if (match && match[1]) {
+              const youtubeId = match[1];
+              const $iframe = $(`
+<div style="text-align:center;">
+  <iframe
+    width="560"
+    height="315"
+    src="https://www.youtube.com/embed/${youtubeId}"
+    frameborder="0"
+    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+    allowfullscreen
+    style="max-width: 100%;"
+  ></iframe>
+  <p>The video is out of date</p>
+</div>
+`);
+              $(anchorElement).replaceWith($iframe[0]);
+            }
+          }
+        }
+      });
+    </script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-9LBGDMRG32"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-9LBGDMRG32");
+    </script>
+  </body>
+</html>
