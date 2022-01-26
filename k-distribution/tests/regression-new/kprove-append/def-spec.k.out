@@ -1,5 +1,0 @@
-  #Ceil ( _0 ~> _DotVar1 ~> . )
-#And
-  <k>
-    a ~> _0 ~> _DotVar1 ~> .
-  </k>
