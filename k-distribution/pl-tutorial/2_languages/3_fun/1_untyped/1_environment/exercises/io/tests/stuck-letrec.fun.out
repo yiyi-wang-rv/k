@@ -1,1 +1,0 @@
-V ==K ( x ~> #freezer_,__FUN-UNTYPED-COMMON0_ ( .Bottoms ) ~> #freezer_,__FUN-UNTYPED-COMMON1_ ( 2 ) ~> #freezerassignTo1_ ( x , y , .Bottoms ) ~> y ~> setEnv ( x |-> 1 ) ~> setEnv ( .Map ) )
