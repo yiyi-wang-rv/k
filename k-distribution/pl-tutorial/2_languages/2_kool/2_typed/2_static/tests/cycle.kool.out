@@ -1,3 +1,0 @@
-  S ==K "Class \"C1\" is in a cycle!\n"
-#Or
-  S ==K "Class \"C2\" is in a cycle!\n"
