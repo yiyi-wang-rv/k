@@ -405,11 +405,10 @@ jobs:
           rm -rf $(find . -maxdepth 1 -not -name public_content -a -not -name .git -a -not -path . -a -not -path .. -a -not -name CNAME)
           mv public_content/* ./
           rm -rf public_content
-      - name: 'Push gh-pages branch'
-        working-directory: gh-pages
-        run: |
-          set -x
-          git add ./
-          git commit -m 'gh-pages: Updated the website'
-          git merge --strategy ours origin/gh-pages --allow-unrelated-histories
-          git push origin gh-pages
+      - name: 'Deploy to gh-pages branch 🚀'
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages # The branch the action should deploy to.
+          folder: ./ # The folder the action should deploy.
+          clean: true
+          single-commit: true
