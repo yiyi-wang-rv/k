@@ -386,7 +386,7 @@ write a priority block with multiple productions and an associativity.</p>
   <span class="token keyword">syntax</span> Boolean <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">"true"</span> <span class="token operator">|</span> <span class="token string">"false"</span>
                    <span class="token operator">|</span> <span class="token string">"("</span> Boolean <span class="token string">")"</span> <span class="token punctuation">[</span><span class="token class-name">bracket</span><span class="token punctuation">]</span>
                    &gt; <span class="token string">"!"</span> Boolean <span class="token punctuation">[</span>function<span class="token punctuation">]</span>
-                   &gt; <span class="token class-name">left</span><span class="token punctuation">:</span> 
+                   &gt; <span class="token class-name">left</span><span class="token punctuation">:</span>
                      Boolean <span class="token string">"&amp;&amp;"</span> Boolean <span class="token punctuation">[</span>function<span class="token punctuation">]</span>
                    <span class="token operator">|</span> Boolean <span class="token string">"^"</span> Boolean <span class="token punctuation">[</span>function<span class="token punctuation">]</span>
                    <span class="token operator">|</span> Boolean <span class="token string">"||"</span> Boolean <span class="token punctuation">[</span>function<span class="token punctuation">]</span>
@@ -420,7 +420,7 @@ will express the exact same grammar as <code>lesson-04-b.k</code></p>
                    <span class="token operator">|</span> <span class="token string">"!"</span> Boolean <span class="token punctuation">[</span>not<span class="token punctuation">,</span> function<span class="token punctuation">]</span>
                    <span class="token operator">|</span> Boolean <span class="token string">"&amp;&amp;"</span> Boolean <span class="token punctuation">[</span>and<span class="token punctuation">,</span> function<span class="token punctuation">]</span>
                    <span class="token operator">|</span> Boolean <span class="token string">"^"</span> Boolean <span class="token punctuation">[</span>xor<span class="token punctuation">,</span> function<span class="token punctuation">]</span>
-                   <span class="token operator">|</span> Boolean <span class="token string">"|"</span> Boolean <span class="token punctuation">[</span>or<span class="token punctuation">,</span> function<span class="token punctuation">]</span>
+                   <span class="token operator">|</span> Boolean <span class="token string">"||"</span> Boolean <span class="token punctuation">[</span>or<span class="token punctuation">,</span> function<span class="token punctuation">]</span>
 
   <span class="token keyword">syntax priorities</span> literal atom &gt; not &gt; and &gt; xor &gt; or
   <span class="token keyword">syntax left</span> and
@@ -512,7 +512,7 @@ and confirm that else clause is part of the innermost <code>if</code> statement.
 modify the definition so that you will get the alternative parse.</p>
 </li>
 <li>
-<p>Modify your solution from lesson 1.3, problem 2 so that unary negation should
+<p>Modify your solution from Lesson 1.3, Exercise 2 so that unary negation should
 bind tighter than multiplication and division, which should bind tighter than
 addition and subtraction, and each binary operator should be left associative.
 Write these priority and associativity declarations both inline and explicitly.</p>

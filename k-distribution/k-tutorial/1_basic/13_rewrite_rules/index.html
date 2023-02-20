@@ -289,8 +289,8 @@ grammar:</p>
              | "."
 </code></pre>
 <p>As a syntactic convenience, K allows you to treat <code>~&gt;</code> like it is an
-associative list (i.e., as if it were defined as <code>syntax K ::= K "~&gt;" K</code>), but
-when a definition is compiled, it will automatically transform the rules you
+associative list (i.e., as if it were defined as <code>syntax K ::= K "~&gt;" K</code>).
+When a definition is compiled, it will automatically transform the rules you
 write so that they treat the <code>K</code> sort as a cons-list. Another syntactic
 convenience is that, for disambiguation purposes, you can write <code>.K</code> anywhere
 you would otherwise write <code>.</code> and the meaning is identical.</p>

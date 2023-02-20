@@ -351,7 +351,7 @@ you would be able to initialize <code>$PGM</code> with either a positional argum
 <code>-cPGM</code> command line flag, but the other configuration variables would need
 to be explicitly initialized with <code>-c</code>.</p>
 <h3 id="exercise">Exercise</h3>
-<p>Modify your solution to Lesson 1.14, Problem 2 to add a new cell with a
+<p>Modify your solution to Lesson 1.14, Exercise 2 to add a new cell with a
 configuration variable of sort <code>Bool</code>. This variable should determine whether
 the <code>/</code> operator is evaluated using <code>/Int</code> or <code>divInt</code>. Test that by specifying
 different values for this variable, you can change the behavior of rounding on
@@ -360,7 +360,7 @@ division of negative numbers.</p>
 <p>It is possible to nest cells inside one another. A cell that contains other
 cells must contain <strong>only</strong> other cells, but in doing this, you are able to
 create a hierarchical structure to the configuration. Consider the following
-definition which is equivalent to the one in <code>LESSON-15-B</code> (<code>lesson-15-c.k</code>):</p>
+definition (<code>lesson-15-c.k</code>), which is equivalent to the one in <code>LESSON-15-B</code>:</p>
 <pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">15</span><span class="token operator">-</span>C<span class="token operator">-</span>SYNTAX
   <span class="token keyword">imports</span> INT<span class="token operator">-</span>SYNTAX
 <span class="token keyword">endmodule</span>

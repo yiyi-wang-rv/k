@@ -286,7 +286,7 @@ execution. One task symbolic execution must perform is to identify whether
 a particular symbolic term is <strong>feasible</strong>, that is to say, that there actually
 exists a concrete instantiation of that term such that all the logical
 constraints on that term can actually be satisfied. The Haskell Backend
-delegates this task to <a href="https://github.com/Z3Prover/z3" target="_blank" rel="noreferrer noopener">Z3</a>, a
+delegates this task to <a href="https://github.com/Z3Prover/z3" target="_blank" rel="noreferrer noopener">Z3</a>, an
 <a href="https://en.wikipedia.org/wiki/Satisfiability_modulo_theories" target="_blank" rel="noreferrer noopener">SMT solver</a>.
 This solver is used to periodically trim configurations that are determined
 to be mathematically infeasible.</p>
@@ -333,7 +333,7 @@ possible states that can be reached by a symbolic configuration.</p>
 </code></pre>
 <p>When we symbolically execute the program <code>0</code>, we get the following output
 from the Haskell Backend:</p>
-<pre><code>    &lt;k&gt;
+<pre style="position: relative; padding-top: 32px;" class="line-numbers language-line-numbers"><div class="code-block-selectors">.numberLines</div><code class="numberLines">    &lt;k&gt;
       5 ~&gt; .
     &lt;/k&gt;
   #And
@@ -364,7 +364,7 @@ from the Haskell Backend:</p>
     #Equals
       0
     } )
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>Note some new symbols introduced by this configuration: <code>#And</code>, <code>#Or</code>, and
 <code>#Equals</code>. While <code>andBool</code>, <code>orBool</code>, and <code>==K</code> represent functions of sort
 <code>Bool</code>, <code>#And</code>, <code>#Or</code>, and <code>#Equals</code> are <strong>matching logic connectives</strong>. We

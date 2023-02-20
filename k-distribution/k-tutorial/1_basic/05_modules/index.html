@@ -356,7 +356,7 @@ module, as well as all the modules it imports recursively, are used to
 determine the rules that can be applied at runtime in order to execute a
 program. For example, in the above example, if the main semantics module is
 module <code>LESSON-05-D-1</code>, then <code>not</code> is an uninterpreted function (i.e., has no
-rules associated with it), and the rules in module <code>LESSON-05-D-2</code> are not
+rules associated with it), and the rules in module <code>LESSON-05-D</code> are not
 included.</p>
 <p>While you can specify the entry point modules explicitly by passing the
 <code>--main-module</code> and <code>--syntax-module</code> flags to <code>kompile</code>, by default, if you
@@ -430,7 +430,7 @@ in which case these directories are prepended to the beginning of the list.</p>
 <h2 id="exercises">Exercises</h2>
 <ol>
 <li>
-<p>Take the solution to lesson 1.4, problem 2 which included the explicit
+<p>Take the solution to Lesson 1.4, Exercise 2 which included the explicit
 priority and associativity declarations, and modify the definition so that
 the syntax of integers and brackets is in one module, the syntax of addition,
 subtraction, and unary negation is in another module, and the syntax of
@@ -439,11 +439,11 @@ the same set of expressions as before. Place priority declarations in the main
 module.</p>
 </li>
 <li>
-<p>Modify <code>lesson-02-d.k</code> from lesson 1.2 so that the rules and syntax are in
+<p>Modify <code>lesson-02-d.k</code> from Lesson 1.2 so that the rules and syntax are in
 separate modules in separate files.</p>
 </li>
 <li>
-<p>Place the file containing the syntax from problem 2 in another directory,
+<p>Place the file containing the syntax from Exercise 2 in another directory,
 then recompile the definition. Observe why a compilation error occurs. Then
 fix the compiler error by passing <code>-I</code> to kompile.</p>
 </li>

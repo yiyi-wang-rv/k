@@ -333,8 +333,8 @@ value.</p>
   <span class="token keyword">syntax</span> Stmt <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token keyword">Id</span> <span class="token string">"="</span> Exp <span class="token string">";"</span> <span class="token punctuation">[</span><span class="token class-name">strict</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">]</span>
                 <span class="token operator">|</span> <span class="token string">"return"</span> Exp <span class="token string">";"</span> <span class="token punctuation">[</span><span class="token class-name">strict</span><span class="token punctuation">]</span>
   <span class="token keyword">syntax</span> Stmts <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> List<span class="token punctuation">{</span>Stmt<span class="token punctuation">,</span><span class="token string">""</span><span class="token punctuation">}</span>
-  <span class="token keyword">syntax</span> Exp <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token keyword">Id</span> 
-               <span class="token operator">|</span> <span class="token keyword">Int</span> 
+  <span class="token keyword">syntax</span> Exp <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token keyword">Id</span>
+               <span class="token operator">|</span> <span class="token keyword">Int</span>
                <span class="token operator">|</span> Exp <span class="token string">"+"</span> Exp <span class="token punctuation">[</span><span class="token class-name">seqstrict</span><span class="token punctuation">]</span>
                <span class="token operator">|</span> <span class="token string">"spawn"</span> <span class="token string">"{"</span> Stmts <span class="token string">"}"</span>
                <span class="token operator">|</span> <span class="token string">"join"</span> Exp <span class="token string">";"</span> <span class="token punctuation">[</span><span class="token class-name">strict</span><span class="token punctuation">]</span>
@@ -359,7 +359,7 @@ value.</p>
          <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> spawn <span class="token punctuation">{</span> Ss <span class="token punctuation">}</span> <span class="token operator">=&gt;</span> NEXTID <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>
        <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>thread</span><span class="token punctuation">&gt;</span></span>
        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>next-id</span><span class="token punctuation">&gt;</span></span> NEXTID <span class="token operator">=&gt;</span> NEXTID <span class="token operator">+</span><span class="token keyword">Int</span> <span class="token number">1</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>next-id</span><span class="token punctuation">&gt;</span></span>
-       <span class="token punctuation">(</span><span class="token punctuation">.</span>Bag <span class="token operator">=&gt;</span> 
+       <span class="token punctuation">(</span><span class="token punctuation">.</span>Bag <span class="token operator">=&gt;</span>
        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>thread</span><span class="token punctuation">&gt;</span></span>
          <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>id</span><span class="token punctuation">&gt;</span></span> NEXTID <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>id</span><span class="token punctuation">&gt;</span></span>
          <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> Ss <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>
@@ -394,7 +394,7 @@ configuration automatically. This allows you to have the power of cells while
 still being a collection under the hood.</p>
 <h2 id="exercises">Exercises</h2>
 <ol>
-<li>Modify the solution from Lesson 1.16, Problem 1 so that the cell you use to
+<li>Modify the solution from Lesson 1.16, Exercise 1 so that the cell you use to
 keep track of functions in a <code>Map</code> is now a cell collection. Run some programs
 and compare how they get unparsed before and after this change.</li>
 </ol>

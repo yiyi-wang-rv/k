@@ -268,9 +268,8 @@ have GDB installed, then do so. Steps to install GDB are outlined in
 this <a href="http://www.gdbtutorial.com/tutorial/how-install-gdb" target="_blank" rel="noreferrer noopener">GDB Tutorial</a>.</p>
 <p>The first thing neccessary in order to debug a K interpreter in GDB is to
 build the interpreter with full debugging support enabled. This can be done
-relatively simply. First, make sure you have not passed <code>-O1</code>, <code>-O2</code>, or <code>-O3</code>
-to <code>kompile</code>. Second, simply add the command line flags <code>-ccopt -g -ccopt -O1</code>
-to <code>kompile</code>. The resulting compiled K definition will be ready to support
+relatively simply. First, run <code>kompile</code> with the command line flags <code>-ccopt -g -ccopt -O1</code>.
+The resulting compiled K definition will be ready to support
 debugging.</p>
 <p>Note: the 'O' in <code>-O1</code> is the letter 'O' not the number 0!</p>
 <p>Once you have a compiled K definition and a program you wish to debug, you
@@ -388,7 +387,7 @@ and setting a breakpoint when a side condition of a rule is evaluated.</p>
 <p>The easiest way to do the first two things is to set a breakpoint on the
 line of code containing the function or rule.</p>
 <p>For example, consider the following K definition (<code>lesson-19-b.k</code>):</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">19</span><span class="token operator">-</span>B
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 2;" class="line-numbers language-line-numbers" data-start="3"><div class="code-block-selectors">.k .numberLines</div><code class="k numberLines" startfrom="3"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">19</span><span class="token operator">-</span>B
   <span class="token keyword">imports</span> BOOL
 
   <span class="token keyword">syntax</span> <span class="token keyword">Bool</span> <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> isBlue<span class="token punctuation">(</span>Fruit<span class="token punctuation">)</span> <span class="token punctuation">[</span>function<span class="token punctuation">]</span>
@@ -398,7 +397,7 @@ line of code containing the function or rule.</p>
 
   <span class="token keyword">rule</span> F<span class="token punctuation">:</span>Fruit <span class="token operator">=&gt;</span> isBlue<span class="token punctuation">(</span>F<span class="token punctuation">)</span>
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>Once this program has been compiled for debugging, we can run the program
 <code>Blueberry()</code>. We can then set a breakpoint that stops when the <code>isBlue</code>
 function is called with the following command:</p>
@@ -454,7 +453,7 @@ of the rule.</p>
 <p>Sometimes it is inconvenient to set the breakpoint based on a line number.</p>
 <p>It is also possible to set a breakpoint based on the rule label of a particular
 rule. Consider the following definition (<code>lesson-19-c.k</code>):</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">19</span><span class="token operator">-</span>C
+<pre style="position: relative; padding-top: 32px;" class="line-numbers language-line-numbers"><div class="code-block-selectors">.k .numberLines</div><code class="k numberLines"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">19</span><span class="token operator">-</span>C
   <span class="token keyword">imports</span> INT
   <span class="token keyword">imports</span> BOOL
 
@@ -463,7 +462,7 @@ rule. Consider the following definition (<code>lesson-19-c.k</code>):</p>
   <span class="token keyword">rule</span> <span class="token punctuation">[</span>isOdd<span class="token punctuation">]</span><span class="token punctuation">:</span> isEven<span class="token punctuation">(</span>I<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token boolean">false</span> <span class="token keyword">requires</span> I <span class="token operator">%</span><span class="token keyword">Int</span> <span class="token number">2</span> <span class="token operator">=</span><span class="token operator">/</span><span class="token operator">=</span><span class="token keyword">Int</span> <span class="token number">0</span>
 
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>We will run the program <code>isEven(4)</code>. We can set a breakpoint for when a rule
 applies by means of the <code>MODULE-NAME.label.rhs</code> syntax:</p>
 <pre><code>(gdb) break LESSON-19-C.isEven.rhs
@@ -546,7 +545,7 @@ We suggest you refer to the
 want to try to do something and are unsure as to how.</p>
 <h2 id="exercises">Exercises</h2>
 <ol>
-<li>Compile your solution to Lesson 1.18, Problem 2 with debugging support
+<li>Compile your solution to Lesson 1.18, Exercise 2 with debugging support
 enabled and step through several programs you have previously used to test.
 Then set a breakpoint on the <code>isKResult</code> function and observe the state of the
 interpreter when stopped at that breakpoint. Set a breakpoint on the rule for
