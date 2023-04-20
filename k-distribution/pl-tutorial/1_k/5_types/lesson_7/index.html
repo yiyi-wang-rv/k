@@ -154,7 +154,7 @@
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/16_collections/">Lesson 1.16: Maps, Semantic Lists, and Sets</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/17_cell_multiplicity/">Lesson 1.17: Cell Multiplicity and Cell Collections</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/18_equality_and_conditionals/">Lesson 1.18: Term Equality and the Ternary Operator</a></div>
-<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB</a></div>
+<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB or LLDB</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/20_backends/">Lesson 1.20: K Backends and the Haskell Backend</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/21_symbolic_execution/">Lesson 1.21: Unification and Symbolic Execution</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/22_proofs/">Lesson 1.22: K Deductive Verification</a></div>
@@ -254,7 +254,7 @@
           class="col-12 col-md-6 col-xl-8 py-md-3 pl-md-5 bd-content"
           role="main"
         >
-          <div class="introduction markdown-preview"><!-- Copyright (c) 2012-2019 K Team. All Rights Reserved. --><html><head></head><body><h1 id="a-naive-substitution-based-polymorphic-type-inferencer">A Naive Substitution-based Polymorphic Type Inferencer</h1>
+          <div class="introduction markdown-preview"><html><head></head><body><h1 id="a-naive-substitution-based-polymorphic-type-inferencer">A Naive Substitution-based Polymorphic Type Inferencer</h1>
 <p>In this lesson you learn how little it takes to turn a naive monomorphic
 type inferencer into a naive polymorphic one, basically only changing
 a few characters. In terms of the K framework, you will learn that
@@ -262,11 +262,11 @@ you can have complex combinations of substitutions in K, both over
 expressions and over types.</p>
 <p>Let us start directly with the change. All we have to do is to take
 the LAMBDA type inferencer in Lesson 4 and only change the macro</p>
-<pre><code>rule let X = E in E' =&gt; (lambda X . E') E  [macro]
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>rule let X = E in E' =&gt; (lambda X . E') E  [macro]
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>as follows:</p>
-<pre><code>rule let X = E in E' =&gt; E'[E/X]  [macro]
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>rule let X = E in E' =&gt; E'[E/X]  [macro]
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>In other words, we are inlining the beta-reduction rule of
 lambda-calculus within the original rule. In terms of typing,
 the above forces the type inferencer to type <code>E</code> in place for each
@@ -277,51 +277,51 @@ one type only which satisfied the constrains of all <code>X</code>'s occurrences
 the type inferencer in Lesson 4 should still work here, although the
 types of some programs can now be more general. For example, reconsider
 the <code>nested-lets.lambda</code> program</p>
-<pre><code>let f1 = lambda x . x in
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>let f1 = lambda x . x in
   let f2 = f1 in
     let f3 = f2 in
       let f4 = f3 in
         let f5 = f4 in
           if (f5 true) then f2 else f3
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>which was previously typed to <code>bool -&gt; bool</code>. With the new rule above,
 the sequence of lets is iteratively eliminated and we end up with the
 program</p>
-<pre><code>if (lambda x . x) true then (lambda x . x) else (lambda x . x)
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>if (lambda x . x) true then (lambda x . x) else (lambda x . x)
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>which now types (with both type inferencers) to a type of the form
 <code>t -&gt; t</code>, for some type variable <code>t</code>, which is more general than the
 previous <code>bool -&gt; bool</code> type that the program typed to in Lesson 4.</p>
 <p>We can also now type programs that were not typable before, such as</p>
-<pre><code>let id = lambda x . x
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>let id = lambda x . x
 in if (id true) then (id 1) else (id 2)
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>and</p>
-<pre><code>let id = lambda x . x
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>let id = lambda x . x
 in id id
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>Let us also test it on some trickier programs, also not typable
 before, such as</p>
-<pre><code>let f = lambda x . x
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>let f = lambda x . x
 in let g = lambda y . f y
    in g g
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <p>which gives us a type of the form <code>t -&gt; t</code> for some type variable <code>t</code>,
 and as</p>
-<pre><code>let f = let g = lambda x . x
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>let f = let g = lambda x . x
         in let h = lambda x . lambda x . (g g g g)
            in h
 in f
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 <p>which types to <code>t1 -&gt; t2 -&gt; t3 -&gt; t3</code> for some type variables <code>t1</code>, <code>t2</code>, <code>t3</code>.</p>
 <p>Here is another program which was not typable before, which is
 trickier than the others above in that a lambda-bound variable appears
 free in a let-bound expression:</p>
-<pre><code>lambda x . (
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>lambda x . (
   let y = lambda z . x
   in if (y true) then (y 1) else (y (lambda x . x))
 )
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 <p>The above presents no problem now, because once <code>lambda z . x</code> gets
 substituted for <code>y</code> we get a well-typed expression which yields that <code>x</code>
 has the type <code>bool</code>, so the entire expression types to <code>bool -&gt; bool</code>.</p>
@@ -339,14 +339,14 @@ program. Consider, for example, the following classic example which
 is known to generate a type whose size is exponential in the size of
 the program (and is thus used as an argument for why let-polymorphic
 type inference is exponential in the worst-case):</p>
-<pre><code>let f00 = lambda x . lambda y . x in
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>let f00 = lambda x . lambda y . x in
   let f01 = lambda x . f00 (f00 x) in
     let f02 = lambda x . f01 (f01 x) in
       let f03 = lambda x . f02 (f02 x) in
         let f04 = lambda x . f03 (f03 x) in
           // ... you can add more nested lets here
           f04
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>The particular instance of the pattern above generates a type which
 has 17 type variables! The desugaring of each <code>let</code> doubles the size of
 the program and of its resulting type. While such programs are little
@@ -403,8 +403,8 @@ defined here.</p>
             /> </picture
         ></a>
         <p class="mt-2 text-md-left copyright">
-          <a href="https://goo.gl/maps/hKLtCjeEd6yqfzwx5" target="_blank"
-            >1807 S Neil Street, Champaign, IL 61820</a
+          <a href="https://goo.gl/maps/TkuJSdoA3oNPpc486" target="_blank"
+            >301 N Neil St. Suite 412, Champaign, IL 61820</a
           >
         </p>
       </div>

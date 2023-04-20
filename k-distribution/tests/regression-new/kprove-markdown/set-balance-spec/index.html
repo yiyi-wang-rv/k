@@ -154,7 +154,7 @@
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/16_collections/">Lesson 1.16: Maps, Semantic Lists, and Sets</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/17_cell_multiplicity/">Lesson 1.17: Cell Multiplicity and Cell Collections</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/18_equality_and_conditionals/">Lesson 1.18: Term Equality and the Ternary Operator</a></div>
-<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB</a></div>
+<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB or LLDB</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/20_backends/">Lesson 1.20: K Backends and the Haskell Backend</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/21_symbolic_execution/">Lesson 1.21: Unification and Symbolic Execution</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/22_proofs/">Lesson 1.22: K Deductive Verification</a></div>
@@ -255,35 +255,25 @@
           role="main"
         >
           <div class="introduction markdown-preview"><html><head></head><body><h1 id="balances-module-specifications">Balances Module Specifications</h1>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">keep</div><code class="language-keep">requires "set-balance.md"
-
-module VERIFICATION
-    imports SET-BALANCE
-
-    syntax Action ::= totalBalance ( AccountId )
- // --------------------------------------------
-    rule &lt;k&gt; totalBalance(AID) =&gt; total_balance(AID) ... &lt;/k&gt;
-endmodule
-
-module SET-BALANCE-SPEC
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">keep</div><code class="language-keep">module SET-BALANCE-SPEC
     imports VERIFICATION
-</code></pre>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k">ignore thie code block<span class="token operator">!</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k">ignore thie code block<span class="token operator">!</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <h3 id="total_balance-tests"><code>total_balance</code> tests</h3>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">keep</div><code class="language-keep">    claim &lt;k&gt; totalBalance(AID) =&gt; 50 &lt;/k&gt;
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">keep</div><code class="language-keep">    claim &lt;k&gt; totalBalance(AID) =&gt; 50 &lt;/k&gt;
           &lt;account&gt;
             &lt;accountID&gt; AID &lt;/accountID&gt;
             &lt;freeBalance&gt; 30 &lt;/freeBalance&gt;
             &lt;reservedBalance&gt; 20 &lt;/reservedBalance&gt;
             ...
           &lt;/account&gt;
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h3 id="no-zero-balance-accounts-exist">No Zero-Balance Accounts Exist</h3>
 <p>This property shows that <code>set_balance</code> will not result in a zero-balance attack.
 <strong>TODO</strong>: Generalize to any EntryAction.
 <strong>TODO</strong>: Assertions about log events.</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">discard</div><code class="language-discard">    rule &lt;k&gt; set_balance(Root, WHO, FREE_BALANCE', RESERVED_BALANCE') =&gt; . ... &lt;/k&gt;
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">discard</div><code class="language-discard">    rule &lt;k&gt; set_balance(Root, WHO, FREE_BALANCE', RESERVED_BALANCE') =&gt; . ... &lt;/k&gt;
          &lt;totalIssuance&gt; TOTAL_ISSUANCE =&gt; TOTAL_ISSUANCE +Int ( FREE_BALANCE' -Int FREE_BALANCE ) +Int ( RESERVED_BALANCE' -Int RESERVED_BALANCE ) &lt;/totalIssuance&gt;
          &lt;existentialDeposit&gt; EXISTENTIAL_DEPOSIT &lt;/existentialDeposit&gt;
          &lt;account&gt;
@@ -296,8 +286,8 @@ module SET-BALANCE-SPEC
        andBool #inWidth(96, TOTAL_ISSUANCE +Int (FREE_BALANCE' -Int FREE_BALANCE) +Int (RESERVED_BALANCE' -Int RESERVED_BALANCE))
        andBool EXISTENTIAL_DEPOSIT &lt;=Int FREE_BALANCE'
        andBool EXISTENTIAL_DEPOSIT &lt;=Int RESERVED_BALANCE'
-</code></pre>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">keep</div><code class="language-keep">    claim &lt;k&gt; set_balance_reserved ( WHO , RESERVED_BALANCE' ) =&gt; . ... &lt;/k&gt;
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">keep</div><code class="language-keep">    claim &lt;k&gt; set_balance_reserved ( WHO , RESERVED_BALANCE' ) =&gt; . ... &lt;/k&gt;
           &lt;existentialDeposit&gt; EXISTENTIAL_DEPOSIT &lt;/existentialDeposit&gt;
           &lt;totalIssuance&gt; TOTAL_ISSUANCE +Int ( FREE_BALANCE' -Int FREE_BALANCE ) =&gt; TOTAL_ISSUANCE +Int ( FREE_BALANCE' -Int FREE_BALANCE ) +Int ( RESERVED_BALANCE' -Int RESERVED_BALANCE ) &lt;/totalIssuance&gt;
           &lt;account&gt;
@@ -308,9 +298,9 @@ module SET-BALANCE-SPEC
           &lt;/account&gt;
       requires #inWidth(96, TOTAL_ISSUANCE +Int (FREE_BALANCE' -Int FREE_BALANCE) +Int (RESERVED_BALANCE' -Int RESERVED_BALANCE))
        andBool EXISTENTIAL_DEPOSIT &lt;=Int RESERVED_BALANCE'
-</code></pre>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">keep</div><code class="language-keep">endmodule
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">keep</div><code class="language-keep">endmodule
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 </body></html></div>
         </main>
 
@@ -354,8 +344,8 @@ module SET-BALANCE-SPEC
             /> </picture
         ></a>
         <p class="mt-2 text-md-left copyright">
-          <a href="https://goo.gl/maps/hKLtCjeEd6yqfzwx5" target="_blank"
-            >1807 S Neil Street, Champaign, IL 61820</a
+          <a href="https://goo.gl/maps/TkuJSdoA3oNPpc486" target="_blank"
+            >301 N Neil St. Suite 412, Champaign, IL 61820</a
           >
         </p>
       </div>

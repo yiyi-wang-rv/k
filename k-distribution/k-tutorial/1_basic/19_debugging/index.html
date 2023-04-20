@@ -154,7 +154,7 @@
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/16_collections/">Lesson 1.16: Maps, Semantic Lists, and Sets</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/17_cell_multiplicity/">Lesson 1.17: Cell Multiplicity and Cell Collections</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/18_equality_and_conditionals/">Lesson 1.18: Term Equality and the Ternary Operator</a></div>
-<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB</a></div>
+<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB or LLDB</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/20_backends/">Lesson 1.20: K Backends and the Haskell Backend</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/21_symbolic_execution/">Lesson 1.21: Unification and Symbolic Execution</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/22_proofs/">Lesson 1.22: K Deductive Verification</a></div>
@@ -254,41 +254,47 @@
           class="col-12 col-md-6 col-xl-8 py-md-3 pl-md-5 bd-content"
           role="main"
         >
-          <div class="introduction markdown-preview"><html><head></head><body><h1 id="lesson-1.19%3A-debugging-with-gdb">Lesson 1.19: Debugging with GDB</h1>
+          <div class="introduction markdown-preview"><html><head></head><body><h1 id="lesson-1.19%3A-debugging-with-gdb-or-lldb">Lesson 1.19: Debugging with GDB or LLDB</h1>
 <p>The purpose of this lesson is to teach how to debug your K interpreter using
-the K-language support provided in <a href="https://www.gnu.org/software/gdb/" target="_blank" rel="noreferrer noopener">GDB</a>.</p>
+the K-language support provided in <a href="https://www.gnu.org/software/gdb/" target="_blank" rel="noreferrer noopener">GDB</a> or
+<a href="https://lldb.llvm.org/index.html" target="_blank" rel="noreferrer noopener">LLDB</a>.</p>
 <h2 id="caveats">Caveats</h2>
-<p>Debugging K definitions using GDB is currently only supported on Linux; the
-instructions in this section will not work properly on macOS. Support for
-debugging K using LLDB is a work in progress, and this chapter will be updated
-when doing so is possible.</p>
+<p>This lesson has been written with GDB support on Linux in mind. Unfortunately,
+on macOS, GDB has limited support. To address this, we have introduced early
+experimental support for debugging with LLDB on macOS. In some cases, the
+features supported by LLDB are slightly different to those supported by GDB; the
+tutorial text will make this clear where necessary. If you use a macOS with an
+LLVM version older than 15, you may need to upgrade it to use the LLDB
+correctly. If you encounter an issue on either operating system, please open an
+issue against the <a href="https://github.com/runtimeverification/k" target="_blank" rel="noreferrer noopener">K repository</a>.</p>
 <h2 id="getting-started">Getting started</h2>
-<p>You will need GDB in order to complete this lesson. If you do not already
-have GDB installed, then do so. Steps to install GDB are outlined in
+<p>On Linux, you will need GDB in order to complete this lesson. If you do not
+already have GDB installed, then do so. Steps to install GDB are outlined in
 this <a href="http://www.gdbtutorial.com/tutorial/how-install-gdb" target="_blank" rel="noreferrer noopener">GDB Tutorial</a>.</p>
-<p>The first thing neccessary in order to debug a K interpreter in GDB is to
-build the interpreter with full debugging support enabled. This can be done
-relatively simply. First, run <code>kompile</code> with the command line flags <code>-ccopt -g -ccopt -O1</code>.
-The resulting compiled K definition will be ready to support
-debugging.</p>
-<p>Note: the 'O' in <code>-O1</code> is the letter 'O' not the number 0!</p>
-<p>Once you have a compiled K definition and a program you wish to debug, you
-can start the debugger by passing the <code>--debugger</code> flag to <code>krun</code>. This will
-automatically load the program you are executing into GDB and drop you into
-a GDB shell ready to start executing the program.</p>
+<p>On macOS, LLDB should already have been installed with K's build dependencies
+(whether you have built K from source, or installed it using <code>kup</code> or Homebrew).</p>
+<p>The first thing neccessary in order to debug a K interpreter is to build the
+interpreter with full debugging support enabled. This can be done relatively
+simply. First, run <code>kompile</code> with the command line flag <code>--enable-llvm-debug</code>.
+The resulting compiled K definition will be ready to support debugging.</p>
+<p>Once you have a compiled K definition and a program you wish to debug, you can
+start the debugger by passing the <code>--debugger</code> flag to <code>krun</code>. This will
+automatically load the program you are executing into GDB and drop you into a
+GDB shell ready to start executing the program.</p>
 <p>As an example, consider the following K definition (<code>lesson-19-a.k</code>):</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">19</span><span class="token operator">-</span>A
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">19</span><span class="token operator">-</span>A
   <span class="token keyword">imports</span> INT
 
   <span class="token keyword">rule</span> I <span class="token operator">=&gt;</span> I <span class="token operator">+</span><span class="token keyword">Int</span> <span class="token number">1</span>
     <span class="token keyword">requires</span> I &lt;<span class="token keyword">Int</span> <span class="token number">100</span>
 <span class="token keyword">endmodule</span>
-</code></pre>
-<p>If we compile this definition with
-<code>kompile lesson-19-a.k -ccopt -g -ccopt -O1</code>, and run the program <code>0</code> in the
-debugger with <code>krun -cPGM=0 --debugger</code>, we will see the following output
-(roughly):</p>
-<pre><code>GNU gdb (Ubuntu 9.2-0ubuntu1~20.04) 9.2
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>If we compile this definition with <code>kompile lesson-19-a.k --enable-llvm-debug</code>,
+and run the program <code>0</code> in the debugger with <code>krun -cPGM=0 --debugger</code>, we will
+see the following output (roughly, and depending on which platform you are
+using):</p>
+<h3 id="gdb-%2F-linux">GDB / Linux</h3>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>GNU gdb (Ubuntu 9.2-0ubuntu1~20.04) 9.2
 Copyright (C) 2020 Free Software Foundation, Inc.
 License GPLv3+: GNU GPL version 3 or later &lt;http://gnu.org/licenses/gpl.html&gt;
 This is free software: you are free to change and redistribute it.
@@ -315,7 +321,7 @@ For more information about this security protection see the
 "Auto-loading safe path" section in the GDB manual.  E.g., run from the shell:
         info "(gdb)Auto-loading safe path"
 (gdb)
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>To make full advantage of the GDB features of K, you should follow the first
 command listed in this output message and add the corresponding
 <code>add-auto-load-safe-path</code> command to your <code>~/.gdbinit</code> file as prompted.
@@ -326,7 +332,41 @@ trusted, so if you want to avoid having to add paths to the "load safe path" eve
 time you kompile a different <code>K</code> definition, then you can just trust a minimal
 directory containing all your kompiled files; however, do not choose a top-level directory containing arbitrary files as this amounts to trusting arbitrary files and is a security risk. More info on the load safe path
 can be found <a href="https://sourceware.org/gdb/onlinedocs/gdb/Auto_002dloading-safe-path.html" target="_blank" rel="noreferrer noopener">here</a>.</p>
+<h3 id="lldb-%2F-macos">LLDB / macOS</h3>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>(lldb) target create "./lesson-19-a-kompiled/interpreter"
+warning: 'interpreter' contains a debug script. To run this script in this debug session:
+
+    command script import "/Users/brucecollie/code/scratch/lesson-19-a-kompiled/interpreter.dSYM/Contents/Resources/Python/interpreter.py"
+
+To run all discovered debug scripts in this session:
+
+    settings set target.load-script-from-symbol-file true
+
+Current executable set to '/Users/brucecollie/code/scratch/lesson-19-a-kompiled/interpreter' (x86_64).
+(lldb) settings set -- target.run-args  ".krun-2023-03-20-11-22-46-TcYt9ffhb2/tmp.in.RupiLwHNfn" "-1" ".krun-2023-03-20-11-22-46-TcYt9ffhb2/result.kore"
+(lldb) 
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>LLDB applies slightly different security policies to GDB. To load K's debugging
+scripts for this session only, you can run the <code>command script import</code> line at
+the LLDB prompt. The loaded scripts will not persist across debugging sessions
+if you do this. It is also possible to configure LLDB to automatically load the
+K scripts when an interpreter is started in LLDB; doing so requires a slightly
+less broad permission than GDB.</p>
+<p>On macOS, the <code>.dSYM</code> directory that contains debugging symbols for an
+executable can also contain Python scripts in <code>Contents/Resources/Python</code>. If
+there is a Python script with a name matching the name of the current executable
+(here, <code>interpreter</code> and <code>interpreter.py</code>), it will be automatically loaded if
+the <code>target.load-script-from-symbol-file</code> setting is set). You can therefore add
+the <code>settings set</code> command to your <code>~/.lldbinit</code> without enabling full arbitrary
+code execution, but you should be aware of the paths from which code <em>can</em> be
+executed if you do so.</p>
 <h2 id="basic-commands">Basic commands</h2>
+<blockquote>
+<p><strong>LLDB Note:</strong> the <code>k start</code> and <code>k step</code> commands are currently not
+implemented in the K LLDB scripts. To work around this limitation temporarily,
+you can run <code>process launch --stop-at-entry</code> instead of <code>k start</code>. To emulate
+<code>k step</code>, first run <code>rbreak k_step</code> once, then <code>continue</code> instead of each <code>k step</code>. We hope to address these limitations soon.</p>
+</blockquote>
 <p>The most basic commands you can execute in the K GDB session are to run your
 program or to step through it. The first can be accomplished using GDB's
 built-in <code>run</code> command. This will automatically start the program and begin
@@ -342,7 +382,7 @@ a program is executed, the <code>K start</code> program will initialize the rewr
 evaluate the initial configuration, and break immediately prior to applying
 any rewrite steps.</p>
 <p>In the example above, here is what we see when we run the <code>k start</code> command:</p>
-<pre><code>Temporary breakpoint 1 at 0x239210
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>Temporary breakpoint 1 at 0x239210
 Starting program: /home/dwightguth/kframework-5.0.0/k-distribution/k-tutorial/1_basic/19_debugging/lesson-19-a-kompiled/interpreter .krun-2021-08-13-14-10-50-sMwBkbRicw/tmp.in.01aQt85TaA -1 .krun-2021-08-13-14-10-50-sMwBkbRicw/result.kore
 [Thread debugging using libthread_db enabled]
 Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
@@ -352,7 +392,7 @@ Temporary breakpoint 1, 0x0000000000239210 in main ()
   0 ~&gt; .
 &lt;/k&gt;)
 (gdb)
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>As you can see, we are stopped at the <code>step</code> function in the interpreter.
 This function is responsible for taking top-level rewrite steps. The <code>subject</code>
 parameter to this function is the current K configuration.</p>
@@ -360,34 +400,34 @@ parameter to this function is the current K configuration.</p>
 command. By default, this takes a single rewrite step (including any function
 rule applications that are part of that step).</p>
 <p>Here is what we see when we run that command:</p>
-<pre><code>Continuing.
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>Continuing.
 
 Temporary breakpoint -22, 0x0000000000231890 in step (subject=&lt;k&gt;
   1 ~&gt; .
 &lt;/k&gt;)
 (gdb)
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>As we can see, we have taken a single rewrite step. We can also pass a number
 to the <code>k step</code> command which indicates the number of rewrite steps to take.</p>
 <p>Here is what we see if we run <code>k step 10</code>:</p>
-<pre><code>Continuing.
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>Continuing.
 
 Temporary breakpoint -23, 0x0000000000231890 in step (subject=&lt;k&gt;
   11 ~&gt; .
 &lt;/k&gt;)
 (gdb)
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>As we can see, ten rewrite steps were taken.</p>
 <h2 id="breakpoints">Breakpoints</h2>
 <p>The next important step in debugging an application in GDB is to be able to
 set breakpoints. Generally speaking, there are three types of breakpoints we
-are interested in in a K semantics: Setting a breakpoint when a particular
+are interested in a K semantics: Setting a breakpoint when a particular
 function is called, setting a breakpoint when a particular rule is applied,
 and setting a breakpoint when a side condition of a rule is evaluated.</p>
 <p>The easiest way to do the first two things is to set a breakpoint on the
 line of code containing the function or rule.</p>
 <p>For example, consider the following K definition (<code>lesson-19-b.k</code>):</p>
-<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 2;" class="line-numbers language-line-numbers" data-start="3"><div class="code-block-selectors">.k .numberLines</div><code class="k numberLines" startfrom="3"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">19</span><span class="token operator">-</span>B
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">.k</div><code class="k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">19</span><span class="token operator">-</span>B
   <span class="token keyword">imports</span> BOOL
 
   <span class="token keyword">syntax</span> <span class="token keyword">Bool</span> <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> isBlue<span class="token punctuation">(</span>Fruit<span class="token punctuation">)</span> <span class="token punctuation">[</span>function<span class="token punctuation">]</span>
@@ -400,11 +440,14 @@ line of code containing the function or rule.</p>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>Once this program has been compiled for debugging, we can run the program
 <code>Blueberry()</code>. We can then set a breakpoint that stops when the <code>isBlue</code>
-function is called with the following command:</p>
-<pre><code>break lesson-19-b.k:4
-</code></pre>
+function is called with the following command in GDB:</p>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>break lesson-19-b.k:4
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>Similarly, in LLDB, run:</p>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>breakpoint set --file lesson-19-b.k --line 4
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>Here is what we see if we set this breakpoint and then run the interpreter:</p>
-<pre><code>(gdb) break lesson-19-b.k:4
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>(gdb) break lesson-19-b.k:4
 Breakpoint 1 at 0x231040: file /home/dwightguth/kframework-5.0.0/k-distribution/k-tutorial/1_basic/19_debugging/lesson-19-b.k, line 4.
 (gdb) run
 Starting program: /home/dwightguth/kframework-5.0.0/k-distribution/k-tutorial/1_basic/19_debugging/lesson-19-b-kompiled/interpreter .krun-2021-08-13-14-20-27-vXOQmV6lwS/tmp.in.fga98yqXlc -1 .krun-2021-08-13-14-20-27-vXOQmV6lwS/result.kore
@@ -414,13 +457,29 @@ Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
 Breakpoint 1, LblisBlue'LParUndsRParUnds'LESSON-19-B'Unds'Bool'Unds'Fruit (_1=Blueberry ( )) at /home/dwightguth/kframework-5.0.0/k-distribution/k-tutorial/1_basic/19_debugging/lesson-19-b.k:4
 4         syntax Bool ::= isBlue(Fruit) [function]
 (gdb)
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>(lldb) breakpoint set --file lesson-19-b.k --line 4
+Breakpoint 1: where = interpreter`LblisBlue'LParUndsRParUnds'LESSON-19-B'Unds'Bool'Unds'Fruit + 20 at lesson-19-b.k:4:19, address = 0x0000000100003ff4
+(lldb) run
+Process 50546 launched: '/Users/brucecollie/code/scratch/lesson-19-b-kompiled/interpreter' (x86_64)
+Process 50546 stopped
+* thread #1, queue = 'com.apple.main-thread', stop reason = breakpoint 1.1
+    frame #0: 0x0000000100003ff4 interpreter`LblisBlue'LParUndsRParUnds'LESSON-19-B'Unds'Bool'Unds'Fruit(_1=Blueberry ( )) at lesson-19-b.k:4:19
+   1   	module LESSON-19-B
+   2   	  imports BOOL
+   3   	
+-&gt; 4   	  syntax Bool ::= isBlue(Fruit) [function]
+   5   	  syntax Fruit ::= Blueberry() | Banana()
+   6   	  rule isBlue(Blueberry()) =&gt; true
+   7   	  rule isBlue(Banana()) =&gt; false
+(lldb)
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>As we can see, we have stopped at the point where we are evaluating that
 function. The value <code>_1</code> that is a parameter to that function shows the
 value passed to the function by the caller.</p>
 <p>We can also break when the <code>isBlue(Blueberry()) =&gt; true</code> rule applies by simply
 changing the line number to the line number of that rule:</p>
-<pre><code>(gdb) break lesson-19-b.k:6
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>(gdb) break lesson-19-b.k:6
 Breakpoint 1 at 0x2af710: file /home/dwightguth/kframework-5.0.0/k-distribution/k-tutorial/1_basic/19_debugging/lesson-19-b.k, line 6.
 (gdb) run
 Starting program: /home/dwightguth/kframework-5.0.0/k-distribution/k-tutorial/1_basic/19_debugging/lesson-19-b-kompiled/interpreter .krun-2021-08-13-14-32-36-7kD0ic7XwD/tmp.in.8JNH5Qtmow -1 .krun-2021-08-13-14-32-36-7kD0ic7XwD/result.kore
@@ -430,9 +489,25 @@ Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
 Breakpoint 1, apply_rule_138 () at /home/dwightguth/kframework-5.0.0/k-distribution/k-tutorial/1_basic/19_debugging/lesson-19-b.k:6
 6         rule isBlue(Blueberry()) =&gt; true
 (gdb)
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>(lldb) breakpoint set --file lesson-19-b.k --line 6
+Breakpoint 1: where = interpreter`apply_rule_140 at lesson-19-b.k:6:8, address = 0x0000000100004620
+(lldb) run
+Process 50681 launched: '/Users/brucecollie/code/scratch/lesson-19-b-kompiled/interpreter' (x86_64)
+Process 50681 stopped
+* thread #1, queue = 'com.apple.main-thread', stop reason = breakpoint 1.1
+    frame #0: 0x0000000100004620 interpreter`apply_rule_140 at lesson-19-b.k:6:8
+   3   	
+   4   	  syntax Bool ::= isBlue(Fruit) [function]
+   5   	  syntax Fruit ::= Blueberry() | Banana()
+-&gt; 6   	  rule isBlue(Blueberry()) =&gt; true
+   7   	  rule isBlue(Banana()) =&gt; false
+   8   	
+   9   	  rule F:Fruit =&gt; isBlue(F)
+(lldb) 
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>We can also do the same with a top-level rule:</p>
-<pre><code>(gdb) break lesson-19-b.k:9
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>(gdb) break lesson-19-b.k:9
 Breakpoint 1 at 0x2aefa0: lesson-19-b.k:9. (2 locations)
 (gdb) run
 Starting program: /home/dwightguth/kframework-5.0.0/k-distribution/k-tutorial/1_basic/19_debugging/lesson-19-b-kompiled/interpreter .krun-2021-08-13-14-33-13-9fC8Sz4aO3/tmp.in.jih1vtxSiQ -1 .krun-2021-08-13-14-33-13-9fC8Sz4aO3/result.kore
@@ -444,7 +519,23 @@ Breakpoint 1, apply_rule_107 (Var'Unds'DotVar0=&lt;generatedCounter&gt;
 &lt;/generatedCounter&gt;, Var'Unds'DotVar1=., VarF=Blueberry ( )) at /home/dwightguth/kframework-5.0.0/k-distribution/k-tutorial/1_basic/19_debugging/lesson-19-b.k:9
 9         rule F:Fruit =&gt; isBlue(F)
 (gdb)
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>(lldb) breakpoint set --file lesson-19-b.k --line 9
+Breakpoint 1: 2 locations.
+(lldb) run
+Process 50798 launched: '/Users/brucecollie/code/scratch/lesson-19-b-kompiled/interpreter' (x86_64)
+Process 50798 stopped
+* thread #1, queue = 'com.apple.main-thread', stop reason = breakpoint 1.1
+    frame #0: 0x0000000100003f2e interpreter`apply_rule_109(Var'Unds'DotVar0=&lt;generatedCounter&gt;
+  0
+&lt;/generatedCounter&gt;, Var'Unds'DotVar1=., VarF=Blueberry ( )) at lesson-19-b.k:9:8
+   6   	  rule isBlue(Blueberry()) =&gt; true
+   7   	  rule isBlue(Banana()) =&gt; false
+   8   	
+-&gt; 9   	  rule F:Fruit =&gt; isBlue(F)
+   10  	endmodule
+(lldb)  
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>Unlike the function rule above, we see several parameters to this function.
 These are the substitution that was matched for the function. Variables only
 appear in this substitution if they are actually used on the right-hand side
@@ -453,7 +544,7 @@ of the rule.</p>
 <p>Sometimes it is inconvenient to set the breakpoint based on a line number.</p>
 <p>It is also possible to set a breakpoint based on the rule label of a particular
 rule. Consider the following definition (<code>lesson-19-c.k</code>):</p>
-<pre style="position: relative; padding-top: 32px;" class="line-numbers language-line-numbers"><div class="code-block-selectors">.k .numberLines</div><code class="k numberLines"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">19</span><span class="token operator">-</span>C
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">.k</div><code class="k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">19</span><span class="token operator">-</span>C
   <span class="token keyword">imports</span> INT
   <span class="token keyword">imports</span> BOOL
 
@@ -465,7 +556,7 @@ rule. Consider the following definition (<code>lesson-19-c.k</code>):</p>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>We will run the program <code>isEven(4)</code>. We can set a breakpoint for when a rule
 applies by means of the <code>MODULE-NAME.label.rhs</code> syntax:</p>
-<pre><code>(gdb) break LESSON-19-C.isEven.rhs
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>(gdb) break LESSON-19-C.isEven.rhs
 Breakpoint 1 at 0x2afda0: file /home/dwightguth/kframework-5.0.0/k-distribution/k-tutorial/1_basic/19_debugging/lesson-19-c.k, line 6.
 (gdb) run
 Starting program: /home/dwightguth/kframework-5.0.0/k-distribution/k-tutorial/1_basic/19_debugging/lesson-19-c-kompiled/interpreter .krun-2021-08-13-14-40-29-LNNT8YEZ61/tmp.in.ZG93vWCGGC -1 .krun-2021-08-13-14-40-29-LNNT8YEZ61/result.kore
@@ -475,10 +566,26 @@ Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
 Breakpoint 1, LESSON-19-C.isEven.rhs () at /home/dwightguth/kframework-5.0.0/k-distribution/k-tutorial/1_basic/19_debugging/lesson-19-c.k:6
 6         rule [isEven]: isEven(I) =&gt; true requires I %Int 2 ==Int 0
 (gdb)
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>(lldb) breakpoint set --name LESSON-19-C.isEven.rhs
+Breakpoint 1: where = interpreter`LESSON-19-C.isEven.rhs at lesson-19-c.k:6:18, address = 0x00000001000038e0
+(lldb) run
+Process 51205 launched: '/Users/brucecollie/code/scratch/lesson-19-c-kompiled/interpreter' (x86_64)
+Process 51205 stopped
+* thread #1, queue = 'com.apple.main-thread', stop reason = breakpoint 1.1
+    frame #0: 0x00000001000038e0 interpreter`LESSON-19-C.isEven.rhs at lesson-19-c.k:6:18
+   3   	  imports BOOL
+   4   	
+   5   	  syntax Bool ::= isEven(Int) [function]
+-&gt; 6   	  rule [isEven]: isEven(I) =&gt; true requires I %Int 2 ==Int 0
+   7   	  rule [isOdd]: isEven(I) =&gt; false requires I %Int 2 =/=Int 0
+   8   	
+   9   	endmodule
+(lldb) 
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>We can also set a breakpoint for when a rule's side condition is evaluated
 by means of the <code>MODULE-NAME.label.sc</code> syntax:</p>
-<pre><code>(gdb) break LESSON-19-C.isEven.sc
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>(gdb) break LESSON-19-C.isEven.sc
 Breakpoint 1 at 0x2afd70: file /home/dwightguth/kframework-5.0.0/k-distribution/k-tutorial/1_basic/19_debugging/lesson-19-c.k, line 6.
 (gdb) run
 Starting program: /home/dwightguth/kframework-5.0.0/k-distribution/k-tutorial/1_basic/19_debugging/lesson-19-c-kompiled/interpreter .krun-2021-08-13-14-41-48-1BoGfJRbYc/tmp.in.kg4F8cwfCe -1 .krun-2021-08-13-14-41-48-1BoGfJRbYc/result.kore
@@ -493,17 +600,46 @@ Run till exit from #0  LESSON-19-C.isEven.sc (VarI=4) at /home/dwightguth/kframe
 5         syntax Bool ::= isEven(Int) [function]
 Value returned is $1 = true
 (gdb)
-</code></pre>
-<p>Here we have used the built-in GDB command <code>finish</code> to tell us whether the
-side condition returned true or not. Note that once again, we see the
-substitution that was matched from the left-hand side. Like before, a variable
-will only appear here if it is used in the side condition.</p>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>(lldb) breakpoint set --name LESSON-19-C.isEven.sc
+Breakpoint 1: where = interpreter`LESSON-19-C.isEven.sc + 1 at lesson-19-c.k:6:18, address = 0x00000001000038c1
+(lldb) run
+Process 52530 launched: '/Users/brucecollie/code/scratch/lesson-19-c-kompiled/interpreter' (x86_64)
+Process 52530 stopped
+* thread #1, queue = 'com.apple.main-thread', stop reason = breakpoint 1.1
+    frame #0: 0x00000001000038c1 interpreter`LESSON-19-C.isEven.sc(VarI=0x0000000101800088) at lesson-19-c.k:6:18
+   3   	  imports BOOL
+   4   	
+   5   	  syntax Bool ::= isEven(Int) [function]
+-&gt; 6   	  rule [isEven]: isEven(I) =&gt; true requires I %Int 2 ==Int 0
+   7   	  rule [isOdd]: isEven(I) =&gt; false requires I %Int 2 =/=Int 0
+   8   	
+   9   	endmodule
+(lldb) finish
+Process 52649 stopped
+* thread #1, queue = 'com.apple.main-thread', stop reason = step out
+Return value: (bool) $0 = true
+
+    frame #0: 0x00000001000069e5 interpreter`LblisEven'LParUndsRParUnds'LESSON-19-C'Unds'Bool'Unds'Int(_1=0x0000000101800088) at lesson-19-c.k:5:19
+   2   	  imports INT
+   3   	  imports BOOL
+   4   	
+-&gt; 5   	  syntax Bool ::= isEven(Int) [function]
+   6   	  rule [isEven]: isEven(I) =&gt; true requires I %Int 2 ==Int 0
+   7   	  rule [isOdd]: isEven(I) =&gt; false requires I %Int 2 =/=Int 0
+   8
+(lldb)
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>Here we have used the built-in command <code>finish</code> to tell us whether the side
+condition returned true or not. Note that once again, we see the substitution
+that was matched from the left-hand side. Like before, a variable will only
+appear here if it is used in the side condition.</p>
 <h2 id="debugging-rule-matching">Debugging rule matching</h2>
 <p>Sometimes it is useful to try to determine why a particular rule did or did
 not apply. K provides some basic debugging commands which make it easier
 to determine this.</p>
 <p>Consider the following K definition (<code>lesson-19-d.k</code>):</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">19</span><span class="token operator">-</span>D
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">19</span><span class="token operator">-</span>D
 
   <span class="token keyword">syntax</span> Foo <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> foo<span class="token punctuation">(</span>Bar<span class="token punctuation">)</span>
   <span class="token keyword">syntax</span> Bar <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> bar<span class="token punctuation">(</span>Baz<span class="token punctuation">)</span> <span class="token operator">|</span> bar2<span class="token punctuation">(</span>Baz<span class="token punctuation">)</span>
@@ -512,7 +648,7 @@ to determine this.</p>
   <span class="token keyword">rule</span> <span class="token punctuation">[</span>baz<span class="token punctuation">]</span><span class="token punctuation">:</span> foo<span class="token punctuation">(</span>bar<span class="token punctuation">(</span>baz<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">.</span>K
 
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>Suppose we try to run the program <code>foo(bar(baz2()))</code>. It is obvious from this
 example why the rule in this definition will not apply. However, in practice,
 such cases are not always obvious. You might look at a rule and not immediately
@@ -523,12 +659,18 @@ having run <code>k start</code> or <code>k step</code>, you can obtain this log 
 any step by running the command <code>k match MODULE.label subject</code> for a particular
 top-level rule label.</p>
 <p>For example, with the <code>baz</code> rule above, we get the following output:</p>
-<pre><code>(gdb) k match LESSON-19-D.baz subject
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>(gdb) k match LESSON-19-D.baz subject
 Subject:
 baz2 ( )
 does not match pattern:
 baz ( )
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>(lldb) k match LESSON-19-D.baz subject
+Subject:
+baz2 ( )
+does not match pattern:
+baz ( )
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>As we can see, it provided the exact subterm which did not match against the
 rule, as well as the particular subpattern it ought to have matched against.</p>
 <p>This command does not actually take any rewrite steps. In the event that
@@ -536,12 +678,13 @@ matching actually succeeds, you will still need to run the <code>k step</code> c
 to advance to the next step.</p>
 <h2 id="final-notes">Final notes</h2>
 <p>In addition to the functionality provided above, you have the full power of
-GDB at your disposal when debugging. Some features are not particularly
+GDB or LLDB at your disposal when debugging. Some features are not particularly
 well-adapted to K code and may require more advanced knowledge of the
 term representation or implementation to use effectively, but anything that
-can be done in GDB can in theory be done using this debugging functionality.
+can be done in GDB or LLDB can in theory be done using this debugging functionality.
 We suggest you refer to the
-<a href="https://www.gnu.org/software/gdb/documentation/" target="_blank" rel="noreferrer noopener">GDB Documentation</a> if you
+<a href="https://www.gnu.org/software/gdb/documentation/" target="_blank" rel="noreferrer noopener">GDB Documentation</a> or
+<a href="https://lldb.llvm.org/use/tutorial.html" target="_blank" rel="noreferrer noopener">LLDB Tutorial</a> if you
 want to try to do something and are unsure as to how.</p>
 <h2 id="exercises">Exercises</h2>
 <ol>
@@ -567,7 +710,7 @@ to insert some rule labels.</li>
 <div>
 <details style="padding:0.25rem 0;;padding-left: 0px;" open>
             <summary class="bd-toc-link-wrapper">
-              <a href="#lesson-1.19%3A-debugging-with-gdb" class="bd-toc-link">Lesson 1.19: Debugging with GDB</a>
+              <a href="#lesson-1.19%3A-debugging-with-gdb-or-lldb" class="bd-toc-link">Lesson 1.19: Debugging with GDB or LLDB</a>
               </summary>
             <div>
               <div class="bd-toc-link-wrapper" style="padding:0.25rem 0;">
@@ -577,14 +720,29 @@ to insert some rule labels.</li>
                 style="padding-left: 8px;;"
               >
                 Caveats
+              </a></div><details style="padding:0.25rem 0;;padding-left: 8px;" open>
+            <summary class="bd-toc-link-wrapper">
+              <a href="#getting-started" class="bd-toc-link">Getting started</a>
+              </summary>
+            <div>
+              <div class="bd-toc-link-wrapper" style="padding:0.25rem 0;">
+              <a
+                href="#gdb-%2F-linux"
+                class="bd-toc-link"
+                style="padding-left: 16px;;"
+              >
+                GDB / Linux
               </a></div><div class="bd-toc-link-wrapper" style="padding:0.25rem 0;">
               <a
-                href="#getting-started"
+                href="#lldb-%2F-macos"
                 class="bd-toc-link"
-                style="padding-left: 8px;;"
+                style="padding-left: 16px;;"
               >
-                Getting started
-              </a></div><div class="bd-toc-link-wrapper" style="padding:0.25rem 0;">
+                LLDB / macOS
+              </a></div>
+            </div>
+          </details>
+        <div class="bd-toc-link-wrapper" style="padding:0.25rem 0;">
               <a
                 href="#basic-commands"
                 class="bd-toc-link"
@@ -665,8 +823,8 @@ to insert some rule labels.</li>
             /> </picture
         ></a>
         <p class="mt-2 text-md-left copyright">
-          <a href="https://goo.gl/maps/hKLtCjeEd6yqfzwx5" target="_blank"
-            >1807 S Neil Street, Champaign, IL 61820</a
+          <a href="https://goo.gl/maps/TkuJSdoA3oNPpc486" target="_blank"
+            >301 N Neil St. Suite 412, Champaign, IL 61820</a
           >
         </p>
       </div>

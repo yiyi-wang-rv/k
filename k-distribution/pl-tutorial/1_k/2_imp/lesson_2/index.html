@@ -154,7 +154,7 @@
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/16_collections/">Lesson 1.16: Maps, Semantic Lists, and Sets</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/17_cell_multiplicity/">Lesson 1.17: Cell Multiplicity and Cell Collections</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/18_equality_and_conditionals/">Lesson 1.18: Term Equality and the Ternary Operator</a></div>
-<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB</a></div>
+<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB or LLDB</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/20_backends/">Lesson 1.20: K Backends and the Haskell Backend</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/21_symbolic_execution/">Lesson 1.21: Unification and Symbolic Execution</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/22_proofs/">Lesson 1.22: K Deductive Verification</a></div>
@@ -254,7 +254,7 @@
           class="col-12 col-md-6 col-xl-8 py-md-3 pl-md-5 bd-content"
           role="main"
         >
-          <div class="introduction markdown-preview"><!-- Copyright (c) 2010-2019 K Team. All Rights Reserved. --><html><head></head><body><h1 id="defining-a-configuration">Defining a Configuration</h1>
+          <div class="introduction markdown-preview"><html><head></head><body><h1 id="defining-a-configuration">Defining a Configuration</h1>
 <p>Here we learn how to define a configuration in K. We also learn how to
 initialize and how to display it.</p>
 <p>As explained in the overview presentation on K, configurations are quite
@@ -271,13 +271,13 @@ defined using an XML-ish notation stating clearly where the cell starts
 and where it ends.</p>
 <p>While not enforced by the tool, we typically like to put the entire
 configuration in a top-level cell, called <code>T</code>. So let's define it:</p>
-<pre><code>configuration &lt;T&gt;...&lt;/T&gt;
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>configuration &lt;T&gt;...&lt;/T&gt;
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>Cells can have other cells inside. In our case of IMP, we need a cell to
 hold the remaining program, cell which we typically call <code>k</code>, and a cell to
 hold the program state. Let us add them:</p>
-<pre><code>configuration &lt;T&gt; &lt;k&gt;...&lt;/k&gt; &lt;state&gt;...&lt;/state&gt; &lt;/T&gt;
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>configuration &lt;T&gt; &lt;k&gt;...&lt;/k&gt; &lt;state&gt;...&lt;/state&gt; &lt;/T&gt;
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>K allows us to also specify how to initialize a configuration at the same
 time with declaring the configuration. All we have to do is to fill in
 the contents of the cells with some terms. The syntactic categories of
@@ -291,18 +291,18 @@ configuration variables, too, which can be used to develop custom
 initializations of program configurations with the help of <code>krun</code>; this can be
 quite useful when defining complex languages, but we do not discuss it in
 this tutorial.</p>
-<pre><code>configuration &lt;T&gt; &lt;k&gt; $PGM &lt;/k&gt; &lt;state&gt;...&lt;/state&gt;  &lt;/T&gt;
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>configuration &lt;T&gt; &lt;k&gt; $PGM &lt;/k&gt; &lt;state&gt;...&lt;/state&gt;  &lt;/T&gt;
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>Moreover, we want the program to be a proper <code>Pgm</code> term (because we do not
 want to allow <code>krun</code> to take fragments of programs, for example, statements).
 Therefore, we tag <code>$PGM</code> with the desired syntactic category, <code>Pgm</code>:</p>
-<pre><code>configuration &lt;T&gt; &lt;k&gt; $PGM:Pgm &lt;/k&gt; &lt;state&gt;...&lt;/state&gt;  &lt;/T&gt;
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>configuration &lt;T&gt; &lt;k&gt; $PGM:Pgm &lt;/k&gt; &lt;state&gt;...&lt;/state&gt;  &lt;/T&gt;
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>Like for other variable tags in K, a run-time check will be performed and the
 semantics will get stuck if the passed term is not a well-formed program.</p>
 <p>We next tell K that the state cell should be initialized with the empty map:</p>
-<pre><code>configuration &lt;T&gt; &lt;k&gt; $PGM:Pgm &lt;/k&gt; &lt;state&gt; .Map &lt;/state&gt;  &lt;/T&gt;
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>configuration &lt;T&gt; &lt;k&gt; $PGM:Pgm &lt;/k&gt; &lt;state&gt; .Map &lt;/state&gt;  &lt;/T&gt;
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>Recall that in K <code>.</code> stands for <em>nothing</em>. However, since there are various
 types of nothing, to avoid confusion we can suffix the <code>.</code> with its desired
 type. K has several builtin data-types, including lists, sets, bags, and
@@ -313,11 +313,11 @@ initialized as desired.</p>
 languages, you may want to color the cells in order to more easily distinguish
 them. This can be easily achieved using the <code>color</code> cell attribute, following
 again an XML-ish style:</p>
-<pre><code>configuration &lt;T color="yellow"&gt;
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>configuration &lt;T color="yellow"&gt;
                 &lt;k color="green"&gt; $PGM:Pgm &lt;/k&gt;
                 &lt;state color="red"&gt; .Map &lt;/state&gt;
               &lt;/T&gt;
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 <p>In the next lesson we will learn how to write rules that involve cells.</p>
 <p>Go to <a href="../lesson_3/">Lesson 3, IMP: Computations, Results, Strictness; Rules Involving Cells</a>.</p>
 <p><a href="https://youtu.be/jkwLyGdt70U" target="_blank" rel="noreferrer noopener">MOVIE (out of date) [04'21"]</a></p>
@@ -364,8 +364,8 @@ again an XML-ish style:</p>
             /> </picture
         ></a>
         <p class="mt-2 text-md-left copyright">
-          <a href="https://goo.gl/maps/hKLtCjeEd6yqfzwx5" target="_blank"
-            >1807 S Neil Street, Champaign, IL 61820</a
+          <a href="https://goo.gl/maps/TkuJSdoA3oNPpc486" target="_blank"
+            >301 N Neil St. Suite 412, Champaign, IL 61820</a
           >
         </p>
       </div>

@@ -154,7 +154,7 @@
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/16_collections/">Lesson 1.16: Maps, Semantic Lists, and Sets</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/17_cell_multiplicity/">Lesson 1.17: Cell Multiplicity and Cell Collections</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/18_equality_and_conditionals/">Lesson 1.18: Term Equality and the Ternary Operator</a></div>
-<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB</a></div>
+<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB or LLDB</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/20_backends/">Lesson 1.20: K Backends and the Haskell Backend</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/21_symbolic_execution/">Lesson 1.21: Unification and Symbolic Execution</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/22_proofs/">Lesson 1.22: K Deductive Verification</a></div>
@@ -261,139 +261,139 @@ deductive program verification.</p>
 <p>We base this lesson on a simple programming language with functions,
 assignment, if conditionals, and while loops. Take your time to study its
 formalization below (<code>lesson-22.k</code>):</p>
-<pre style="position: relative; padding-top: 32px;" class="line-numbers language-line-numbers"><div class="code-block-selectors">.k .numberLines</div><code class="k numberLines"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">22</span><span class="token operator">-</span>SYNTAX
-    <span class="token keyword">imports</span> INT<span class="token operator">-</span>SYNTAX
-    <span class="token keyword">imports</span> BOOL<span class="token operator">-</span>SYNTAX
-    <span class="token keyword">imports</span> ID<span class="token operator">-</span>SYNTAX
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>module LESSON-22-SYNTAX
+    imports INT-SYNTAX
+    imports BOOL-SYNTAX
+    imports ID-SYNTAX
 
-    <span class="token keyword">syntax</span> Exp <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> IExp <span class="token operator">|</span> BExp
+    syntax Exp ::= IExp | BExp
 
-    <span class="token keyword">syntax</span> IExp <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token keyword">Id</span> <span class="token operator">|</span> <span class="token keyword">Int</span>
+    syntax IExp ::= Id | Int
 
-    <span class="token keyword">syntax</span> KResult <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token keyword">Int</span> <span class="token operator">|</span> <span class="token keyword">Bool</span> <span class="token operator">|</span> Ints
+    syntax KResult ::= Int | Bool | Ints
 
-    <span class="token comment">// Take this sort structure:</span>
-    <span class="token comment">//</span>
-    <span class="token comment">//     IExp</span>
-    <span class="token comment">//    /    \</span>
-    <span class="token comment">// Int      Id</span>
-    <span class="token comment">//</span>
-    <span class="token comment">// Through the List{_, ","} functor.</span>
-    <span class="token comment">// Must add a `Bot`, for a common subsort for the empty list.</span>
+    // Take this sort structure:
+    //
+    //     IExp
+    //    /    \
+    // Int      Id
+    //
+    // Through the List{_, ","} functor.
+    // Must add a `Bot`, for a common subsort for the empty list.
 
-    <span class="token keyword">syntax</span> Bot
-    <span class="token keyword">syntax</span> Bots <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> List<span class="token punctuation">{</span>Bot<span class="token punctuation">,</span> <span class="token string">","</span><span class="token punctuation">}</span> <span class="token punctuation">[</span><span class="token class-name">klabel</span><span class="token punctuation">(</span>exps<span class="token punctuation">)</span><span class="token punctuation">]</span>
-    <span class="token keyword">syntax</span> Ints <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> List<span class="token punctuation">{</span><span class="token keyword">Int</span><span class="token punctuation">,</span> <span class="token string">","</span><span class="token punctuation">}</span> <span class="token punctuation">[</span><span class="token class-name">klabel</span><span class="token punctuation">(</span>exps<span class="token punctuation">)</span><span class="token punctuation">]</span>
-                  <span class="token operator">|</span> Bots
-    <span class="token keyword">syntax</span> Ids  <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> List<span class="token punctuation">{</span><span class="token keyword">Id</span><span class="token punctuation">,</span> <span class="token string">","</span><span class="token punctuation">}</span>  <span class="token punctuation">[</span><span class="token class-name">klabel</span><span class="token punctuation">(</span>exps<span class="token punctuation">)</span><span class="token punctuation">]</span>
-                  <span class="token operator">|</span> Bots
-    <span class="token keyword">syntax</span> Exps <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> List<span class="token punctuation">{</span>Exp<span class="token punctuation">,</span> <span class="token string">","</span><span class="token punctuation">}</span> <span class="token punctuation">[</span><span class="token class-name">klabel</span><span class="token punctuation">(</span>exps<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token class-name">seqstrict</span><span class="token punctuation">]</span>
-                  <span class="token operator">|</span> Ids <span class="token operator">|</span> Ints
+    syntax Bot
+    syntax Bots ::= List{Bot, ","} [klabel(exps)]
+    syntax Ints ::= List{Int, ","} [klabel(exps)]
+                  | Bots
+    syntax Ids  ::= List{Id, ","}  [klabel(exps)]
+                  | Bots
+    syntax Exps ::= List{Exp, ","} [klabel(exps), seqstrict]
+                  | Ids | Ints
 
-    <span class="token keyword">syntax</span> IExp <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">"("</span> IExp <span class="token string">")"</span> <span class="token punctuation">[</span><span class="token class-name">bracket</span><span class="token punctuation">]</span>
-                  <span class="token operator">|</span> IExp <span class="token string">"+"</span> IExp <span class="token punctuation">[</span><span class="token class-name">seqstrict</span><span class="token punctuation">]</span>
-                  <span class="token operator">|</span> IExp <span class="token string">"-"</span> IExp <span class="token punctuation">[</span><span class="token class-name">seqstrict</span><span class="token punctuation">]</span>
-                  &gt; IExp <span class="token string">"*"</span> IExp <span class="token punctuation">[</span><span class="token class-name">seqstrict</span><span class="token punctuation">]</span>
-                  <span class="token operator">|</span> IExp <span class="token string">"/"</span> IExp <span class="token punctuation">[</span><span class="token class-name">seqstrict</span><span class="token punctuation">]</span>
-                  &gt; IExp <span class="token string">"^"</span> IExp <span class="token punctuation">[</span><span class="token class-name">seqstrict</span><span class="token punctuation">]</span>
-                  <span class="token operator">|</span> <span class="token keyword">Id</span> <span class="token string">"("</span> Exps <span class="token string">")"</span> <span class="token punctuation">[</span><span class="token class-name">strict</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">]</span>
+    syntax IExp ::= "(" IExp ")" [bracket]
+                  | IExp "+" IExp [seqstrict]
+                  | IExp "-" IExp [seqstrict]
+                  &gt; IExp "*" IExp [seqstrict]
+                  | IExp "/" IExp [seqstrict]
+                  &gt; IExp "^" IExp [seqstrict]
+                  | Id "(" Exps ")" [strict(2)]
 
-    <span class="token keyword">syntax</span> BExp <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token keyword">Bool</span>
+    syntax BExp ::= Bool
 
-    <span class="token keyword">syntax</span> BExp <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">"("</span> BExp <span class="token string">")"</span> <span class="token punctuation">[</span><span class="token class-name">bracket</span><span class="token punctuation">]</span>
-                  <span class="token operator">|</span> IExp <span class="token string">"&lt;="</span> IExp <span class="token punctuation">[</span><span class="token class-name">seqstrict</span><span class="token punctuation">]</span>
-                  <span class="token operator">|</span> IExp <span class="token string">"&lt;"</span>  IExp <span class="token punctuation">[</span><span class="token class-name">seqstrict</span><span class="token punctuation">]</span>
-                  <span class="token operator">|</span> IExp <span class="token string">"&gt;="</span> IExp <span class="token punctuation">[</span><span class="token class-name">seqstrict</span><span class="token punctuation">]</span>
-                  <span class="token operator">|</span> IExp <span class="token string">"&gt;"</span>  IExp <span class="token punctuation">[</span><span class="token class-name">seqstrict</span><span class="token punctuation">]</span>
-                  <span class="token operator">|</span> IExp <span class="token string">"=="</span> IExp <span class="token punctuation">[</span><span class="token class-name">seqstrict</span><span class="token punctuation">]</span>
-                  <span class="token operator">|</span> IExp <span class="token string">"!="</span> IExp <span class="token punctuation">[</span><span class="token class-name">seqstrict</span><span class="token punctuation">]</span>
+    syntax BExp ::= "(" BExp ")" [bracket]
+                  | IExp "&lt;=" IExp [seqstrict]
+                  | IExp "&lt;"  IExp [seqstrict]
+                  | IExp "&gt;=" IExp [seqstrict]
+                  | IExp "&gt;"  IExp [seqstrict]
+                  | IExp "==" IExp [seqstrict]
+                  | IExp "!=" IExp [seqstrict]
 
-    <span class="token keyword">syntax</span> BExp <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> BExp <span class="token string">"&amp;&amp;"</span> BExp
-                  <span class="token operator">|</span> BExp <span class="token string">"||"</span> BExp
+    syntax BExp ::= BExp "&amp;&amp;" BExp
+                  | BExp "||" BExp
 
-    <span class="token keyword">syntax</span> Stmt <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span>
-         <span class="token keyword">Id</span> <span class="token string">"="</span> IExp <span class="token string">";"</span> <span class="token punctuation">[</span><span class="token class-name">strict</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">]</span>                        <span class="token comment">// Assignment</span>
-       <span class="token operator">|</span> Stmt Stmt <span class="token punctuation">[</span><span class="token class-name">left</span><span class="token punctuation">]</span>                                   <span class="token comment">// Sequence</span>
-       <span class="token operator">|</span> Block                                              <span class="token comment">// Block</span>
-       <span class="token operator">|</span> <span class="token string">"if"</span> <span class="token string">"("</span> BExp <span class="token string">")"</span> Block <span class="token string">"else"</span> Block <span class="token punctuation">[</span><span class="token class-name">strict</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">]</span>   <span class="token comment">// If conditional</span>
-       <span class="token operator">|</span> <span class="token string">"while"</span> <span class="token string">"("</span> BExp <span class="token string">")"</span> Block                         <span class="token comment">// While loop</span>
-       <span class="token operator">|</span> <span class="token string">"return"</span> IExp <span class="token string">";"</span>                    <span class="token punctuation">[</span><span class="token class-name">seqstrict</span><span class="token punctuation">]</span>   <span class="token comment">// Return statement</span>
-       <span class="token operator">|</span> <span class="token string">"def"</span> <span class="token keyword">Id</span> <span class="token string">"("</span> Ids <span class="token string">")"</span> Block                         <span class="token comment">// Function definition</span>
+    syntax Stmt ::=
+         Id "=" IExp ";" [strict(2)]                        // Assignment
+       | Stmt Stmt [left]                                   // Sequence
+       | Block                                              // Block
+       | "if" "(" BExp ")" Block "else" Block [strict(1)]   // If conditional
+       | "while" "(" BExp ")" Block                         // While loop
+       | "return" IExp ";"                    [seqstrict]   // Return statement
+       | "def" Id "(" Ids ")" Block                         // Function definition
 
-    <span class="token keyword">syntax</span> Block <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span>
-         <span class="token string">"{"</span> Stmt <span class="token string">"}"</span>    <span class="token comment">// Block with statement</span>
-       <span class="token operator">|</span> <span class="token string">"{"</span> <span class="token string">"}"</span>         <span class="token comment">// Empty block</span>
-<span class="token keyword">endmodule</span>
+    syntax Block ::=
+         "{" Stmt "}"    // Block with statement
+       | "{" "}"         // Empty block
+endmodule
 
-<span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">22</span>
-    <span class="token keyword">imports</span> INT
-    <span class="token keyword">imports</span> BOOL
-    <span class="token keyword">imports</span> LIST
-    <span class="token keyword">imports</span> MAP
-    <span class="token keyword">imports</span> LESSON<span class="token operator">-</span><span class="token number">22</span><span class="token operator">-</span>SYNTAX
+module LESSON-22
+    imports INT
+    imports BOOL
+    imports LIST
+    imports MAP
+    imports LESSON-22-SYNTAX
 
-    <span class="token keyword">configuration</span>
-      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> $PGM<span class="token punctuation">:</span>Stmt <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>
-      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>store</span><span class="token punctuation">&gt;</span></span> <span class="token punctuation">.</span>Map <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>store</span><span class="token punctuation">&gt;</span></span>
-      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>funcs</span><span class="token punctuation">&gt;</span></span> <span class="token punctuation">.</span>Map <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>funcs</span><span class="token punctuation">&gt;</span></span>
-      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>stack</span><span class="token punctuation">&gt;</span></span> <span class="token punctuation">.</span>List <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>stack</span><span class="token punctuation">&gt;</span></span>
+    configuration
+      &lt;k&gt; $PGM:Stmt &lt;/k&gt;
+      &lt;store&gt; .Map &lt;/store&gt;
+      &lt;funcs&gt; .Map &lt;/funcs&gt;
+      &lt;stack&gt; .List &lt;/stack&gt;
 
- <span class="token comment">// -----------------------------------------------</span>
-    <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> I1 <span class="token operator">+</span> I2 <span class="token operator">=&gt;</span> I1 <span class="token operator">+</span><span class="token keyword">Int</span> I2 <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>
-    <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> I1 <span class="token operator">-</span> I2 <span class="token operator">=&gt;</span> I1 <span class="token operator">-</span><span class="token keyword">Int</span> I2 <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>
-    <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> I1 <span class="token operator">*</span> I2 <span class="token operator">=&gt;</span> I1 <span class="token operator">*</span><span class="token keyword">Int</span> I2 <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>
-    <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> I1 <span class="token operator">/</span> I2 <span class="token operator">=&gt;</span> I1 <span class="token operator">/</span><span class="token keyword">Int</span> I2 <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>
-    <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> I1 <span class="token operator">^</span> I2 <span class="token operator">=&gt;</span> I1 <span class="token operator">^</span><span class="token keyword">Int</span> I2 <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>
+ // -----------------------------------------------
+    rule &lt;k&gt; I1 + I2 =&gt; I1 +Int I2 ... &lt;/k&gt;
+    rule &lt;k&gt; I1 - I2 =&gt; I1 -Int I2 ... &lt;/k&gt;
+    rule &lt;k&gt; I1 * I2 =&gt; I1 *Int I2 ... &lt;/k&gt;
+    rule &lt;k&gt; I1 / I2 =&gt; I1 /Int I2 ... &lt;/k&gt;
+    rule &lt;k&gt; I1 ^ I2 =&gt; I1 ^Int I2 ... &lt;/k&gt;
 
-    <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> I<span class="token punctuation">:</span><span class="token keyword">Id</span> <span class="token operator">=&gt;</span> STORE<span class="token punctuation">[</span>I<span class="token punctuation">]</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>
-         <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>store</span><span class="token punctuation">&gt;</span></span> STORE <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>store</span><span class="token punctuation">&gt;</span></span>
+    rule &lt;k&gt; I:Id =&gt; STORE[I] ... &lt;/k&gt;
+         &lt;store&gt; STORE &lt;/store&gt;
 
- <span class="token comment">// ------------------------------------------------</span>
-    <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> I1 <span class="token operator">&lt;=</span> I2 <span class="token operator">=&gt;</span> I1  <span class="token operator">&lt;=</span><span class="token keyword">Int</span> I2 <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>
-    <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> I1  &lt; I2 <span class="token operator">=&gt;</span> I1   &lt;<span class="token keyword">Int</span> I2 <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>
-    <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> I1 <span class="token operator">&gt;=</span> I2 <span class="token operator">=&gt;</span> I1  <span class="token operator">&gt;=</span><span class="token keyword">Int</span> I2 <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>
-    <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> I1  &gt; I2 <span class="token operator">=&gt;</span> I1   &gt;<span class="token keyword">Int</span> I2 <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>
-    <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> I1 <span class="token operator">==</span> I2 <span class="token operator">=&gt;</span> I1  <span class="token operator">==</span><span class="token keyword">Int</span> I2 <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>
-    <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> I1 <span class="token operator">!=</span> I2 <span class="token operator">=&gt;</span> I1 <span class="token operator">=</span><span class="token operator">/</span><span class="token operator">=</span><span class="token keyword">Int</span> I2 <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>
+ // ------------------------------------------------
+    rule &lt;k&gt; I1 &lt;= I2 =&gt; I1  &lt;=Int I2 ... &lt;/k&gt;
+    rule &lt;k&gt; I1  &lt; I2 =&gt; I1   &lt;Int I2 ... &lt;/k&gt;
+    rule &lt;k&gt; I1 &gt;= I2 =&gt; I1  &gt;=Int I2 ... &lt;/k&gt;
+    rule &lt;k&gt; I1  &gt; I2 =&gt; I1   &gt;Int I2 ... &lt;/k&gt;
+    rule &lt;k&gt; I1 == I2 =&gt; I1  ==Int I2 ... &lt;/k&gt;
+    rule &lt;k&gt; I1 != I2 =&gt; I1 =/=Int I2 ... &lt;/k&gt;
 
-    <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> B1 <span class="token operator">&amp;&amp;</span> B2 <span class="token operator">=&gt;</span> B1 andBool B2 <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>
-    <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> B1 <span class="token operator">||</span> B2 <span class="token operator">=&gt;</span> B1  orBool B2 <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>
+    rule &lt;k&gt; B1 &amp;&amp; B2 =&gt; B1 andBool B2 ... &lt;/k&gt;
+    rule &lt;k&gt; B1 || B2 =&gt; B1  orBool B2 ... &lt;/k&gt;
 
-    <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> S1<span class="token punctuation">:</span>Stmt S2<span class="token punctuation">:</span>Stmt <span class="token operator">=&gt;</span> S1 <span class="token operator">~&gt;</span> S2 <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>
+    rule &lt;k&gt; S1:Stmt S2:Stmt =&gt; S1 ~&gt; S2 ... &lt;/k&gt;
 
-    <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> ID <span class="token operator">=</span> I<span class="token punctuation">:</span><span class="token keyword">Int</span> <span class="token punctuation">;</span> <span class="token operator">=&gt;</span> <span class="token punctuation">.</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>
-         <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>store</span><span class="token punctuation">&gt;</span></span> STORE <span class="token operator">=&gt;</span> STORE <span class="token punctuation">[</span> ID &lt;<span class="token operator">-</span> I <span class="token punctuation">]</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>store</span><span class="token punctuation">&gt;</span></span>
+    rule &lt;k&gt; ID = I:Int ; =&gt; . ... &lt;/k&gt;
+         &lt;store&gt; STORE =&gt; STORE [ ID &lt;- I ] &lt;/store&gt;
 
-    <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> <span class="token punctuation">{</span> S <span class="token punctuation">}</span> <span class="token operator">=&gt;</span> S <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>
-    <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> <span class="token punctuation">{</span>   <span class="token punctuation">}</span> <span class="token operator">=&gt;</span> <span class="token punctuation">.</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>
+    rule &lt;k&gt; { S } =&gt; S ... &lt;/k&gt;
+    rule &lt;k&gt; {   } =&gt; . ... &lt;/k&gt;
 
-    <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> if <span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span>   THEN else _ELSE <span class="token operator">=&gt;</span> THEN <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>
-    <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> if <span class="token punctuation">(</span><span class="token boolean">false</span><span class="token punctuation">)</span> _THEN else  ELSE <span class="token operator">=&gt;</span> ELSE <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>
+    rule &lt;k&gt; if (true)   THEN else _ELSE =&gt; THEN ... &lt;/k&gt;
+    rule &lt;k&gt; if (false) _THEN else  ELSE =&gt; ELSE ... &lt;/k&gt;
 
-    <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> while <span class="token punctuation">(</span> BE <span class="token punctuation">)</span> BODY <span class="token operator">=&gt;</span> if <span class="token punctuation">(</span> BE <span class="token punctuation">)</span> <span class="token punctuation">{</span> BODY while <span class="token punctuation">(</span> BE <span class="token punctuation">)</span> BODY <span class="token punctuation">}</span> else <span class="token punctuation">{</span> <span class="token punctuation">}</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>
+    rule &lt;k&gt; while ( BE ) BODY =&gt; if ( BE ) { BODY while ( BE ) BODY } else { } ... &lt;/k&gt;
 
-    <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> def FNAME <span class="token punctuation">(</span> ARGS <span class="token punctuation">)</span> BODY <span class="token operator">=&gt;</span> <span class="token punctuation">.</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>
-         <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>funcs</span><span class="token punctuation">&gt;</span></span> FS <span class="token operator">=&gt;</span> FS <span class="token punctuation">[</span> FNAME &lt;<span class="token operator">-</span> def FNAME <span class="token punctuation">(</span> ARGS <span class="token punctuation">)</span> BODY <span class="token punctuation">]</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>funcs</span><span class="token punctuation">&gt;</span></span>
+    rule &lt;k&gt; def FNAME ( ARGS ) BODY =&gt; . ... &lt;/k&gt;
+         &lt;funcs&gt; FS =&gt; FS [ FNAME &lt;- def FNAME ( ARGS ) BODY ] &lt;/funcs&gt;
 
-    <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> FNAME <span class="token punctuation">(</span> IS<span class="token punctuation">:</span>Ints <span class="token punctuation">)</span> <span class="token operator">~&gt;</span> CONT <span class="token operator">=&gt;</span> #makeBindings<span class="token punctuation">(</span>ARGS<span class="token punctuation">,</span> IS<span class="token punctuation">)</span> <span class="token operator">~&gt;</span> BODY <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>
-         <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>funcs</span><span class="token punctuation">&gt;</span></span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> FNAME <span class="token operator">|</span><span class="token operator">-</span>&gt; def FNAME <span class="token punctuation">(</span> ARGS <span class="token punctuation">)</span> BODY <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>funcs</span><span class="token punctuation">&gt;</span></span>
-         <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>store</span><span class="token punctuation">&gt;</span></span> STORE <span class="token operator">=&gt;</span> <span class="token punctuation">.</span>Map <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>store</span><span class="token punctuation">&gt;</span></span>
-         <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>stack</span><span class="token punctuation">&gt;</span></span> <span class="token punctuation">.</span>List <span class="token operator">=&gt;</span> ListItem<span class="token punctuation">(</span>state<span class="token punctuation">(</span>CONT<span class="token punctuation">,</span> STORE<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>stack</span><span class="token punctuation">&gt;</span></span>
+    rule &lt;k&gt; FNAME ( IS:Ints ) ~&gt; CONT =&gt; #makeBindings(ARGS, IS) ~&gt; BODY &lt;/k&gt;
+         &lt;funcs&gt; ... FNAME |-&gt; def FNAME ( ARGS ) BODY ... &lt;/funcs&gt;
+         &lt;store&gt; STORE =&gt; .Map &lt;/store&gt;
+         &lt;stack&gt; .List =&gt; ListItem(state(CONT, STORE)) ... &lt;/stack&gt;
 
-    <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> return I<span class="token punctuation">:</span><span class="token keyword">Int</span> <span class="token punctuation">;</span> <span class="token operator">~&gt;</span> _ <span class="token operator">=&gt;</span> I <span class="token operator">~&gt;</span> CONT <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>
-         <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>stack</span><span class="token punctuation">&gt;</span></span> ListItem<span class="token punctuation">(</span>state<span class="token punctuation">(</span>CONT<span class="token punctuation">,</span> STORE<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">.</span>List <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>stack</span><span class="token punctuation">&gt;</span></span>
-         <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>store</span><span class="token punctuation">&gt;</span></span> _ <span class="token operator">=&gt;</span> STORE <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>store</span><span class="token punctuation">&gt;</span></span>
+    rule &lt;k&gt; return I:Int ; ~&gt; _ =&gt; I ~&gt; CONT &lt;/k&gt;
+         &lt;stack&gt; ListItem(state(CONT, STORE)) =&gt; .List ... &lt;/stack&gt;
+         &lt;store&gt; _ =&gt; STORE &lt;/store&gt;
 
-    <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> return I<span class="token punctuation">:</span><span class="token keyword">Int</span> <span class="token punctuation">;</span> <span class="token operator">~&gt;</span> <span class="token punctuation">.</span> <span class="token operator">=&gt;</span> I <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>
-         <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>stack</span><span class="token punctuation">&gt;</span></span> <span class="token punctuation">.</span>List <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>stack</span><span class="token punctuation">&gt;</span></span>
+    rule &lt;k&gt; return I:Int ; ~&gt; . =&gt; I &lt;/k&gt;
+         &lt;stack&gt; .List &lt;/stack&gt;
 
-    <span class="token keyword">syntax</span> KItem <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> #makeBindings<span class="token punctuation">(</span>Ids<span class="token punctuation">,</span> Ints<span class="token punctuation">)</span>
-                   <span class="token operator">|</span> state<span class="token punctuation">(</span>continuation<span class="token punctuation">:</span> K<span class="token punctuation">,</span> store<span class="token punctuation">:</span> Map<span class="token punctuation">)</span>
- <span class="token comment">// ----------------------------------------------------</span>
-    <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> #makeBindings<span class="token punctuation">(</span><span class="token punctuation">.</span>Ids<span class="token punctuation">,</span> <span class="token punctuation">.</span>Ints<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">.</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>
-    <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> #makeBindings<span class="token punctuation">(</span><span class="token punctuation">(</span>I<span class="token punctuation">:</span><span class="token keyword">Id</span><span class="token punctuation">,</span> IDS <span class="token operator">=&gt;</span> IDS<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token punctuation">(</span>IN<span class="token punctuation">:</span><span class="token keyword">Int</span><span class="token punctuation">,</span> INTS <span class="token operator">=&gt;</span> INTS<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>
-         <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>store</span><span class="token punctuation">&gt;</span></span> STORE <span class="token operator">=&gt;</span> STORE <span class="token punctuation">[</span> I &lt;<span class="token operator">-</span> IN <span class="token punctuation">]</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>store</span><span class="token punctuation">&gt;</span></span>
-<span class="token keyword">endmodule</span>
+    syntax KItem ::= #makeBindings(Ids, Ints)
+                   | state(continuation: K, store: Map)
+ // ----------------------------------------------------
+    rule &lt;k&gt; #makeBindings(.Ids, .Ints) =&gt; . ... &lt;/k&gt;
+    rule &lt;k&gt; #makeBindings((I:Id, IDS =&gt; IDS), (IN:Int, INTS =&gt; INTS)) ... &lt;/k&gt;
+         &lt;store&gt; STORE =&gt; STORE [ I &lt;- IN ] &lt;/store&gt;
+endmodule
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>Next, compile this example using <code>kompile lesson-22.k --backend haskell</code>. If
 your processor is an Apple Silicon processor, add the <code>--no-haskell-binary</code>
@@ -402,7 +402,7 @@ flag if the compilation fails.</p>
 <p>Next, take the following snippet of K code and save it in <code>lesson-22-spec.k</code>.
 This is a skeleton of the proof environment, and we will complete it as the
 lesson progresses.</p>
-<pre><code>requires "lesson-22.k"
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>requires "lesson-22.k"
 requires "domains.md"
 
 module LESSON-22-SPEC-SYNTAX
@@ -422,15 +422,15 @@ module LESSON-22-SPEC
     imports VERIFICATION
 
 endmodule
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h2 id="3.-claims">3. Claims</h2>
 <ol>
 <li>The first claim we will ask K to prove is that 3 + 4, in fact, equals 7.
 Claims are stated using the <code>claim</code> keyword, followed by the claim
 statement:</li>
 </ol>
-<pre><code>claim &lt;k&gt; 3 + 4 =&gt; 7 ... &lt;/k&gt;
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>claim &lt;k&gt; 3 + 4 =&gt; 7 ... &lt;/k&gt;
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>Add this claim to the <code>LESSON-22-SPEC</code> module and run the K prover using the
 command <code>kprove lesson-22-spec.k</code>. You should get back the output <code>#Top</code>,
 which denotes the Matching Logic equivalent of <code>true</code> and means, in this
@@ -438,19 +438,19 @@ context, that all claims have been proven correctly.</p>
 <ol start="2">
 <li>The second claim reasons about the <code>if</code> statement that has a concrete condition:</li>
 </ol>
-<pre><code>claim &lt;k&gt; if ( 3 + 4 == 7 ) {
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>claim &lt;k&gt; if ( 3 + 4 == 7 ) {
             $a = 1 ;
             } else {
             $a = 2 ;
             }
         =&gt; . ... &lt;/k&gt;
         &lt;store&gt; STORE =&gt; STORE [ $a &lt;- 1 ] &lt;/store&gt;
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>stating that the given program terminates (<code>=&gt; .</code>), and when it does, the value
 of the variable <code>$a</code> is set to <code>1</code>, meaning that the execution will have taken
 the <code>then</code> branch. Add this claim to the <code>LESSON-22-SPEC</code> module, but also add</p>
-<pre><code>syntax Id ::= "$a" [token]
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>syntax Id ::= "$a" [token]
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>to the <code>LESSON-22-SPEC-SYNTAX</code> module in order to declare <code>$a</code> as a token so
 that it can be used as a program variable. Re-run the K prover, which should
 again return <code>#Top</code>.</p>
@@ -458,7 +458,7 @@ again return <code>#Top</code>.</p>
 <li>Our third claim demonstrates how to reason about both branches of an <code>if</code>
 statement at the same time:</li>
 </ol>
-<pre><code>claim &lt;k&gt; $a = A:Int ; $b = B:Int ;
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>claim &lt;k&gt; $a = A:Int ; $b = B:Int ;
           if ($a &lt; $b) {
             $c = $b ;
           } else {
@@ -467,7 +467,7 @@ statement at the same time:</li>
         =&gt; . ... &lt;/k&gt;
         &lt;store&gt; STORE =&gt; STORE [ $a &lt;- A ] [ $b &lt;- B ] [ $c &lt;- ?C:Int ] &lt;/store&gt;
     ensures (?C ==Int A) orBool (?C ==Int B)
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>The program in question first assigns symbolic integers <code>A</code> and <code>B</code> to program
 variables <code>$a</code> and <code>$b</code>, respectively, and then executes the given <code>if</code>
 statement, which has a symbolic condition (<code>A &lt; B</code>), updating the value of the
@@ -482,7 +482,7 @@ either <code>A</code> or <code>B</code>.</p>
 the K prover again, and observe the output, which should not be <code>#Top</code> this
 time. This means that K was not able to prove the claim, and we now need to
 understand why. We do so by examining the output, which should look as follows:</p>
-<pre><code>    (InfoReachability) while checking the implication:
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>    (InfoReachability) while checking the implication:
     The configuration's term unifies with the destination's term,
     but the implication check between the conditions has failed.
 
@@ -520,7 +520,7 @@ understand why. We do so by examining the output, which should look as follows:<
   #Equals
     A &lt;Int B
   }
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>This output starts with a message telling us at which point the proof failed,
 followed by the final state, which consists of three parts: some negative
 Matching Logic (ML) constraints, the final configuration (<code>&lt;generatedTop&gt; ... &lt;/generatedTop&gt;</code>), and some positive ML constraints. Generally speaking,
@@ -529,16 +529,16 @@ such as (but not limited to) branches taken by the execution
 (e.g. <code>{ true #Equals A &lt;Int B }</code> or <code>#Not ( { true #Equals A &lt;Int B } ) </code>),
 or <code>ensures</code> constraints.</p>
 <p>First, we examine the message:</p>
-<pre><code>(InfoReachability) while checking the implication:
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>(InfoReachability) while checking the implication:
 The configuration's term unifies with the destination's term,
 but the implication check between the conditions has failed.
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <p>which tells us that the <em>structure</em> of the final configuration is as expected,
 but that some of the associated constraints cannot be proven. We next look at
 the final configuration, in which the relevant item is the <code>&lt;store&gt; ... &lt;/store&gt;</code> cell, because it is the only one that we are reasoning about. By
 inspecting its contents:</p>
-<pre><code>STORE [ $a &lt;- A:Int ] [ $b &lt;- B:Int ] [ $c &lt;- B:Int ]
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>STORE [ $a &lt;- A:Int ] [ $b &lt;- B:Int ] [ $c &lt;- B:Int ]
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>we see that we should be within the constraints of the <code>ensures</code>, since the
 value of <code>$c</code> in the store equals <code>B</code> in this branch. We next examine the
 negative and positive constraints of the output and, more often than not, the
@@ -546,11 +546,11 @@ goal is to instruct K how to use the information from the final configuration
 and the positive constraints to falsify one of the negative constraints. This
 is done through <em>simplifications</em>.</p>
 <p>So, the positive constraint that we have is</p>
-<pre><code>{ true #Equals A &lt;Int B }
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>{ true #Equals A &lt;Int B }
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>meaning that <code>A &lt;Int B</code> holds. Given the analysed program, this tells us that
 we are in the <code>then</code> branch of the <code>if</code>. The negative constraint is</p>
-<pre><code>  #Not (
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>  #Not (
     #Exists ?C . {
         STORE [ $a &lt;- A:Int ] [ $b &lt;- B:Int ] [ $c &lt;- ?C:Int ]
       #Equals
@@ -559,26 +559,28 @@ we are in the <code>then</code> branch of the <code>if</code>. The negative cons
   #And
     { true #Equals ?C ==Int A orBool ?C ==Int B }
   )
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>and we observe, from the first equality, that the existential <code>?C</code> should be
 instantiated with <code>B</code>. This would make both branches of the <code>#And</code> true,
 falsifying the outside <code>#Not</code>. We just need to show <code>K</code> how to conclude that
 <code>?C ==Int B</code>. We do so by introducing the following simplification into the
 <code>VERIFICATION</code> module:</p>
-<pre><code>rule { M:Map [ K &lt;- V ] #Equals M [ K &lt;- V' ] } =&gt; { V #Equals V' } [simplification]
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>rule { M:Map [ K &lt;- V ] #Equals M [ K &lt;- V' ] } =&gt; { V #Equals V' } [simplification]
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>which formalizes our internal understanding of <code>?C ==Int B</code>. The rule states
 that when we update the same key in the same map with two values, and the
 resulting maps are equal, then the two values must be equal as well. The
 <code>[simplification]</code> attribute indicates to K to use this rule to simplify the
-state when trying to prove claims. Re-run the K prover, which should now return
+state when trying to prove claims. Like function rules, simplification rules
+do not complete to the top of the configuration, but instead apply anywhere
+their left-hand-side matches. Re-run the K prover, which should now return
 <code>#Top</code>, indicating that K was able to use the simplification and prove the
 required claims.</p>
 <ol start="4">
 <li>Next, we show how to state and prove properties of <code>while</code> loops. In
 particular, we consider the following loop</li>
 </ol>
-<pre><code>claim
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>claim
     &lt;k&gt;
         while ( 0 &lt; $n ) {
             $s = $s + $n;
@@ -590,7 +592,7 @@ particular, we consider the following loop</li>
         $n |-&gt; (N:Int =&gt; 0)
     &lt;/store&gt;
     requires N &gt;=Int 0
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>which adds the sum of the first <code>$n</code> integers to <code>$s</code>, assuming the value of <code>$n</code>
 is non-negative to begin with. This is reflected in the store by stating that,
 after the execution of the loop, the original value of <code>$s</code> (which is set to
@@ -600,7 +602,7 @@ module, and run the K prover, which should return <code>#Top</code>.</p>
 <ol start="5">
 <li>Finally, our last claim is about a program that uses function calls:</li>
 </ol>
-<pre><code>claim
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>claim
     &lt;k&gt;
         def $sum($n, .Ids) {
             $s = 0 ;
@@ -617,7 +619,7 @@ module, and run the K prover, which should return <code>#Top</code>.</p>
     &lt;store&gt; $s |-&gt; (_ =&gt; ((N +Int 1) *Int N /Int 2)) &lt;/store&gt;
     &lt;stack&gt; .List &lt;/stack&gt;
     requires N &gt;=Int 0
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>Essentially, we have wrapped the <code>while</code> loop from claim 3.4 into a function
 <code>$sum</code>, and then called that function with a symbolic integer <code>N</code>, storing the
 return value in the variable <code>$s</code>. The specification states that this program
@@ -634,7 +636,7 @@ branch and adjust the claim so that the proof passes.</p>
 <li>
 <p>The post-condition of the specification in part 3.3 loses some information.
 In particular, the value of <code>?C</code> is in fact the maximum of <code>A</code> and <code>B</code>.
-Prove the same claim as in 3.2, but with the post-condition <code>ensures (?C ==Int maxInt(A, B))</code>. For this, you will need to extend the <code>VERIFICATION</code>
+Prove the same claim as in 3.2, but with the post-condition <code>ensures (?C ==Int maxInt(A, B))</code>.  For this, you will need to extend the <code>VERIFICATION</code>
 module with two simplifications that capture the meaning of <code>maxInt(A:Int, B:Int)</code>. Keep in mind that any rewriting rule can be used as a
 simplification; in particular, that simplifications can have <code>requires</code>
 clauses.</p>
@@ -644,12 +646,12 @@ clauses.</p>
 value of <code>$b</code>, specify and verify the following <code>while</code> loop:</p>
 </li>
 </ol>
-<pre><code>while ( 0 &lt; $b ) {
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>while ( 0 &lt; $b ) {
     $a = $a + $c;
     $b = $b - 1;
     $c = $c - 1;
 }
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>Hint</strong>: You will not need additional simplifications---once you've got the
 specification right, the proof will go through.</p>
 <ol start="4">
@@ -728,8 +730,8 @@ interacting with each other), and try to specify and verify it (them) in K.</li>
             /> </picture
         ></a>
         <p class="mt-2 text-md-left copyright">
-          <a href="https://goo.gl/maps/hKLtCjeEd6yqfzwx5" target="_blank"
-            >1807 S Neil Street, Champaign, IL 61820</a
+          <a href="https://goo.gl/maps/TkuJSdoA3oNPpc486" target="_blank"
+            >301 N Neil St. Suite 412, Champaign, IL 61820</a
           >
         </p>
       </div>

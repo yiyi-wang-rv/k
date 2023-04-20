@@ -154,7 +154,7 @@
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/16_collections/">Lesson 1.16: Maps, Semantic Lists, and Sets</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/17_cell_multiplicity/">Lesson 1.17: Cell Multiplicity and Cell Collections</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/18_equality_and_conditionals/">Lesson 1.18: Term Equality and the Ternary Operator</a></div>
-<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB</a></div>
+<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB or LLDB</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/20_backends/">Lesson 1.20: K Backends and the Haskell Backend</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/21_symbolic_execution/">Lesson 1.21: Unification and Symbolic Execution</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/22_proofs/">Lesson 1.22: K Deductive Verification</a></div>
@@ -276,18 +276,18 @@ as a top-level rule is for the left-hand side of the rule to mention one or
 more <strong>cells</strong>. We will cover how cells work and are declared in more detail
 in a later lesson, but for now, what you should know is that when we ran <code>krun</code>
 in our very first example in Lesson 1.2 and got the following output:</p>
-<pre><code>&lt;k&gt;
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>&lt;k&gt;
   Yellow ( ) ~&gt; .
 &lt;/k&gt;
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <p><code>&lt;k&gt;</code> is a cell, known by convention as the <strong>K cell</strong>. This cell is available
 by default in any definition without needing to be explicitly declared.</p>
 <p>The K cell contains a single term of sort <code>K</code>. <code>K</code> is a predefined sort in K
 with two constructors, that can be roughly represented by the following
 grammar:</p>
-<pre><code>  syntax K ::= KItem "~&gt;" K
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>  syntax K ::= KItem "~&gt;" K
              | "."
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>As a syntactic convenience, K allows you to treat <code>~&gt;</code> like it is an
 associative list (i.e., as if it were defined as <code>syntax K ::= K "~&gt;" K</code>).
 When a definition is compiled, it will automatically transform the rules you
@@ -298,8 +298,8 @@ you would otherwise write <code>.</code> and the meaning is identical.</p>
 another built-in sort in K. For every sort <code>S</code> declared in a definition (with
 the exception of <code>K</code> and <code>KItem</code>), K will implicitly insert the following
 production:</p>
-<pre><code>  syntax KItem ::= S
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>  syntax KItem ::= S
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>In other words, every sort is a subsort of the sort <code>KItem</code>, and thus a term
 of any sort can be injected as an element of a term of sort <code>K</code>, also called
 a <strong>K sequence</strong>.</p>
@@ -325,6 +325,25 @@ explore all possible non-deterministic choices, and generate a complete list of
 all possible final configurations reachable by each nondeterminstic choice that
 can be made. Note that the <code>--search</code> flag to krun only works if you pass
 <code>--enable-search</code> to kompile first.</p>
+<p>Unlike top-level rewrite rules, function rules are not associated with any
+particular set of cells in the configuration (although they can contain cells
+in their function arguments and return value). While top-level rewrite rules
+apply to the entire term being rewritten, function rules apply anywhere a
+function application for that function appears, and are immediately rewritten
+to their return value in that position.</p>
+<p>Another key distinction between top-level rules and function rules is that
+function <em>symbols</em>, i.e., productions with the <code>function</code> attribute, are
+mathematical functions rather than constructors. While a constructor is
+logically distinct from any other constructor of the same sort, and can be
+matched against unconditionally, a function does not necessaraily have the
+same restriction unless it happens to be an injective function. Thus, two
+function symbols with different arguments may still ultimately produce the
+same value and thus compare equal to one another. Due to this, concrete
+execution (i.e., all K definitions introduced thus far; see Lesson 1.21)
+introduces the restriction that you cannot match on a function symbol on the
+left-hand side of a rule, except as the top symbol on the left-hand side of
+a function rule. This restriction will be later lifted when we introduce the
+Haskell Backend which performs <strong>symbolic execution</strong>.</p>
 <h3 id="exercise">Exercise</h3>
 <p>Pass a program containing no functions to <code>krun</code>. You can use a term of sort
 <code>Exp</code> from <code>LESSON-11-D</code>. Observe the output and try to understand why you get
@@ -343,7 +362,7 @@ programming language into a value representing the result of evaluating that
 expression.</p>
 <p>Recall in Lesson 1.11, we wrote a simple grammar of Boolean and integer
 expressions that looked roughly like this (<code>lesson-13-a.k</code>):</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">13</span><span class="token operator">-</span>A
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">13</span><span class="token operator">-</span>A
   <span class="token keyword">imports</span> INT
 
   <span class="token keyword">syntax</span> Exp <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token keyword">Int</span>
@@ -351,12 +370,12 @@ expressions that looked roughly like this (<code>lesson-13-a.k</code>):</p>
                <span class="token operator">|</span> Exp <span class="token string">"+"</span> Exp
                <span class="token operator">|</span> Exp <span class="token string">"&amp;&amp;"</span> Exp
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>In that lesson, we defined a function <code>eval</code> which evaluated such expressions
 to either an integer or Boolean.</p>
 <p>However, it is more idiomatic to evaluate such expressions using top-level
 rewrite rules. Here is how one might do so in K (<code>lesson-13-b.k</code>):</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">13</span><span class="token operator">-</span>B<span class="token operator">-</span>SYNTAX
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">13</span><span class="token operator">-</span>B<span class="token operator">-</span>SYNTAX
   <span class="token keyword">imports</span> UNSIGNED<span class="token operator">-</span>INT<span class="token operator">-</span>SYNTAX
   <span class="token keyword">imports</span> BOOL<span class="token operator">-</span>SYNTAX
 
@@ -387,7 +406,7 @@ rewrite rules. Here is how one might do so in K (<code>lesson-13-b.k</code>):</p
   <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> E2<span class="token punctuation">:</span>Val <span class="token operator">~&gt;</span> freezer3<span class="token punctuation">(</span>E1<span class="token punctuation">)</span> <span class="token operator">~&gt;</span> K<span class="token punctuation">:</span>K <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span> <span class="token operator">=&gt;</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> E1 <span class="token operator">&amp;&amp;</span> E2 <span class="token operator">~&gt;</span> K <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>
   <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> E1<span class="token punctuation">:</span>Val <span class="token operator">~&gt;</span> freezer4<span class="token punctuation">(</span>E2<span class="token punctuation">)</span> <span class="token operator">~&gt;</span> K<span class="token punctuation">:</span>K <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span> <span class="token operator">=&gt;</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> E1 <span class="token operator">&amp;&amp;</span> E2 <span class="token operator">~&gt;</span> K <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>This is of course rather cumbersome currently, but we will soon introduce
 syntactic convenience which makes writing definitions of this type considerably
 easier. For now, notice that there are roughly 3 types of rules here: the first
@@ -421,11 +440,11 @@ operators inside that term. While a rewrite operator cannot appear nested
 inside another rewrite operator, by doing this, we can express that some parts
 of what we are matching are not <strong>changed</strong> by the rewrite operator. For
 example, consider the following rule from above:</p>
-<pre><code>  rule &lt;k&gt; I1:Int + I2:Int ~&gt; K:K &lt;/k&gt; =&gt; &lt;k&gt; I1 +Int I2 ~&gt; K &lt;/k&gt;
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>  rule &lt;k&gt; I1:Int + I2:Int ~&gt; K:K &lt;/k&gt; =&gt; &lt;k&gt; I1 +Int I2 ~&gt; K &lt;/k&gt;
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>We can equivalently write it like following:</p>
-<pre><code>  rule &lt;k&gt; (I1:Int + I2:Int =&gt; I1 +Int I2) ~&gt; _:K &lt;/k&gt;
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>  rule &lt;k&gt; (I1:Int + I2:Int =&gt; I1 +Int I2) ~&gt; _:K &lt;/k&gt;
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>When you put a rewrite inside a term like this, in essence, you are telling
 the rule to only rewrite <strong>part</strong> of the left-hand side to the right-hand side.
 In practice, this is implemented by lifting the rewrite operator to the top of
@@ -434,8 +453,8 @@ the rule by means of duplicating the surrounding context.</p>
 provides a special syntax for each cell containing a term of sort K, indicating
 that we want to match only on some prefix of the K sequence. For example, the
 above rule can be simplified further like so:</p>
-<pre><code>  rule &lt;k&gt; I1:Int + I2:Int =&gt; I1 +Int I2 ...&lt;/k&gt;
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>  rule &lt;k&gt; I1:Int + I2:Int =&gt; I1 +Int I2 ...&lt;/k&gt;
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>Here we have placed the symbol <code>...</code> immediately prior to the <code>&lt;/k&gt;</code> which ends
 the cell. What this tells the compiler is to take the contents of the cell,
 treat it as the prefix of a K sequence, and insert an anonymous variable of
@@ -444,7 +463,7 @@ sort <code>K</code> at the end. Thus we can think of <code>...</code> as a way o
 it unchanged.</p>
 <p>Putting all this together, we can rewrite <code>LESSON-13-B</code> like so
 (<code>lesson-13-c.k</code>):</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">13</span><span class="token operator">-</span>C<span class="token operator">-</span>SYNTAX
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">13</span><span class="token operator">-</span>C<span class="token operator">-</span>SYNTAX
   <span class="token keyword">imports</span> UNSIGNED<span class="token operator">-</span>INT<span class="token operator">-</span>SYNTAX
   <span class="token keyword">imports</span> BOOL<span class="token operator">-</span>SYNTAX
 
@@ -475,7 +494,7 @@ it unchanged.</p>
   <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> E2<span class="token punctuation">:</span>Val <span class="token operator">~&gt;</span> freezer3<span class="token punctuation">(</span>E1<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> E1 <span class="token operator">&amp;&amp;</span> E2 <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>
   <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> E1<span class="token punctuation">:</span>Val <span class="token operator">~&gt;</span> freezer4<span class="token punctuation">(</span>E2<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> E1 <span class="token operator">&amp;&amp;</span> E2 <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>This is still rather cumbersome, but it is already greatly simplified. In the
 next lesson, we will see how additional features of K can be used to specify
 heating and cooling rules much more compactly.</p>
@@ -588,8 +607,8 @@ heating and cooling rules much more compactly.</p>
             /> </picture
         ></a>
         <p class="mt-2 text-md-left copyright">
-          <a href="https://goo.gl/maps/hKLtCjeEd6yqfzwx5" target="_blank"
-            >1807 S Neil Street, Champaign, IL 61820</a
+          <a href="https://goo.gl/maps/TkuJSdoA3oNPpc486" target="_blank"
+            >301 N Neil St. Suite 412, Champaign, IL 61820</a
           >
         </p>
       </div>

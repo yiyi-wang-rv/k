@@ -154,7 +154,7 @@
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/16_collections/">Lesson 1.16: Maps, Semantic Lists, and Sets</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/17_cell_multiplicity/">Lesson 1.17: Cell Multiplicity and Cell Collections</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/18_equality_and_conditionals/">Lesson 1.18: Term Equality and the Ternary Operator</a></div>
-<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB</a></div>
+<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB or LLDB</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/20_backends/">Lesson 1.20: K Backends and the Haskell Backend</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/21_symbolic_execution/">Lesson 1.21: Unification and Symbolic Execution</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/22_proofs/">Lesson 1.22: K Deductive Verification</a></div>
@@ -317,14 +317,14 @@ supported:</p>
 complete, so you may run into errors using code points greater than 0xff.</p>
 <p>As an example, you can construct a string literal containing the following
 block of text:</p>
-<pre><code>This is an example block of text.
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>This is an example block of text.
 Here is a quotation: "Hello world."
 	This line is indented.
 ÁÉÍÓÚ
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 <p>Like so:</p>
-<pre><code>"This is an example block of text.\nHere is a quotation: \"Hello world.\"\n\tThis line is indented.\n\xc1\xc9\xcd\xd3\xda\n"
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>"This is an example block of text.\nHere is a quotation: \"Hello world.\"\n\tThis line is indented.\n\xc1\xc9\xcd\xd3\xda\n"
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <h2 id="basic-string-functions">Basic String Functions</h2>
 <p>The full list of functions provided for the <code>String</code> sort can be found in
 <a href="../../../include/kframework/builtin/domains/">domains.md</a>, but here we
@@ -333,13 +333,13 @@ describe a few of the more basic ones.</p>
 <p>The concatenation operator for strings is <code>+String</code>. For example, consider
 the following K rule that constructs a string from component parts
 (<code>lesson-10.k</code>):</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">10</span>
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">10</span>
   <span class="token keyword">imports</span> STRING
 
   <span class="token keyword">syntax</span> <span class="token keyword">String</span> <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> msg<span class="token punctuation">(</span><span class="token keyword">String</span><span class="token punctuation">)</span> <span class="token punctuation">[</span>function<span class="token punctuation">]</span>
   <span class="token keyword">rule</span> msg<span class="token punctuation">(</span>S<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token string">"The string you provided: "</span> <span class="token operator">+</span><span class="token keyword">String</span> S <span class="token operator">+</span><span class="token keyword">String</span> <span class="token string">"\nHave a nice day!"</span>
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>Note that this operator is <code>O(N)</code>, so repeated concatenations are inefficient.
 For information about efficient string concatenation, refer to
 <a href="../../2_intermediate/14_string_buffers_and_bytes/">Lesson 2.14</a>.</p>
@@ -353,11 +353,11 @@ takes two string indices, starting from 0, and returns the substring within the
 range [start..end). It is only defined if <code>end &gt;= start</code>, <code>start &gt;= 0</code>, and
 <code>end &lt;= length of string</code>. Here, for example, we return the first 5 characters
 of a string:</p>
-<pre><code>substrString(S, 0, 5)
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>substrString(S, 0, 5)
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>Here we return all but the first 3 characters:</p>
-<pre><code>substrString(S, 3, lengthString(S))
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>substrString(S, 3, lengthString(S))
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <h2 id="exercises">Exercises</h2>
 <ol>
 <li>Write a function that takes a paragraph of text (i.e., a sequence of
@@ -465,8 +465,8 @@ implement such a function, refer to <code>domains.md</code>.</li>
             /> </picture
         ></a>
         <p class="mt-2 text-md-left copyright">
-          <a href="https://goo.gl/maps/hKLtCjeEd6yqfzwx5" target="_blank"
-            >1807 S Neil Street, Champaign, IL 61820</a
+          <a href="https://goo.gl/maps/TkuJSdoA3oNPpc486" target="_blank"
+            >301 N Neil St. Suite 412, Champaign, IL 61820</a
           >
         </p>
       </div>

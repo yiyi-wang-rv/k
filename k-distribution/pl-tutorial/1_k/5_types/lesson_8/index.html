@@ -154,7 +154,7 @@
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/16_collections/">Lesson 1.16: Maps, Semantic Lists, and Sets</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/17_cell_multiplicity/">Lesson 1.17: Cell Multiplicity and Cell Collections</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/18_equality_and_conditionals/">Lesson 1.18: Term Equality and the Ternary Operator</a></div>
-<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB</a></div>
+<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB or LLDB</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/20_backends/">Lesson 1.20: K Backends and the Haskell Backend</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/21_symbolic_execution/">Lesson 1.21: Unification and Symbolic Execution</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/22_proofs/">Lesson 1.22: K Deductive Verification</a></div>
@@ -254,7 +254,7 @@
           class="col-12 col-md-6 col-xl-8 py-md-3 pl-md-5 bd-content"
           role="main"
         >
-          <div class="introduction markdown-preview"><!-- Copyright (c) 2012-2019 K Team. All Rights Reserved. --><html><head></head><body><h1 id="a-naive-environment-based-polymorphic-type-inferencer">A Naive Environment-based Polymorphic Type Inferencer</h1>
+          <div class="introduction markdown-preview"><html><head></head><body><h1 id="a-naive-environment-based-polymorphic-type-inferencer">A Naive Environment-based Polymorphic Type Inferencer</h1>
 <p>In this short lesson we discuss how to quickly turn a naive
 environment-based monomorphic type inferencer into a naive let-polymorphic
 one. Like in the previous lesson, we only need to change a few
@@ -262,11 +262,11 @@ characters. In terms of the K framework, you will learn how to have
 both environments and substitution in the same definition.</p>
 <p>Like in the previous lesson, all we have to do is to take the LAMBDA
 type inferencer in Lesson 5 and only change the rule</p>
-<pre><code>rule let X = E in E' =&gt; (lambda X . E') E
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>rule let X = E in E' =&gt; (lambda X . E') E
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>as follows:</p>
-<pre><code>rule let X = E in E' =&gt; E'[E/X]
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>rule let X = E in E' =&gt; E'[E/X]
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>The reasons why this works have already been explained in the previous
 lesson, so we do not repeat them here.</p>
 <p>Since our new let rule uses substitution, we have to require the
@@ -274,13 +274,13 @@ substitution module at the top and also import SUBSTITUTION in the
 current module, besides the already existing UNIFICATION.</p>
 <p>Everything which worked with the type inferencer in Lesson 7 should
 also work now. Let us only try the exponential type example,</p>
-<pre><code>let f00 = lambda x . lambda y . x in
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>let f00 = lambda x . lambda y . x in
   let f01 = lambda x . f00 (f00 x) in
     let f02 = lambda x . f01 (f01 x) in
       let f03 = lambda x . f02 (f02 x) in
         let f04 = lambda x . f03 (f03 x) in
           f04
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>As expected, this gives us precisely the same type as in Lesson 7.</p>
 <p>So the only difference between this type inferencer and the one in
 Lesson 7 is that substitution is only used for LAMBDA-to-LAMBDA
@@ -336,8 +336,8 @@ typing work by means of parametric types.</p>
             /> </picture
         ></a>
         <p class="mt-2 text-md-left copyright">
-          <a href="https://goo.gl/maps/hKLtCjeEd6yqfzwx5" target="_blank"
-            >1807 S Neil Street, Champaign, IL 61820</a
+          <a href="https://goo.gl/maps/TkuJSdoA3oNPpc486" target="_blank"
+            >301 N Neil St. Suite 412, Champaign, IL 61820</a
           >
         </p>
       </div>

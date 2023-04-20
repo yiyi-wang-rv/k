@@ -154,7 +154,7 @@
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/16_collections/">Lesson 1.16: Maps, Semantic Lists, and Sets</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/17_cell_multiplicity/">Lesson 1.17: Cell Multiplicity and Cell Collections</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/18_equality_and_conditionals/">Lesson 1.18: Term Equality and the Ternary Operator</a></div>
-<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB</a></div>
+<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB or LLDB</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/20_backends/">Lesson 1.20: K Backends and the Haskell Backend</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/21_symbolic_execution/">Lesson 1.21: Unification and Symbolic Execution</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/22_proofs/">Lesson 1.22: K Deductive Verification</a></div>
@@ -265,7 +265,7 @@ about requires or imports just yet.</p>
 <h2 id="our-first-k-program">Our first K program</h2>
 <p>To start with, input the following program into your editor as file
 <code>lesson-02-a.k</code>:</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">02</span><span class="token operator">-</span>A
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">02</span><span class="token operator">-</span>A
 
   <span class="token keyword">syntax</span> Color <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> Yellow<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">|</span> Blue<span class="token punctuation">(</span><span class="token punctuation">)</span>
   <span class="token keyword">syntax</span> Fruit <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> Banana<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">|</span> Blueberry<span class="token punctuation">(</span><span class="token punctuation">)</span>
@@ -275,10 +275,10 @@ about requires or imports just yet.</p>
   <span class="token keyword">rule</span> colorOf<span class="token punctuation">(</span>Blueberry<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> Blue<span class="token punctuation">(</span><span class="token punctuation">)</span>
 
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>Save this file and then run:</p>
-<pre><code>kompile lesson-02-a.k
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>kompile lesson-02-a.k
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p><code>kompile</code> is K's compiler. By default, it takes a program or specification
 written in K and compiles it into an interpreter for that input. Right now we
 are compiling a single file. A set of K files that are compiled together are
@@ -289,25 +289,25 @@ programs and perform proofs using that definition. In this case, <code>kompile</
 directory.</p>
 <p>Now, save the following input file in your editor as <code>banana.color</code> in the same
 directory as <code>lesson-02-a.k</code>:</p>
-<pre><code>colorOf(Banana())
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>colorOf(Banana())
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>We can now evaluate this K term by running (from the same directory):</p>
-<pre><code>krun banana.color
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>krun banana.color
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p><code>krun</code> will use the interpreter generated by the first call to <code>kompile</code> to
 execute this program.</p>
 <p>You will get the following output:</p>
-<pre><code>&lt;k&gt;
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>&lt;k&gt;
   Yellow ( ) ~&gt; .
 &lt;/k&gt;
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <p>For now, don't worry about the <code>&lt;k&gt;</code>, <code>&lt;/k&gt;</code>, or <code> ~&gt; .</code> portions of this
 output file.</p>
 <p>You can also execute small programs directly by specifying them on the command
 line instead of putting them in a file. For example, the same program above
 could also have been executed by running the following command:</p>
-<pre><code>krun -cPGM='colorOf(Banana())'
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>krun -cPGM='colorOf(Banana())'
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>Now, let's look at what this definition and program did.</p>
 <h2 id="productions%2C-constructors%2C-and-functions">Productions, Constructors, and Functions</h2>
 <p>The first thing to realize is that this K definition contains 5 productions.
@@ -318,8 +318,8 @@ types of productions, but for now we only care about <strong>constructors</stron
 <strong>functions</strong>. Each declaration separated by the <code>|</code> operator is individually
 a single production, and the <code>|</code> symbol simply groups together productions that
 have the same sort. For example, we could equally have written an identical K
-definition like so:</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">02</span><span class="token operator">-</span>B
+definition <code>lesson-02-b.k</code> like so:</p>
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">02</span><span class="token operator">-</span>B
 
   <span class="token keyword">syntax</span> Color <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> Yellow<span class="token punctuation">(</span><span class="token punctuation">)</span>
   <span class="token keyword">syntax</span> Color <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> Blue<span class="token punctuation">(</span><span class="token punctuation">)</span>
@@ -331,9 +331,14 @@ definition like so:</p>
   <span class="token keyword">rule</span> colorOf<span class="token punctuation">(</span>Blueberry<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> Blue<span class="token punctuation">(</span><span class="token punctuation">)</span>
 
 <span class="token keyword">endmodule</span>
-</code></pre>
-<p>Or even:</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">02</span><span class="token operator">-</span>C
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>You can try compiling and running <code>lesson-02-b.k</code> to see that it produces the same output as <code>lesson-02-a.k</code>:</p>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>kompile lesson-02-b.k
+krun -cPGM='colorOf(Banana())' --definition 'lesson-02-b-kompiled'
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p>where the <code>--definition</code> attribute points to the <em>directory</em> containing a compiled version of <code>LESSON-02-B</code>.
+Even the following definition is equivalent:</p>
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">02</span><span class="token operator">-</span>C
 
   <span class="token keyword">syntax</span> Color <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> Yellow<span class="token punctuation">(</span><span class="token punctuation">)</span>
                  <span class="token operator">|</span> Blue<span class="token punctuation">(</span><span class="token punctuation">)</span>
@@ -345,7 +350,7 @@ definition like so:</p>
   <span class="token keyword">rule</span> colorOf<span class="token punctuation">(</span>Blueberry<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> Blue<span class="token punctuation">(</span><span class="token punctuation">)</span>
 
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>Each of these types of productions named above has the same underlying syntax,
 but context and <strong>attributes</strong> are used to distinguish between the different
 types. Tokens, brackets, lists, macros, aliases, and anywhere productions will
@@ -389,7 +394,7 @@ of an uppercase identifier. However, unlike a constructor, a variable will
 match <strong>any</strong> pattern with one exception: Two variables with the same name
 must match the same pattern.</p>
 <p>Here is a more complex example (<code>lesson-02-d.k</code>):</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">02</span><span class="token operator">-</span>D
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">02</span><span class="token operator">-</span>D
 
   <span class="token keyword">syntax</span> Container <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> Jar<span class="token punctuation">(</span>Fruit<span class="token punctuation">)</span>
   <span class="token keyword">syntax</span> Fruit <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> Apple<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">|</span> Pear<span class="token punctuation">(</span><span class="token punctuation">)</span>
@@ -399,7 +404,7 @@ must match the same pattern.</p>
   <span class="token keyword">rule</span> contentsOfJar<span class="token punctuation">(</span>Jar<span class="token punctuation">(</span>F<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> F
 
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>Here we see that <code>Jar</code> is a constructor with a single argument. You can write a
 production with multiple arguments by putting the sorts of the arguments in a
 comma-separated list inside the parentheses.</p>
@@ -409,8 +414,8 @@ values of all of the variables into the variables on the right-hand side of
 the rule.</p>
 <p>To demonstrate, compile this definition and execute the following program with
 krun:</p>
-<pre><code>contentsOfJar(Jar(Apple()))
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>contentsOfJar(Jar(Apple()))
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>You will see when you run it that the program returns <code>Apple()</code>, because that
 is the pattern that was matched by <code>F</code>.</p>
 <h2 id="exercises">Exercises</h2>
@@ -518,8 +523,8 @@ you expect.</li>
             /> </picture
         ></a>
         <p class="mt-2 text-md-left copyright">
-          <a href="https://goo.gl/maps/hKLtCjeEd6yqfzwx5" target="_blank"
-            >1807 S Neil Street, Champaign, IL 61820</a
+          <a href="https://goo.gl/maps/TkuJSdoA3oNPpc486" target="_blank"
+            >301 N Neil St. Suite 412, Champaign, IL 61820</a
           >
         </p>
       </div>

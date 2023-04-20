@@ -154,7 +154,7 @@
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/16_collections/">Lesson 1.16: Maps, Semantic Lists, and Sets</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/17_cell_multiplicity/">Lesson 1.17: Cell Multiplicity and Cell Collections</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/18_equality_and_conditionals/">Lesson 1.18: Term Equality and the Ternary Operator</a></div>
-<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB</a></div>
+<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB or LLDB</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/20_backends/">Lesson 1.20: K Backends and the Haskell Backend</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/21_symbolic_execution/">Lesson 1.21: Unification and Symbolic Execution</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/22_proofs/">Lesson 1.22: K Deductive Verification</a></div>
@@ -254,7 +254,7 @@
           class="col-12 col-md-6 col-xl-8 py-md-3 pl-md-5 bd-content"
           role="main"
         >
-          <div class="introduction markdown-preview"><!-- Copyright (c) 2014-2019 K Team. All Rights Reserved. --><html><head></head><body><h1 id="a-naive-substitution-based-type-inferencer">A Naive Substitution-Based Type Inferencer</h1>
+          <div class="introduction markdown-preview"><html><head></head><body><h1 id="a-naive-substitution-based-type-inferencer">A Naive Substitution-Based Type Inferencer</h1>
 <p>In this lesson you learn how to define a naive substitution-based type
 inferencer for a higher-order language, namely the LAMBDA language
 defined in Part 1 of the tutorial.</p>
@@ -262,15 +262,15 @@ defined in Part 1 of the tutorial.</p>
 associate a type with each declared variable, a type inferencer
 attempts to infer the types of all the variables from the way those
 variables are used. Let us take a look at this program, say <code>plus.lambda</code>:</p>
-<pre><code>lambda x . lambda y . x + y
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>lambda x . lambda y . x + y
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>Since <code>x</code> and <code>y</code> are used in an integer addition context, we can infer
 that they must have the type <code>int</code> and the result of the addition is
 also an <code>int</code>, so the type of the entire expression is <code>int -&gt; int -&gt; int</code>.
 Similarly, the program <code>if.lambda</code></p>
-<pre><code>lambda x . lambda y . lambda z .
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>lambda x . lambda y . lambda z .
   if x then y else z
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>can only make sense when <code>x</code> has type <code>bool</code> and <code>y</code> and <code>z</code> have the same
 type, say <code>t</code>, in which case the type of the entire expression is
 <code>bool -&gt; t -&gt; t -&gt; t</code>. Since the type <code>t</code> can be anything, we say that
@@ -278,15 +278,15 @@ the type of this expression is <em>polymorphic</em>. That means that the code
 above can be used in different contexts, where <code>t</code> can be an <code>int</code>, a
 <code>bool</code>, a function type <code>int -&gt; int</code>, and so on.</p>
 <p>In the <code>identity.lambda</code> program</p>
-<pre><code>let f = lambda x . x
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>let f = lambda x . x
 in f 1
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p><code>f</code> has such a polymorphic type, which is then applied to an integer,
 so this program is type-safe and its type is <code>int</code>.</p>
 <p>A typical polymorphic expression is the composition</p>
-<pre><code>lambda f . lambda g . lambda x .
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>lambda f . lambda g . lambda x .
   g (f x)
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>which has the type <code>(t1 -&gt; t2) -&gt; (t2 -&gt; t3) -&gt; (t1 -&gt; t3)</code>, polymorphic
 in 3 types.</p>
 <p>Let us now define our naive type inferencer and then we discuss more
@@ -326,11 +326,11 @@ itself. With this semantics of <code>=</code> in mind, we can now go ahead and
 modify the rules of the type checker systematically into rules
 for a type inferencer. The changes are self-explanatory and
 mechanical: for example, the rule</p>
-<pre><code>rule int * int =&gt; int
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>rule int * int =&gt; int
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>changes into rule</p>
-<pre><code>rule T1:Type  * T2:Type =&gt; T1 = int ~&gt; T2 = int ~&gt; int
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>rule T1:Type  * T2:Type =&gt; T1 = int ~&gt; T2 = int ~&gt; int
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>generating the constraints that the two arguments of multiplication
 have the type <code>int</code>, and the result type is <code>int</code>. Recall that each type
 equality on the <code>&lt;k/&gt;</code> cell updates the current <code>Mgu</code> appropriately and
@@ -340,9 +340,9 @@ constraints <code>T1=int</code> and <code>T2=int</code>, multiplication yields a
 but inferred, we have to generate a fresh type for each variable at its
 declaration time, and then generate appropriately constraints for it.
 For example, the type semantics of <code>lambda</code> and <code>mu</code> become:</p>
-<pre><code>rule lambda X . E =&gt; T -&gt; E[T/X]  when fresh(T:Type)
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>rule lambda X . E =&gt; T -&gt; E[T/X]  when fresh(T:Type)
 rule mu X . E =&gt; (T -&gt; T) E[T/X]  when fresh(T:Type)
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>that is, we add a condition stating that the previously declared type
 is now a fresh one. This type will be further constrained by how the
 variable <code>X</code> is being used within <code>E</code>.</p>
@@ -355,8 +355,8 @@ we have to do is to enforce it to be a function type, by means of
 fresh types and constraints. We can introduce a fresh type for the
 result of the application, and then write the expected rule as
 follows:</p>
-<pre><code>rule T1:Type T2:Type =&gt; T1 = (T2 -&gt; T) ~&gt; T  when fresh(T:Type)
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>rule T1:Type T2:Type =&gt; T1 = (T2 -&gt; T) ~&gt; T  when fresh(T:Type)
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>The conditional requires that its first argument is a <code>bool</code> and its
 second and third arguments have the same type, which is also the
 result type.</p>
@@ -368,46 +368,46 @@ because it limits the polymorphism of our type system.</p>
 expected. Let us also try some additional programs, to push it to its
 limits.</p>
 <p>First, let us test <code>mu</code> by means of a <code>letrec</code> example:</p>
-<pre><code>letrec f x = 3
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>letrec f x = 3
 in f
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>We can also try all the programs that we had in our first tutorial, on
 lambda, for example the <code>factorial.imp</code> program:</p>
-<pre><code>letrec f x = if x &lt;= 1 then 1 else (x * (f (x + -1)))
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>letrec f x = if x &lt;= 1 then 1 else (x * (f (x + -1)))
 in (f 10)
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>Those programs are simple enough that they should all work as
 expected with our naive type inferencer here.</p>
 <p>Let us next try to type some tricky programs, which involve more
 complex and indirect type constraints.</p>
 <p><code>tricky-1.lambda</code>:</p>
-<pre><code>lambda f . lambda x . lambda y . (
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>lambda f . lambda x . lambda y . (
   (f x y) + x + (let x = y in x)
 )
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <p><code>tricky-2.lambda</code>:</p>
-<pre><code>lambda x .
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>lambda x .
   let f = lambda y . if true then y else x
   in (lambda x . f 0)
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <p><code>tricky-3.lambda</code>:</p>
-<pre><code>lambda x . let f = lambda y . if true then x 7 else x y
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>lambda x . let f = lambda y . if true then x 7 else x y
            in f
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p><code>tricky-4.lambda</code>:</p>
-<pre><code>lambda x . let f = lambda x . x
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>lambda x . let f = lambda x . x
            in let d = (f x) + 1
               in x
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <p><code>tricky-5.lambda</code>:</p>
-<pre><code>lambda x . let f = lambda y . x y
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>lambda x . let f = lambda y . x y
            in let z = x 0 in f
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>It is now time to see the limitations of this naive type inferencer.
 Consider the program</p>
-<pre><code>let id = lambda x . x
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>let id = lambda x . x
 in if (id true) then (id 1) else (id 2)
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>Our type inferencer fails graciously with a clash in the <code>&lt;mgu/&gt;</code> cell
 between <code>int</code> and <code>bool</code>. Indeed, the desugaring macro of <code>let</code> turns it
 into a <code>lambda</code> and an application, which further enforce <code>id</code> to have a
@@ -416,9 +416,9 @@ in the condition of <code>if</code> will then constrain <code>t</code> to be <co
 other uses in the two branches will enforce <code>t</code> to be <code>int</code>. Thus the
 clash in the <code>&lt;mgu/&gt;</code> cell.</p>
 <p>Similarly, the program</p>
-<pre><code>let id = lambda x . x
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>let id = lambda x . x
 in id id
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>yields a different kind of conflict: if <code>id</code> has type <code>t -&gt; t</code>, in order
 to apply <code>id</code> to itself it must be the case that its argument, <code>t</code>, equals
 <code>t -&gt; t</code>. These two type terms cannot be unified because there is a
@@ -428,13 +428,13 @@ circular dependence on <code>t</code>, so we get a cycle in the <code>&lt;mgu/&g
 <p>Before we conclude this lesson, let us see one more interesting
 example, where the lack of let-polymorphism leads not to a type error,
 but to a less generic type:</p>
-<pre><code>let f1 = lambda x . x in
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>let f1 = lambda x . x in
   let f2 = f1 in
     let f3 = f2 in
       let f4 = f3 in
         let f5 = f4 in
           if (f5 true) then f2 else f3
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>Our current type inferencer will infer the type <code>bool -&gt; bool</code> for the
 program above. Nevertheless, since all functions <code>f1</code>, <code>f2</code>, <code>f3</code>, <code>f4</code>, <code>f5</code>
 are the identity function, which is polymorphic, we would expect the
@@ -488,8 +488,8 @@ into a similarly naive, but environment-based type inferencer.</p>
             /> </picture
         ></a>
         <p class="mt-2 text-md-left copyright">
-          <a href="https://goo.gl/maps/hKLtCjeEd6yqfzwx5" target="_blank"
-            >1807 S Neil Street, Champaign, IL 61820</a
+          <a href="https://goo.gl/maps/TkuJSdoA3oNPpc486" target="_blank"
+            >301 N Neil St. Suite 412, Champaign, IL 61820</a
           >
         </p>
       </div>

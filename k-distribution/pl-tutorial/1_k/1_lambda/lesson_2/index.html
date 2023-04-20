@@ -154,7 +154,7 @@
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/16_collections/">Lesson 1.16: Maps, Semantic Lists, and Sets</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/17_cell_multiplicity/">Lesson 1.17: Cell Multiplicity and Cell Collections</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/18_equality_and_conditionals/">Lesson 1.18: Term Equality and the Ternary Operator</a></div>
-<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB</a></div>
+<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB or LLDB</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/20_backends/">Lesson 1.20: K Backends and the Haskell Backend</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/21_symbolic_execution/">Lesson 1.21: Unification and Symbolic Execution</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/22_proofs/">Lesson 1.22: K Deductive Verification</a></div>
@@ -254,7 +254,7 @@
           class="col-12 col-md-6 col-xl-8 py-md-3 pl-md-5 bd-content"
           role="main"
         >
-          <div class="introduction markdown-preview"><!-- Copyright (c) 2012-2019 K Team. All Rights Reserved. --><html><head></head><body><h1 id="module-importing%2C-rules%2C-variables">Module Importing, Rules, Variables</h1>
+          <div class="introduction markdown-preview"><html><head></head><body><h1 id="module-importing%2C-rules%2C-variables">Module Importing, Rules, Variables</h1>
 <p>We here learn how to include a predefined module (SUBSTITUTION), how to
 use it to define a K rule (the characteristic rule of lambda calculus),
 and how to make proper use of variables in rules.</p>
@@ -262,8 +262,8 @@ and how to make proper use of variables in rules.</p>
 <p>The <code>requires</code> keyword takes a <code>.k</code> file containing language features that
 are needed for the current definition, which can be found in the
 <a href="../../../../include/kframework/builtin/">k-distribution/include/kframework/builtin</a> folder.  Thus, the command</p>
-<pre><code>require "substitution.k"
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>require "substitution.k"
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>says that the subsequent definition of LAMBDA needs the generic substitution,
 which is predefined in file <code>substitution.k</code> under the folder
 <a href="../../../../include/kframework/builtin/">k-distribution/include/kframework/builtin</a>.  Note that substitution can be defined itself in K,
@@ -302,13 +302,13 @@ yet concerned with proving) that the first two variables will always have the
 claimed sorts whenever we execute any expression that parses within our
 original grammar.</p>
 <p>Let us compile the definition and then run some programs.  For example,</p>
-<pre><code>krun closed-variable-capture.lambda
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>krun closed-variable-capture.lambda
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>yields the output</p>
-<pre><code>&lt;k&gt;
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>&lt;k&gt;
   lambda y . ((lambda x . (lambda y . (x  y))) y)
 &lt;/k&gt; 
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <p>Notice that only certain programs reduce (some even yield non-termination,
 such as <code>omega.lambda</code>), while others do not.  For example,
 <code>free-variable-capture.lambda</code> does not reduce its second argument expression
@@ -364,8 +364,8 @@ using strictness attributes.</p>
             /> </picture
         ></a>
         <p class="mt-2 text-md-left copyright">
-          <a href="https://goo.gl/maps/hKLtCjeEd6yqfzwx5" target="_blank"
-            >1807 S Neil Street, Champaign, IL 61820</a
+          <a href="https://goo.gl/maps/TkuJSdoA3oNPpc486" target="_blank"
+            >301 N Neil St. Suite 412, Champaign, IL 61820</a
           >
         </p>
       </div>

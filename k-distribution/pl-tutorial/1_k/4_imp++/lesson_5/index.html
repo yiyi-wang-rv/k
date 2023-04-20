@@ -154,7 +154,7 @@
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/16_collections/">Lesson 1.16: Maps, Semantic Lists, and Sets</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/17_cell_multiplicity/">Lesson 1.17: Cell Multiplicity and Cell Collections</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/18_equality_and_conditionals/">Lesson 1.18: Term Equality and the Ternary Operator</a></div>
-<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB</a></div>
+<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB or LLDB</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/20_backends/">Lesson 1.20: K Backends and the Haskell Backend</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/21_symbolic_execution/">Lesson 1.21: Unification and Symbolic Execution</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/22_proofs/">Lesson 1.22: K Deductive Verification</a></div>
@@ -254,7 +254,7 @@
           class="col-12 col-md-6 col-xl-8 py-md-3 pl-md-5 bd-content"
           role="main"
         >
-          <div class="introduction markdown-preview"><!-- Copyright (c) 2010-2019 K Team. All Rights Reserved. --><html><head></head><body><h1 id="deleting%2C-saving-and-restoring-cell-contents">Deleting, Saving and Restoring Cell Contents</h1>
+          <div class="introduction markdown-preview"><html><head></head><body><h1 id="deleting%2C-saving-and-restoring-cell-contents">Deleting, Saving and Restoring Cell Contents</h1>
 <p>In this lesson we will see how easily we can delete, save and/or restore
 contents of cells in order to achieve the desired semantics of language
 constructs that involve abrupt changes of control or environments. We have
@@ -265,8 +265,8 @@ what we want is to abruptly terminate the execution of the program. Moreover,
 we want the program configuration to look as if the program terminated
 normally, with an empty computation cell. The simplest way to achieve that is
 to simply empty the computation cell when <code>halt</code> is encountered:</p>
-<pre><code>rule &lt;k&gt; halt; ~&gt; _ =&gt; . &lt;/k&gt;
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>rule &lt;k&gt; halt; ~&gt; _ =&gt; . &lt;/k&gt;
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>It is important to mention the entire <code>&lt;k/&gt;</code> cell here, with both its membranes
 closed, to make sure that its entire contents is discarded. Note the
 anonymous variable, which matches the rest of the computation.</p>
@@ -288,11 +288,11 @@ existing <code>&lt;k/&gt;</code> cell for such operations. More specifically, we
 <em>reminder</em> item in the computation whenever we need to take a snapshot of
 some cell contents; the item simply consists of the entire contents of the cell.
 Then, when the reminder item is reached, we restore the contents of the cell:</p>
-<pre><code>rule &lt;k&gt; {S} =&gt; S ~&gt; Rho ...&lt;/k&gt; &lt;env&gt; Rho &lt;/env&gt;  [structural]
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>rule &lt;k&gt; {S} =&gt; S ~&gt; Rho ...&lt;/k&gt; &lt;env&gt; Rho &lt;/env&gt;  [structural]
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>The only thing left now is to give the definition of environment restore:</p>
-<pre><code>rule &lt;k&gt; Rho =&gt; . ...&lt;/k&gt; &lt;env&gt; _ =&gt; Rho &lt;/env&gt;    [structural]
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>rule &lt;k&gt; Rho =&gt; . ...&lt;/k&gt; &lt;env&gt; _ =&gt; Rho &lt;/env&gt;    [structural]
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>Done. <code>kompile</code> and <code>krun</code> <code>locals.imp</code>. Everything should work correctly now.
 Note that the rule above is different from the one we had for LAMBDA++ in
 Part 3 of the tutorial, in that here there is no value preceding the environment
@@ -345,8 +345,8 @@ dynamically creates a concurrent shared-memory thread executing statement <code>
             /> </picture
         ></a>
         <p class="mt-2 text-md-left copyright">
-          <a href="https://goo.gl/maps/hKLtCjeEd6yqfzwx5" target="_blank"
-            >1807 S Neil Street, Champaign, IL 61820</a
+          <a href="https://goo.gl/maps/TkuJSdoA3oNPpc486" target="_blank"
+            >301 N Neil St. Suite 412, Champaign, IL 61820</a
           >
         </p>
       </div>

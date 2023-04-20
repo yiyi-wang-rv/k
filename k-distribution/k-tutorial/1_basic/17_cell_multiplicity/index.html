@@ -154,7 +154,7 @@
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/16_collections/">Lesson 1.16: Maps, Semantic Lists, and Sets</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/17_cell_multiplicity/">Lesson 1.17: Cell Multiplicity and Cell Collections</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/18_equality_and_conditionals/">Lesson 1.18: Term Equality and the Ternary Operator</a></div>
-<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB</a></div>
+<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB or LLDB</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/20_backends/">Lesson 1.20: K Backends and the Haskell Backend</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/21_symbolic_execution/">Lesson 1.21: Unification and Symbolic Execution</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/22_proofs/">Lesson 1.22: K Deductive Verification</a></div>
@@ -262,8 +262,8 @@ and cells that repeat multiple times in a configuration using a feature called
 <p>K allows you to specify attributes for cell productions as part of the syntax
 of configuration declarations. Unlike regular productions, which use the <code>[]</code>
 syntax for attributes, configuration cells use an XML-like attribute syntax:</p>
-<pre><code>configuration &lt;k color="red"&gt; $PGM:K &lt;/k&gt;
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>configuration &lt;k color="red"&gt; $PGM:K &lt;/k&gt;
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>This configuration declaration gives the <code>&lt;k&gt;</code> cell the color red during
 unparsing using the <code>color</code> attribute as discussed in
 <a href="../09_unparsing/">Lesson 1.9</a>.</p>
@@ -283,7 +283,7 @@ it. However, it is possible to override the default behavior and create that
 cell initially by adding the additional cell attribute <code>initial=""</code>.</p>
 <p>K uses the <code>.Bag</code> symbol to represent the absence of any cells in a particular
 rule. Consider the following module:</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">17</span><span class="token operator">-</span>A
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">17</span><span class="token operator">-</span>A
   <span class="token keyword">imports</span> INT
 
   <span class="token keyword">configuration</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> $PGM<span class="token punctuation">:</span>K <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>
@@ -297,7 +297,7 @@ rule. Consider the following module:</p>
        <span class="token punctuation">(</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>optional</span><span class="token punctuation">&gt;</span></span> _ <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>optional</span><span class="token punctuation">&gt;</span></span> <span class="token operator">=&gt;</span> <span class="token punctuation">.</span>Bag<span class="token punctuation">)</span>
 
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>In this definition, when the <code>init</code> symbol is executed, the <code>&lt;optional&gt;</code> cell
 is added to the configuration, and when the <code>destroy</code> symbol is executed, it
 is removed. Any rule that matches on that cell will only match if that cell is
@@ -325,7 +325,7 @@ sort. A <code>Map</code> cell collection is represented as a <code>Map</code> in
 subcell of the cell collection is the key and the remaining cells are the
 value.</p>
 <p>For example, consider the following module:</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">17</span><span class="token operator">-</span>B
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">17</span><span class="token operator">-</span>B
   <span class="token keyword">imports</span> INT
   <span class="token keyword">imports</span> BOOL
   <span class="token keyword">imports</span> ID<span class="token operator">-</span>SYNTAX
@@ -377,7 +377,7 @@ value.</p>
   <span class="token keyword">rule</span> isKResult<span class="token punctuation">(</span>_<span class="token punctuation">:</span><span class="token keyword">Int</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token boolean">true</span>
   <span class="token keyword">rule</span> isKResult<span class="token punctuation">(</span>_<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token boolean">false</span> <span class="token punctuation">[</span>owise<span class="token punctuation">]</span>
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>This module implements a very basic fork/join semantics. The <code>spawn</code> expression
 spawns a new thread to execute a sequence of statements and returns a thread
 id, and the <code>join</code> statement waits until a thread executes <code>return</code> and then
@@ -488,8 +488,8 @@ and compare how they get unparsed before and after this change.</li>
             /> </picture
         ></a>
         <p class="mt-2 text-md-left copyright">
-          <a href="https://goo.gl/maps/hKLtCjeEd6yqfzwx5" target="_blank"
-            >1807 S Neil Street, Champaign, IL 61820</a
+          <a href="https://goo.gl/maps/TkuJSdoA3oNPpc486" target="_blank"
+            >301 N Neil St. Suite 412, Champaign, IL 61820</a
           >
         </p>
       </div>

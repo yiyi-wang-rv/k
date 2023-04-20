@@ -154,7 +154,7 @@
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/16_collections/">Lesson 1.16: Maps, Semantic Lists, and Sets</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/17_cell_multiplicity/">Lesson 1.17: Cell Multiplicity and Cell Collections</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/18_equality_and_conditionals/">Lesson 1.18: Term Equality and the Ternary Operator</a></div>
-<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB</a></div>
+<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB or LLDB</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/20_backends/">Lesson 1.20: K Backends and the Haskell Backend</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/21_symbolic_execution/">Lesson 1.21: Unification and Symbolic Execution</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/22_proofs/">Lesson 1.22: K Deductive Verification</a></div>
@@ -275,27 +275,27 @@ differences, in turn.</p>
 <p>The most basic, and most common, type of cast in K is called the
 <strong>semantic cast</strong>. For every sort <code>S</code> declared in a module, K provides the
 following (implicit) production for use in sentences:</p>
-<pre><code>  syntax S ::= S ":S"
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>  syntax S ::= S ":S"
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>Note that <code>S</code> simply represents the name of the sort. For example, if we
 defined a sort <code>Exp</code>, the actual production for that sort would be:</p>
-<pre><code>  syntax Exp ::= Exp ":Exp"
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>  syntax Exp ::= Exp ":Exp"
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>At runtime, this expression will not actually exist; it is merely an annotation
 to the compiler describing the sort of the term inside the cast. It is telling
 the compiler that the term inside the cast must be of sort <code>Exp</code>. For example,
 if we had the following grammar:</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">11</span><span class="token operator">-</span>A
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">11</span><span class="token operator">-</span>A
   <span class="token keyword">imports</span> INT
 
   <span class="token keyword">syntax</span> Exp <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token keyword">Int</span> <span class="token operator">|</span> Exp <span class="token string">"+"</span> Exp
   <span class="token keyword">syntax</span> Stmt <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">"if"</span> <span class="token string">"("</span> Exp <span class="token string">")"</span> Stmt <span class="token operator">|</span> <span class="token string">"{"</span> <span class="token string">"}"</span>
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>Then we would be able to write <code>1:Exp</code>, or <code>(1 + 2):Exp</code>, but not <code>{}:Exp</code>.</p>
 <p>You can also restrict the sort that a variable in a rule will match by casting
 it. For example, consider the following additional module:</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">11</span><span class="token operator">-</span>B
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">11</span><span class="token operator">-</span>B
   <span class="token keyword">imports</span> LESSON<span class="token operator">-</span><span class="token number">11</span><span class="token operator">-</span>A
   <span class="token keyword">imports</span> BOOL
 
@@ -305,7 +305,7 @@ it. For example, consider the following additional module:</p>
   <span class="token keyword">rule</span> isExpression<span class="token punctuation">(</span>_E<span class="token punctuation">:</span>Exp<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token boolean">true</span>
   <span class="token keyword">rule</span> isExpression<span class="token punctuation">(</span>_<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token boolean">false</span> <span class="token punctuation">[</span>owise<span class="token punctuation">]</span>
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>Here we have defined a very simple function that decides whether a term is
 an expression or a statement. It does this by casting the variable inside the
 <code>isExpression</code> rule to sort <code>Exp</code>. As a result, that variable will only match terms
@@ -318,13 +318,13 @@ write an <code>isStatement</code> function, and test that it works as expected.<
 <p>On occasion, a semantic cast is not strict enough. It might be that you want
 to, for disambiguation purposes, say <strong>exactly</strong> what sort a term is. For
 example, consider the following definition:</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">11</span><span class="token operator">-</span>C
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">11</span><span class="token operator">-</span>C
   <span class="token keyword">imports</span> INT
 
   <span class="token keyword">syntax</span> Exp <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token keyword">Int</span> <span class="token operator">|</span> Exp <span class="token string">"+"</span> Exp <span class="token punctuation">[</span>exp<span class="token punctuation">]</span>
   <span class="token keyword">syntax</span> Exp2 <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> Exp <span class="token operator">|</span> Exp2 <span class="token string">"+"</span> Exp2 <span class="token punctuation">[</span>exp2<span class="token punctuation">]</span>
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>This grammar is a little ambiguous and contrived, but it serves to demonstrate
 how a semantic cast might be insufficient to disambiguate a term. If we were
 to write the term <code>(I1:Int + I2:Int):Exp2</code>, the term would be ambiguous,
@@ -332,8 +332,8 @@ because the cast is not sufficiently strict to determine whether you mean
 to derive the "+" production tagged <code>exp</code>, or the one tagged <code>exp2</code>.</p>
 <p>In this situation, there is a solution: the <strong>strict cast</strong>. For every sort
 <code>S</code> in your grammar, K also defines the following production:</p>
-<pre><code>  syntax S ::= S "::S"
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>  syntax S ::= S "::S"
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>This may at first glance seem the same as the previous cast. And indeed,
 from the perspective of the grammar and from the perspective of rewriting,
 they are in fact identical. However, the second variant has a unique meaning
@@ -363,8 +363,8 @@ language, where you might cast a superclass to a subclass if you know for
 sure the object at runtime is in fact an instance of that class.</p>
 <p>K provides something similar for subsorts: the <strong>projection cast</strong>.</p>
 <p>For each pair of sorts <code>S</code> and <code>S2</code>, K provides the following production:</p>
-<pre><code>  syntax S ::= "{" S2 "}" ":&gt;S"
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>  syntax S ::= "{" S2 "}" ":&gt;S"
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>What this means is that you take any term of sort <code>S2</code> and <strong>cast</strong> it to sort
 <code>S</code>. If the term of sort S2 consists of an injection containing a term of sort
 <code>S</code>, then this will return that term. Otherwise, an error occurs and rewriting
@@ -372,7 +372,7 @@ fails, returning the projection function which failed to apply. The sort is
 not actually checked at compilation time; rather, it is a runtime check
 inserted into the code that runs when the rule applies.</p>
 <p>For example, here is a module that makes use of projection casts:</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">11</span><span class="token operator">-</span>D
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">11</span><span class="token operator">-</span>D
   <span class="token keyword">imports</span> INT
   <span class="token keyword">imports</span> BOOL
 
@@ -384,7 +384,7 @@ inserted into the code that runs when the rule applies.</p>
   <span class="token keyword">rule</span> eval<span class="token punctuation">(</span>E1 <span class="token operator">+</span> E2<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>eval<span class="token punctuation">(</span>E1<span class="token punctuation">)</span><span class="token punctuation">}</span><span class="token punctuation">:</span>&gt;<span class="token keyword">Int</span> <span class="token operator">+</span><span class="token keyword">Int</span> <span class="token punctuation">{</span>eval<span class="token punctuation">(</span>E2<span class="token punctuation">)</span><span class="token punctuation">}</span><span class="token punctuation">:</span>&gt;<span class="token keyword">Int</span>
   <span class="token keyword">rule</span> eval<span class="token punctuation">(</span>E1 <span class="token operator">&amp;&amp;</span> E2<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>eval<span class="token punctuation">(</span>E1<span class="token punctuation">)</span><span class="token punctuation">}</span><span class="token punctuation">:</span>&gt;<span class="token keyword">Bool</span> andBool <span class="token punctuation">{</span>eval<span class="token punctuation">(</span>E2<span class="token punctuation">)</span><span class="token punctuation">}</span><span class="token punctuation">:</span>&gt;<span class="token keyword">Bool</span>
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>Here we have defined constructors for a simple expression language over
 Booleans and integers, as well as a function <code>eval</code> that evaluates these
 expressions to a value. Because that value could be an integer or a Boolean,
@@ -503,8 +503,8 @@ sort <code>Exp</code> to either a <code>Bool</code> or an <code>Int</code>.</p>
             /> </picture
         ></a>
         <p class="mt-2 text-md-left copyright">
-          <a href="https://goo.gl/maps/hKLtCjeEd6yqfzwx5" target="_blank"
-            >1807 S Neil Street, Champaign, IL 61820</a
+          <a href="https://goo.gl/maps/TkuJSdoA3oNPpc486" target="_blank"
+            >301 N Neil St. Suite 412, Champaign, IL 61820</a
           >
         </p>
       </div>

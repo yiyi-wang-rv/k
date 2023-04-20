@@ -154,7 +154,7 @@
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/16_collections/">Lesson 1.16: Maps, Semantic Lists, and Sets</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/17_cell_multiplicity/">Lesson 1.17: Cell Multiplicity and Cell Collections</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/18_equality_and_conditionals/">Lesson 1.18: Term Equality and the Ternary Operator</a></div>
-<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB</a></div>
+<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB or LLDB</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/20_backends/">Lesson 1.20: K Backends and the Haskell Backend</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/21_symbolic_execution/">Lesson 1.21: Unification and Symbolic Execution</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/22_proofs/">Lesson 1.22: K Deductive Verification</a></div>
@@ -276,7 +276,7 @@ is then used to perform parsing.</p>
 defines a relatively basic calculator capable of evaluating Boolean expressions
 containing and, or, not, and xor.</p>
 <p>Input the following program into your editor as file <code>lesson-03-a.k</code>:</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">03</span><span class="token operator">-</span>A
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">03</span><span class="token operator">-</span>A
 
   <span class="token keyword">syntax</span> Boolean <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">"true"</span> <span class="token operator">|</span> <span class="token string">"false"</span>
                    <span class="token operator">|</span> <span class="token string">"!"</span> Boolean <span class="token punctuation">[</span>function<span class="token punctuation">]</span>
@@ -285,7 +285,7 @@ containing and, or, not, and xor.</p>
                    <span class="token operator">|</span> Boolean <span class="token string">"||"</span> Boolean <span class="token punctuation">[</span>function<span class="token punctuation">]</span>
 
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>You will notice that the productions in this file look a little different than
 the ones from the previous lesson. In point of fact, K has two different
 mechanisms for defining productions. We have previously been focused
@@ -295,20 +295,20 @@ parentheses. However, this is merely a special case of a more generic mechanism
 for defining the syntax of productions using a variant of
 <a href="https://en.wikipedia.org/wiki/Backus%E2%80%93Naur_form" target="_blank" rel="noreferrer noopener">BNF Form</a>.</p>
 <p>For example, in the previous lesson, we had the following set of productions:</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">03</span><span class="token operator">-</span>B
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">03</span><span class="token operator">-</span>B
   <span class="token keyword">syntax</span> Color <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> Yellow<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">|</span> Blue<span class="token punctuation">(</span><span class="token punctuation">)</span>
   <span class="token keyword">syntax</span> Fruit <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> Banana<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">|</span> Blueberry<span class="token punctuation">(</span><span class="token punctuation">)</span>
   <span class="token keyword">syntax</span> Color <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> colorOf<span class="token punctuation">(</span>Fruit<span class="token punctuation">)</span> <span class="token punctuation">[</span>function<span class="token punctuation">]</span>
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>It turns out that this is equivalent to the following definition which defines
 the same grammar, but using BNF notation:</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">03</span><span class="token operator">-</span>C
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">03</span><span class="token operator">-</span>C
   <span class="token keyword">syntax</span> Color <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">"Yellow"</span> <span class="token string">"("</span> <span class="token string">")"</span> <span class="token operator">|</span> <span class="token string">"Blue"</span> <span class="token string">"("</span> <span class="token string">")"</span>
   <span class="token keyword">syntax</span> Fruit <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">"Banana"</span> <span class="token string">"("</span> <span class="token string">")"</span> <span class="token operator">|</span> <span class="token string">"Blueberrry"</span> <span class="token string">"("</span> <span class="token string">")"</span>
   <span class="token keyword">syntax</span> Color <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">"colorOf"</span> <span class="token string">"("</span> Fruit <span class="token string">")"</span> <span class="token punctuation">[</span>function<span class="token punctuation">]</span>
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>In this example, the sorts of the argument to the function are unchanged, but
 everything else has been wrapped in double quotation marks. This is because
 in BNF notation, we distinguish between two types of <strong>production items</strong>:
@@ -331,26 +331,26 @@ programming language. As such, we can now write programs in the simple language
 we have defined.</p>
 <p>Input the following program into your editor as <code>and.bool</code> in the same
 directory:</p>
-<pre><code>true &amp;&amp; false
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>true &amp;&amp; false
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>We cannot interpret this program yet, because we have not given rules defining
 the meaning of the <code>&amp;&amp;</code> function yet, but we can parse it. To do this, you can
 run (from the same directory):</p>
-<pre><code>kast --output kore and.bool
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>kast --output kore and.bool
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p><code>kast</code> is K's just-in-time parser. It will generate a grammar from your K
 definition on the fly and use it to parse the program passed on the command
 line. The <code>--output</code> flag controls how the resulting AST is represented; don't
 worry about the possible values yet, just use <code>kore</code>.</p>
 <p>You ought to get the following AST printed on standard output, minus the
 formatting:</p>
-<pre><code>inj{SortBoolean{}, SortKItem{}}(
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>inj{SortBoolean{}, SortKItem{}}(
   Lbl'UndsAnd-And-UndsUnds'LESSON-03-A'Unds'Boolean'Unds'Boolean'Unds'Boolean{}(
     Lbltrue'Unds'LESSON-03-A'Unds'Boolean{}(),
     Lblfalse'Unds'LESSON-03-A'Unds'Boolean{}()
   )
 )
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>Don't worry about what exactly this means yet, just understand that it
 represents the AST of the program that you just parsed. You ought to be able
 to recognize the basic shape of it by seeing the words <code>true</code>, <code>false</code>, and
@@ -360,11 +360,11 @@ will cover it in detail later.</p>
 more direct representation of the original K, while still maintaining the
 structure of an AST, you can say <code>kast --output kast and.bool</code>. This will
 yield the following output:</p>
-<pre><code>`_&amp;&amp;__LESSON-03-A_Boolean_Boolean_Boolean`(
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>`_&amp;&amp;__LESSON-03-A_Boolean_Boolean_Boolean`(
   `true_LESSON-03-A_Boolean`(.KList),
   `false_LESSON-03-A_Boolean`(.KList)
 )
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 <p>Note how the first output is largely a name-mangled version of the second
 output. The one difference is the presence of the <code>inj</code> symbol in the KORE
 output. We will talk more about this in later lessons.</p>
@@ -376,10 +376,10 @@ prediction.</p>
 <h2 id="ambiguities">Ambiguities</h2>
 <p>Now let's try a slightly more advanced example. Input the following program
 into your editor as <code>and-or.bool</code>:</p>
-<pre><code>true &amp;&amp; false || false
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>true &amp;&amp; false || false
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>When you try and parse this program, you ought to see the following error:</p>
-<pre><code>[Error] Inner Parser: Parsing ambiguity.
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>[Error] Inner Parser: Parsing ambiguity.
 1: syntax Boolean ::= Boolean "||" Boolean [function]
 
 `_||__LESSON-03-A_Boolean_Boolean_Boolean`(`_&amp;&amp;__LESSON-03-A_Boolean_Boolean_Boolean`(`true_LESSON-03-A_Boolean`(.KList),`false_LESSON-03-A_Boolean`(.KList)),`false_LESSON-03-A_Boolean`(.KList))
@@ -388,7 +388,7 @@ into your editor as <code>and-or.bool</code>:</p>
 `_&amp;&amp;__LESSON-03-A_Boolean_Boolean_Boolean`(`true_LESSON-03-A_Boolean`(.KList),`_||__LESSON-03-A_Boolean_Boolean_Boolean`(`false_LESSON-03-A_Boolean`(.KList),`false_LESSON-03-A_Boolean`(.KList)))
         Source(./and-or.bool)
         Location(1,1,1,23)
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>This error is saying that <code>kast</code> was unable to parse this program because it is
 ambiguous. K's just-in-time parser is a GLL parser, which means it can handle
 the full generality of context-free grammars, including those grammars which
@@ -413,7 +413,7 @@ type of bracket, the type used by the vast majority of programming languages,
 quite simply.</p>
 <p>Consider the following modified definition, which we will save to
 <code>lesson-03-d.k</code>:</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">03</span><span class="token operator">-</span>D
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">03</span><span class="token operator">-</span>D
 
   <span class="token keyword">syntax</span> Boolean <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">"true"</span> <span class="token operator">|</span> <span class="token string">"false"</span>
                    <span class="token operator">|</span> <span class="token string">"("</span> Boolean <span class="token string">")"</span> <span class="token punctuation">[</span><span class="token class-name">bracket</span><span class="token punctuation">]</span>
@@ -423,17 +423,17 @@ quite simply.</p>
                    <span class="token operator">|</span> Boolean <span class="token string">"||"</span> Boolean <span class="token punctuation">[</span>function<span class="token punctuation">]</span>
 
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>In this definition, if the user does not explicitly define parentheses, the
 grammar remains ambiguous and K's just-in-time parser will report an error.
 However, you are now able to parse more complex programs by means of explicitly
 grouping subterms with the bracket we have just defined.</p>
 <p>Consider <code>and-or-left.bool</code>:</p>
-<pre><code>(true &amp;&amp; false) || false
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>(true &amp;&amp; false) || false
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>Now consider <code>and-or-right.bool</code>:</p>
-<pre><code>true &amp;&amp; (false || false)
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>true &amp;&amp; (false || false)
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>If you parse these programs with <code>kast</code>, you will once again get a single
 unique AST with no error. If you look, you might notice that the bracket itself
 does not appear in the AST. In fact, this is a property unique to brackets:
@@ -459,13 +459,13 @@ suffix indicating the type of the literal.</p>
 only would it be cumbersome and tedious, you would also then have to deal with
 an AST generated for the literal which is not convenient to work with.</p>
 <p>Instead of doing this, K allows you to define <strong>token</strong> productions, where
-a production consists of a regular expression followed by the <code>token</code>
+a production consists of a <a href="https://en.wikipedia.org/wiki/Regular_expression" target="_blank" rel="noreferrer noopener">regular expression</a> followed by the <code>token</code>
 attribute, and the resulting AST consists of a typed string containing the
 value recognized by the regular expression.</p>
 <p>For example, the builtin integers in K are defined using the following
 production:</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">.k .exclude</div><code class="k exclude"><span class="token keyword">syntax</span> <span class="token keyword">Int</span> <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> r<span class="token string">"[\\+-]?[0-9]+"</span> <span class="token punctuation">[</span><span class="token class-name">token</span><span class="token punctuation">]</span>
-</code></pre>
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">.k .exclude</div><code class="k exclude"><span class="token keyword">syntax</span> <span class="token keyword">Int</span> <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> r<span class="token string">"[\\+-]?[0-9]+"</span> <span class="token punctuation">[</span><span class="token class-name">token</span><span class="token punctuation">]</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>Here we can see that we have defined that an integer is an optional sign
 followed by a nonzero sequence of digits. The <code>r</code> preceding the terminal
 indicates that what appears inside the double quotes is a regular expression,
@@ -474,8 +474,8 @@ should be converted into a token by the parser.</p>
 <p>It is also possible to define tokens that do not use regular expressions. This
 can be useful when you wish to declare particular identifiers for use in your
 semantics later. For example:</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">.k .exclude</div><code class="k exclude"><span class="token keyword">syntax</span> <span class="token keyword">Id</span> <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">"main"</span> <span class="token punctuation">[</span><span class="token class-name">token</span><span class="token punctuation">]</span>
-</code></pre>
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">.k .exclude</div><code class="k exclude"><span class="token keyword">syntax</span> <span class="token keyword">Id</span> <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">"main"</span> <span class="token punctuation">[</span><span class="token class-name">token</span><span class="token punctuation">]</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>Here, we declare that <code>main</code> is a token of sort <code>Id</code>. Instead of being parsed
 as a symbol, it gets parsed as a token, generating a typed string in the AST.
 This is useful in a semantics of C because the parser generally does not treat
@@ -483,8 +483,8 @@ the <code>main</code> function in C specially; only the semantics treats it spec
 <p>Of course, languages can have more complex lexical syntax. For example, if we
 wish to define the syntax of integers in C, we could use the following
 production:</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">.k .exclude</div><code class="k exclude"><span class="token keyword">syntax</span> IntConstant <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> r<span class="token string">"(([1-9][0-9]*)|(0[0-7]*)|(0[xX][0-9a-fA-F]+))(([uU][lL]?)|([uU]((ll)|(LL)))|([lL][uU]?)|(((ll)|(LL))[uU]?))?"</span> <span class="token punctuation">[</span><span class="token class-name">token</span><span class="token punctuation">]</span>
-</code></pre>
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">.k .exclude</div><code class="k exclude"><span class="token keyword">syntax</span> IntConstant <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> r<span class="token string">"(([1-9][0-9]*)|(0[0-7]*)|(0[xX][0-9a-fA-F]+))(([uU][lL]?)|([uU]((ll)|(LL)))|([lL][uU]?)|(((ll)|(LL))[uU]?))?"</span> <span class="token punctuation">[</span><span class="token class-name">token</span><span class="token punctuation">]</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>As you may have noted above, long and complex regular expressions
 can be hard to read. They also suffer from the problem that unlike a grammar,
 they are not particularly modular.</p>
@@ -492,7 +492,7 @@ they are not particularly modular.</p>
 giving them a name, and then referring to them in productions.</p>
 <p>Consider the following (equivalent) way to define the lexical syntax of
 integers in C:</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">.k .exclude</div><code class="k exclude"><span class="token keyword">syntax</span> IntConstant <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> r<span class="token string">"({DecConstant}|{OctConstant}|{HexConstant})({IntSuffix}?)"</span> <span class="token punctuation">[</span><span class="token class-name">token</span><span class="token punctuation">]</span>
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">.k .exclude</div><code class="k exclude"><span class="token keyword">syntax</span> IntConstant <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> r<span class="token string">"({DecConstant}|{OctConstant}|{HexConstant})({IntSuffix}?)"</span> <span class="token punctuation">[</span><span class="token class-name">token</span><span class="token punctuation">]</span>
 <span class="token keyword">syntax lexical</span> DecConstant <span class="token operator">=</span> r<span class="token string">"{NonzeroDigit}({Digit}*)"</span>
 <span class="token keyword">syntax lexical</span> OctConstant <span class="token operator">=</span> r<span class="token string">"0({OctDigit}*)"</span>
 <span class="token keyword">syntax lexical</span> HexConstant <span class="token operator">=</span> r<span class="token string">"{HexPrefix}({HexDigit}+)"</span>
@@ -505,7 +505,7 @@ integers in C:</p>
 <span class="token keyword">syntax lexical</span> UnsignedSuffix <span class="token operator">=</span> r<span class="token string">"[uU]"</span>
 <span class="token keyword">syntax lexical</span> LongSuffix <span class="token operator">=</span> r<span class="token string">"[lL]"</span>
 <span class="token keyword">syntax lexical</span> LongLongSuffix <span class="token operator">=</span> r<span class="token string">"ll|LL"</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>As you can see, this is rather more verbose, but it has the benefit of both
 being much easier to read and understand, and also increased modularity.
 Note that we refer to a named regular expression by putting the name in curly
@@ -685,8 +685,8 @@ express each individual intended meaning using brackets.</p>
             /> </picture
         ></a>
         <p class="mt-2 text-md-left copyright">
-          <a href="https://goo.gl/maps/hKLtCjeEd6yqfzwx5" target="_blank"
-            >1807 S Neil Street, Champaign, IL 61820</a
+          <a href="https://goo.gl/maps/TkuJSdoA3oNPpc486" target="_blank"
+            >301 N Neil St. Suite 412, Champaign, IL 61820</a
           >
         </p>
       </div>

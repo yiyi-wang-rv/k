@@ -154,7 +154,7 @@
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/16_collections/">Lesson 1.16: Maps, Semantic Lists, and Sets</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/17_cell_multiplicity/">Lesson 1.17: Cell Multiplicity and Cell Collections</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/18_equality_and_conditionals/">Lesson 1.18: Term Equality and the Ternary Operator</a></div>
-<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB</a></div>
+<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB or LLDB</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/20_backends/">Lesson 1.20: K Backends and the Haskell Backend</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/21_symbolic_execution/">Lesson 1.21: Unification and Symbolic Execution</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/22_proofs/">Lesson 1.22: K Deductive Verification</a></div>
@@ -254,7 +254,7 @@
           class="col-12 col-md-6 col-xl-8 py-md-3 pl-md-5 bd-content"
           role="main"
         >
-          <div class="introduction markdown-preview"><!-- Copyright (c) 2012-2019 K Team. All Rights Reserved. --><html><head></head><body><h1 id="abrupt-changes-of-control">Abrupt Changes of Control</h1>
+          <div class="introduction markdown-preview"><html><head></head><body><h1 id="abrupt-changes-of-control">Abrupt Changes of Control</h1>
 <p>Here we add <em>call-with-current-continuation</em> (<code>callcc</code>) to the definition of
 LAMBDA completed in Tutorial 1, and call the resulting language LAMBDA++.
 While doing so, we will learn how to define language constructs that
@@ -276,13 +276,13 @@ the value is passed to it; if <code>e</code> evaluates normally to some value <c
 passes nothing to <code>k</code> in the process, then <code>v</code> is returned as a result of
 <code>callcc e</code> and the execution continues normally.  For example, we want the
 program <code>callcc-jump.lambda</code>:</p>
-<pre><code>(callcc (lambda k . ((k 5) + 2))) + 10
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>(callcc (lambda k . ((k 5) + 2))) + 10
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>to evaluate to <code>15</code>, not <code>17</code>!  Indeed, the computation context <code>[] + 10</code> is
 passed to <code>callcc</code>'s argument, which then sends it a <code>5</code>, so the computation
 resumes to <code>5 + 10</code>.  On the other hand, the program <code>callcc-not-jump.lambda</code></p>
-<pre><code>(callcc (lambda k . (5 + 2))) + 10
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>(callcc (lambda k . (5 + 2))) + 10
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>evaluates to <code>17</code>.</p>
 <p>If you like playing games, you can metaphorically think of <code>callcc e</code> as
 <em>saving your game state in a file and passing it to your friend <code>e</code></em>.
@@ -292,11 +292,11 @@ your game and continue to play it from where you were.</p>
 using <code>callcc</code>.  The program <code>callcc-return.lambda</code> shows, for example, how to
 obtain the behavior of a <code>return</code> statement, which exits the current execution
 context inside a function and returns a value to the caller's context:</p>
-<pre><code>letrec f x = callcc (lambda return . (
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>letrec f x = callcc (lambda return . (
   f (if (x &lt;= 0) then ((return 1) / 0) else 2)
 ))
 in (f -3)
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 <p>This should evaluate to <code>1</code>, in spite of the recursive call to <code>f</code>
 and of the division by zero!  Note that <code>return</code> is nothing but a variable
 name, but one which is bound to the current continuation at the beginning of
@@ -306,11 +306,11 @@ program will loop forever.</p>
 <p><code>callcc</code> is quite a powerful and beautiful language construct, although one
 which is admittedly hard to give semantics to in some frameworks.
 But not in K :)  Here is the entire K syntax and semantics of <code>callcc</code>:</p>
-<pre><code>syntax Exp ::= "callcc" Exp  [strict]
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>syntax Exp ::= "callcc" Exp  [strict]
 syntax Val ::= cc(K)
 rule &lt;k&gt; (callcc V:Val =&gt; V cc(K)) ~&gt; K &lt;/k&gt;
 rule &lt;k&gt; cc(K) V ~&gt; _ =&gt;  V ~&gt; K &lt;/k&gt;
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 <p>Let us first discuss the annotated syntax.  We declared <code>callcc</code> strict,
 because its argument may not necessarily be a function yet, so it may need
 to be evaluated.  As explained above, we need to encode the remaining
@@ -332,9 +332,9 @@ Note that here, unlike in our definition of LAMBDA in Tutorial 1, we had
 to mention the cell <code>&lt;k/&gt;</code> in our rules.  This is because we need to make sure
 that we match the entire remaining computation, not only a fragment of it!
 For example, if we replace the two rules above with</p>
-<pre><code>rule (callcc V:Val =&gt; V cc(K)) ~&gt; K
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>rule (callcc V:Val =&gt; V cc(K)) ~&gt; K
 rule cc(K) V ~&gt; _ =&gt;  V ~&gt; K
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>then we get a <code>callcc</code> which is allowed to non-deterministically pick a
 prefix of the remaining computation and pass it to its argument, and then
 when invoked within its argument, a non-deterministic prefix of the new
@@ -397,8 +397,8 @@ functional languages are implemented.</p>
             /> </picture
         ></a>
         <p class="mt-2 text-md-left copyright">
-          <a href="https://goo.gl/maps/hKLtCjeEd6yqfzwx5" target="_blank"
-            >1807 S Neil Street, Champaign, IL 61820</a
+          <a href="https://goo.gl/maps/TkuJSdoA3oNPpc486" target="_blank"
+            >301 N Neil St. Suite 412, Champaign, IL 61820</a
           >
         </p>
       </div>

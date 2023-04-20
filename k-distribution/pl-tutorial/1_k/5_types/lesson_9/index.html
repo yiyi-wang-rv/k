@@ -154,7 +154,7 @@
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/16_collections/">Lesson 1.16: Maps, Semantic Lists, and Sets</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/17_cell_multiplicity/">Lesson 1.17: Cell Multiplicity and Cell Collections</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/18_equality_and_conditionals/">Lesson 1.18: Term Equality and the Ternary Operator</a></div>
-<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB</a></div>
+<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB or LLDB</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/20_backends/">Lesson 1.20: K Backends and the Haskell Backend</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/21_symbolic_execution/">Lesson 1.21: Unification and Symbolic Execution</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/22_proofs/">Lesson 1.22: K Deductive Verification</a></div>
@@ -254,7 +254,7 @@
           class="col-12 col-md-6 col-xl-8 py-md-3 pl-md-5 bd-content"
           role="main"
         >
-          <div class="introduction markdown-preview"><!-- Copyright (c) 2014-2019 K Team. All Rights Reserved. --><html><head></head><body><h1 id="let-polymorphic-type-inferencer-(damas-hindley-milner)">Let-Polymorphic Type Inferencer (Damas-Hindley-Milner)</h1>
+          <div class="introduction markdown-preview"><html><head></head><body><h1 id="let-polymorphic-type-inferencer-(damas-hindley-milner)">Let-Polymorphic Type Inferencer (Damas-Hindley-Milner)</h1>
 <p>In this lesson we discuss a type inferencer based on what we call today
 <em>the Damas-Hindley-Milner type system</em>, which is at the core of many
 modern functional programming languages. The first variant of it was
@@ -271,8 +271,8 @@ change one existing rule (the rule of the let binder) and to add a new
 one. We will also learn some new predefined features of K, which make
 the above possible.</p>
 <p>The main idea is to replace the rule</p>
-<pre><code>rule let X = E in E' =&gt; E'[E/X]
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>rule let X = E in E' =&gt; E'[E/X]
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>which creates potentially many copies of <code>E</code> within <code>E'</code> with a rule
 which types <code>E</code> once and then reuses that type in each place where <code>X</code>
 occurs free in <code>E'</code>. The simplest K way to type <code>E</code> is to declare the
@@ -285,15 +285,15 @@ parameters in each free occurrence of <code>X</code> in <code>E'</code>.</p>
 <p>Let us discuss some examples, before we go into the technical details.
 Consider the first let-polymorphic example which failed to be typed
 with our first naive type-inferencer:</p>
-<pre><code>let id = lambda x . x
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>let id = lambda x . x
 in if (id true) then (id 1) else (id 2)
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>When typing <code>lambda x . x</code>, we get a type of the form <code>t -&gt; t</code>, for some
 fresh type <code>t</code>. Instead of assigning this type to <code>id</code> as we did in the
 naive type inferencers, we now first parametrize this type in its
 fresh variable <code>t</code>, written</p>
-<pre><code>(forall t) t -&gt; t
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>(forall t) t -&gt; t
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>and then bind <code>id</code> to this parametric type. The intuition for the
 parameter is that it can be instantiated with any other type, so this
 parametric type stands, in fact, for infinitely many non-parametric
@@ -313,11 +313,11 @@ elegant way to reuse all that typing work.</p>
 <p>There are some subtleties regarding what fresh types can be made
 parameters. Let us consider another example, discussed as part of
 Lesson 7 on naive let-polymorphism:</p>
-<pre><code>lambda x . (
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>lambda x . (
   let y = lambda z . x
   in if (y true) then (y 1) else (y (lambda x . x))
 )
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 <p>This program should type to <code>bool -&gt; bool</code>, as explained in Lesson 7.
 The <code>lambda</code> construct will bind <code>x</code> to some fresh type <code>tx</code>. Then the
 let-bound expression <code>lambda z . x</code> types to <code>tz -&gt; tx</code> for some
@@ -337,10 +337,10 @@ environment (like <code>x</code> is bound to <code>tx</code> in our example abov
 In our example, the correct type schema is <code>(forall tz) tz -&gt; tx</code>,
 which now allows us to correctly infer that <code>tx</code> is <code>bool</code>.</p>
 <p>Let us now discuss another example, which should fail to type:</p>
-<pre><code>lambda x .
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>lambda x .
   let f = lambda y . x y
   in if (f true) then (f 1) else (f 2)
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <p>This should fail to type because <code>lambda y . x y</code> is equivalent to <code>x</code>,
 so the conditional imposes the conflicting constraints that <code>x</code> should be
 a function whose argument is either a <code>bool</code> or an <code>int</code>. Let us try to
@@ -367,24 +367,24 @@ type environment are turned into parameters of type schemas.</p>
 <p>Thanks to generic support offered by the K tool, we can easily achieve
 all the above as follows.</p>
 <p>First, add syntax for type schemas:</p>
-<pre><code>syntax TypeSchema ::= "(" "forall" Set ")" Type  [binder]
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>syntax TypeSchema ::= "(" "forall" Set ")" Type  [binder]
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>The definition below will be given in such a way that the <code>Set</code> argument
 of a type schema will always be a set of fresh types. We also declare
 this construct to be a <code>binder</code>, so that we can make use of the generic
 free variable function provided by the K tool.</p>
 <p>We now replace the old rule for <code>let</code></p>
-<pre><code>rule let X = E in E' =&gt; E'[E/X]
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>rule let X = E in E' =&gt; E'[E/X]
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>with the following rule:</p>
-<pre><code>rule &lt;k&gt; let X = T:Type in E =&gt; E ~&gt; tenv(TEnv) ...&lt;/k&gt;
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>rule &lt;k&gt; let X = T:Type in E =&gt; E ~&gt; tenv(TEnv) ...&lt;/k&gt;
      &lt;mgu&gt; Theta:Mgu &lt;/mgu&gt;
      &lt;tenv&gt; TEnv
       =&gt; TEnv[(forall freeVariables(applyMgu(Theta, T)) -Set
                       freeVariables(applyMgu(Theta, values TEnv))
               ) applyMgu(Theta, T) / X]
      &lt;/tenv&gt;
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>So the type <code>T</code> of <code>E</code> is being parameterized and then bound to <code>X</code> in the
 type environment. The current mgu <code>Theta</code>, which comprises all the type
 constraints accumulated so far, is applied to both <code>T</code> and the types in
@@ -400,9 +400,9 @@ that <code>T</code> there is of sort <code>Type</code> (adding a sort membership
 In the second case, as explained above, we have to create fresh copies
 of the parameters. This can be easily achieved with another
 predefined K function, as follows:</p>
-<pre><code>rule &lt;k&gt; X:Id =&gt; freshVariables(Tvs,T) ...&lt;/k&gt;
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>rule &lt;k&gt; X:Id =&gt; freshVariables(Tvs,T) ...&lt;/k&gt;
      &lt;tenv&gt;... X |-&gt; (forall Tvs) T ...&lt;/tenv&gt;
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>Indeed, <code>freshVariables</code> takes a set of variables and a term, and returns the
 same term but with each of the given variables replaced by a fresh copy.</p>
 <p>The operations <code>freeVariables</code> and <code>freshVariables</code> are useful in many K
@@ -453,8 +453,8 @@ programs discussed since Lesson 4. They should all work as expected.</p>
             /> </picture
         ></a>
         <p class="mt-2 text-md-left copyright">
-          <a href="https://goo.gl/maps/hKLtCjeEd6yqfzwx5" target="_blank"
-            >1807 S Neil Street, Champaign, IL 61820</a
+          <a href="https://goo.gl/maps/TkuJSdoA3oNPpc486" target="_blank"
+            >301 N Neil St. Suite 412, Champaign, IL 61820</a
           >
         </p>
       </div>

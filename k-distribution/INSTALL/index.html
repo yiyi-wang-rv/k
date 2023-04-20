@@ -154,7 +154,7 @@
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../k-distribution/k-tutorial/1_basic/16_collections/">Lesson 1.16: Maps, Semantic Lists, and Sets</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../k-distribution/k-tutorial/1_basic/17_cell_multiplicity/">Lesson 1.17: Cell Multiplicity and Cell Collections</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../k-distribution/k-tutorial/1_basic/18_equality_and_conditionals/">Lesson 1.18: Term Equality and the Ternary Operator</a></div>
-<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB</a></div>
+<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB or LLDB</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../k-distribution/k-tutorial/1_basic/20_backends/">Lesson 1.20: K Backends and the Haskell Backend</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../k-distribution/k-tutorial/1_basic/21_symbolic_execution/">Lesson 1.21: Unification and Symbolic Execution</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../k-distribution/k-tutorial/1_basic/22_proofs/">Lesson 1.22: K Deductive Verification</a></div>
@@ -258,15 +258,15 @@
 <h2 id="fast-installation-(preferred)">Fast Installation (preferred)</h2>
 <p>If you're on a system that supports <a href="https://nixos.org/download.html" target="_blank" rel="noreferrer noopener">Nix</a>,
 use this command to install via Nix:</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">shell</div><code class="language-shell"><span class="token function">bash</span> <span class="token operator">&lt;</span><span class="token punctuation">(</span><span class="token function">curl</span> https://kframework.org/install<span class="token punctuation">)</span>
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">shell</div><code class="language-shell"><span class="token function">bash</span> <span class="token operator">&lt;</span><span class="token punctuation">(</span><span class="token function">curl</span> https://kframework.org/install<span class="token punctuation">)</span>
 kup <span class="token function">install</span> k
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>You can update K with:</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">shell</div><code class="language-shell">kup update k
-</code></pre>
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">shell</div><code class="language-shell">kup update k
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>And list available versions with:</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">shell</div><code class="language-shell">kup list
-</code></pre>
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">shell</div><code class="language-shell">kup list
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>This will take care of all the dependencies and specific versions used by K.
 Note that the first run will take longer to fetch all the libraries and compile
 sources. (30m to 1h)</p>
@@ -315,8 +315,8 @@ browser to download the package, you will need to make it accessible to
 the command line environment. For this reason, we recommend downloading the
 package from the command line directly using a tool like <code>wget</code>. For
 example, you could copy the package download URL and then type:</p>
-<pre><code>wget &lt;package-download-url&gt;
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>wget &lt;package-download-url&gt;
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>where <code>&lt;package-download-url&gt;</code> is replaced by the URL you just copied.</p>
 </li>
 <li>
@@ -341,17 +341,17 @@ requires about ~1.4GB of dependencies and will take some time.</p>
 <li>On macOS/brew, K will typically be installed under <code>/usr/local</code>.</li>
 </ul>
 <h3 id="ubuntu-focal-(20.04)">Ubuntu Focal (20.04)</h3>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">sh</div><code class="language-sh"><span class="token function">sudo</span> <span class="token function">apt</span> <span class="token function">install</span> ./kframework_amd64_ubuntu_focal.deb
-</code></pre>
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">sh</div><code class="language-sh"><span class="token function">sudo</span> <span class="token function">apt</span> <span class="token function">install</span> ./kframework_amd64_ubuntu_focal.deb
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <h3 id="ubuntu-jammy-(22.04)">Ubuntu Jammy (22.04)</h3>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">sh</div><code class="language-sh"><span class="token function">sudo</span> <span class="token function">apt</span> <span class="token function">install</span> ./kframework_amd64_ubuntu_jammy.deb
-</code></pre>
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">sh</div><code class="language-sh"><span class="token function">sudo</span> <span class="token function">apt</span> <span class="token function">install</span> ./kframework_amd64_ubuntu_jammy.deb
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <h3 id="debian-bullseye">Debian Bullseye</h3>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">sh</div><code class="language-sh"><span class="token function">sudo</span> <span class="token function">apt</span> <span class="token function">install</span> ./kframework_amd64_debian_bullseye.deb
-</code></pre>
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">sh</div><code class="language-sh"><span class="token function">sudo</span> <span class="token function">apt</span> <span class="token function">install</span> ./kframework_amd64_debian_bullseye.deb
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <h3 id="arch-linux">Arch Linux</h3>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">sh</div><code class="language-sh">pacman <span class="token parameter variable">-U</span> ./kframework_arch_x86_64.pkg.tar.zst
-</code></pre>
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">sh</div><code class="language-sh">pacman <span class="token parameter variable">-U</span> ./kframework_arch_x86_64.pkg.tar.zst
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <h3 id="macos-x-mojave%2Fhomebrew">MacOS X Mojave/Homebrew</h3>
 <p><a href="https://brew.sh/" target="_blank" rel="noreferrer noopener">Homebrew</a> (or just brew) is a third-party package manager
 for MacOS.
@@ -359,34 +359,34 @@ If you have not installed brew, you must do so before installing the K
 Framework brew package.</p>
 <p>With brew installed, do the following to install the K Framework brew package
 (with build number <code>BN</code>):</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">sh</div><code class="language-sh">brew <span class="token function">install</span> kframework--X.Y.Z.ID.bottle.BN.tar.gz <span class="token parameter variable">-v</span>
-</code></pre>
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">sh</div><code class="language-sh">brew <span class="token function">install</span> kframework--X.Y.Z.ID.bottle.BN.tar.gz <span class="token parameter variable">-v</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>Note: we do not yet have a MacOS Monterey bottle. The existing brew package
 also does not work on M1 Silicon Macs. If you have either of these systems,
 you should build from source for the time being.</p>
 <h4 id="homebrew-alternate-installation">Homebrew Alternate Installation</h4>
 <p>To directly install the latest K Framework brew package without needing to
 download it separately, do the following:</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">sh</div><code class="language-sh">brew <span class="token function">install</span> kframework/k/kframework
-</code></pre>
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">sh</div><code class="language-sh">brew <span class="token function">install</span> kframework/k/kframework
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>Or, to streamline future K Framework upgrades, you can <code>tap</code> the K Framework
 package repository. This lets future installations/upgrades/etc... use the
 unprefixed package name.</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">sh</div><code class="language-sh">brew tap kframework/k
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">sh</div><code class="language-sh">brew tap kframework/k
 brew <span class="token function">install</span> kframework
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <h3 id="docker-images">Docker Images</h3>
 <p>Docker images with K pre-installed are available at the
 <a href="https://hub.docker.com/repository/docker/runtimeverificationinc/kframework-k" target="_blank" rel="noreferrer noopener">runtimeverification/kframework-k Docker Hub repository</a>.</p>
 <p>Each release at <code>COMMIT_ID</code> has an image associated with it at
 <code>runtimeverificationinc/kframework-k:ubuntu-focal-COMMIT_ID</code>.</p>
 <p>To run the image directly:</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">sh</div><code class="language-sh"><span class="token function">docker</span> run <span class="token parameter variable">-it</span> runtimeverificationinc/kframework-k:ubuntu-focal-COMMIT_ID
-</code></pre>
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">sh</div><code class="language-sh"><span class="token function">docker</span> run <span class="token parameter variable">-it</span> runtimeverificationinc/kframework-k:ubuntu-focal-COMMIT_ID
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>and to make a Docker Image based on it, use the following line in your
 <code>Dockerfile</code>:</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">Dockerfile</div><code class="language-Dockerfile">FROM runtimeverificationinc/kframework-k:ubuntu-focal-COMMIT_ID
-</code></pre>
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">Dockerfile</div><code class="language-Dockerfile">FROM runtimeverificationinc/kframework-k:ubuntu-focal-COMMIT_ID
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>We also create Ubuntu 22.04 images with the <code>ubuntu-jammy-COMMIT_ID</code> tags.</p>
 <h2 id="testing-packages">Testing Packages</h2>
 <p>The easiest way to test the K package is to copy a K tutorial language and
@@ -396,20 +396,20 @@ check if you can compile and run an included example.</p>
 <p>Start by copying the K tutorial to some work directory
 (e.g. <code>$HOME/pl-tutorial</code>) from the K distribution root. Using a Linux
 package, this command typically will be like:</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">sh</div><code class="language-sh">$ <span class="token function">cp</span> <span class="token parameter variable">-R</span> /usr/share/kframework/pl-tutorial <span class="token environment constant">$HOME</span>/pl-tutorial
-</code></pre>
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">sh</div><code class="language-sh">$ <span class="token function">cp</span> <span class="token parameter variable">-R</span> /usr/share/kframework/pl-tutorial <span class="token environment constant">$HOME</span>/pl-tutorial
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>On macOS/brew, this command typically will be like:</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">sh</div><code class="language-sh">$ <span class="token function">cp</span> <span class="token parameter variable">-R</span> /usr/local/share/kframework/pl-tutorial <span class="token environment constant">$HOME</span>/pl-tutorial
-</code></pre>
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">sh</div><code class="language-sh">$ <span class="token function">cp</span> <span class="token parameter variable">-R</span> /usr/local/share/kframework/pl-tutorial <span class="token environment constant">$HOME</span>/pl-tutorial
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>This step is needed because sometimes only the <code>root</code> user can run the
 examples in the default installation directory.</p>
 </li>
 <li>
 <p>Now you can try to run some programs:</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">sh</div><code class="language-sh">$ <span class="token builtin class-name">cd</span> <span class="token environment constant">$HOME</span>/pl-tutorial/2_languages/1_simple/1_untyped
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">sh</div><code class="language-sh">$ <span class="token builtin class-name">cd</span> <span class="token environment constant">$HOME</span>/pl-tutorial/2_languages/1_simple/1_untyped
 $ <span class="token function">make</span> kompile
 $ krun tests/diverse/factorial.simple
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 </li>
 </ol>
 </body></html></div>
@@ -549,8 +549,8 @@ $ krun tests/diverse/factorial.simple
             /> </picture
         ></a>
         <p class="mt-2 text-md-left copyright">
-          <a href="https://goo.gl/maps/hKLtCjeEd6yqfzwx5" target="_blank"
-            >1807 S Neil Street, Champaign, IL 61820</a
+          <a href="https://goo.gl/maps/TkuJSdoA3oNPpc486" target="_blank"
+            >301 N Neil St. Suite 412, Champaign, IL 61820</a
           >
         </p>
       </div>

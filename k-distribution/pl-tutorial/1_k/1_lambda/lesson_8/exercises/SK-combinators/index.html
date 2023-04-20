@@ -154,7 +154,7 @@
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../../../k-distribution/k-tutorial/1_basic/16_collections/">Lesson 1.16: Maps, Semantic Lists, and Sets</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../../../k-distribution/k-tutorial/1_basic/17_cell_multiplicity/">Lesson 1.17: Cell Multiplicity and Cell Collections</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../../../k-distribution/k-tutorial/1_basic/18_equality_and_conditionals/">Lesson 1.18: Term Equality and the Ternary Operator</a></div>
-<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB</a></div>
+<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB or LLDB</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../../../k-distribution/k-tutorial/1_basic/20_backends/">Lesson 1.20: K Backends and the Haskell Backend</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../../../k-distribution/k-tutorial/1_basic/21_symbolic_execution/">Lesson 1.21: Unification and Symbolic Execution</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../../../k-distribution/k-tutorial/1_basic/22_proofs/">Lesson 1.22: K Deductive Verification</a></div>
@@ -254,21 +254,21 @@
           class="col-12 col-md-6 col-xl-8 py-md-3 pl-md-5 bd-content"
           role="main"
         >
-          <div class="introduction markdown-preview"><!-- Copyright (c) 2014-2019 K Team. All Rights Reserved. --><html><head></head><body><p>Define LAMBDA using the S/K combinators instead of substitution.
+          <div class="introduction markdown-preview"><html><head></head><body><p>Define LAMBDA using the S/K combinators instead of substitution.
 You new definition will not require the <code>substitution.k</code> module anymore,
 and will not use environments (discussed in future lectures), either.</p>
 <p>Recall that the <code>S</code> and <code>K</code> combinators are defined as follows:</p>
-<pre><code>K E1 E2 = E1
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>K E1 E2 = E1
 S E1 E2 E3 = E1 E3 (E2 E3)
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>where the application is that of LAMBDA (left associative binary operation),
 and that the lambda construct can be desugared to combinators using the
 following simple rules:</p>
-<pre><code>lambda X . X = S K K
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>lambda X . X = S K K
 lambda X . Y = K Y    when Y is a name different from X
 lambda X . (E1 E2) = S (lambda X . E1) (lambda X . E2)
 lambda X . B = K B    when B is any constant, including S or K
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 <p>To distinguish the <code>S</code> and <code>K</code> combinators from K variables and make them
 more visible, we prefer to write them as <code>SS</code> and <code>KK</code> instead of <code>S</code> and <code>K</code>.</p>
 <p>If defined correctly and completely, all the tests should pass when you call
@@ -326,8 +326,8 @@ yield functions are values; for example, <code>isVal(cond V:Val) =&gt; true</cod
             /> </picture
         ></a>
         <p class="mt-2 text-md-left copyright">
-          <a href="https://goo.gl/maps/hKLtCjeEd6yqfzwx5" target="_blank"
-            >1807 S Neil Street, Champaign, IL 61820</a
+          <a href="https://goo.gl/maps/TkuJSdoA3oNPpc486" target="_blank"
+            >301 N Neil St. Suite 412, Champaign, IL 61820</a
           >
         </p>
       </div>

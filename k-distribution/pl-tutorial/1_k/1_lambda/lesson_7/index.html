@@ -154,7 +154,7 @@
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/16_collections/">Lesson 1.16: Maps, Semantic Lists, and Sets</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/17_cell_multiplicity/">Lesson 1.17: Cell Multiplicity and Cell Collections</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/18_equality_and_conditionals/">Lesson 1.18: Term Equality and the Ternary Operator</a></div>
-<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB</a></div>
+<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB or LLDB</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/20_backends/">Lesson 1.20: K Backends and the Haskell Backend</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/21_symbolic_execution/">Lesson 1.21: Unification and Symbolic Execution</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/22_proofs/">Lesson 1.22: K Deductive Verification</a></div>
@@ -254,7 +254,7 @@
           class="col-12 col-md-6 col-xl-8 py-md-3 pl-md-5 bd-content"
           role="main"
         >
-          <div class="introduction markdown-preview"><!-- Copyright (c) 2012-2019 K Team. All Rights Reserved. --><html><head></head><body><h1 id="derived-constructs%2C-extending-predefined-syntax">Derived Constructs, Extending Predefined Syntax</h1>
+          <div class="introduction markdown-preview"><html><head></head><body><h1 id="derived-constructs%2C-extending-predefined-syntax">Derived Constructs, Extending Predefined Syntax</h1>
 <p>In this lesson we will learn how to define derived language constructs, that
 is, ones whose semantics is defined completely in terms of other language
 constructs.  We will also learn how to add new constructs to predefined
@@ -262,11 +262,11 @@ syntactic categories.</p>
 <p>When defining a language, we often want certain language constructs to be
 defined in terms of other constructs.  For example, a let-binding construct
 of the form</p>
-<pre><code>let x = e in e'
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>let x = e in e'
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>is nothing but syntactic sugar for</p>
-<pre><code>(lambda x . e') e
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>(lambda x . e') e
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>This can be easily achieved with a rule, as shown in <code>lambda.k</code>.</p>
 <p>As a side point, which is not very relevant here but good to know, we may
 want the <em>desugaring</em> of <code>let</code> to not even count as a computational step, but
@@ -283,13 +283,13 @@ and replaces each integer by a let-bound variable.  It should evaluate to
 <code>true</code>, just like the original <code>arithmetic.lambda</code>.</p>
 <p>Let us now consider a more interesting program, namely one that calculates the
 factorial of 10:</p>
-<pre><code>let f = lambda x . (
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>let f = lambda x . (
         (lambda t . lambda x . (t t x))
         (lambda f . lambda x . (if x &lt;= 1 then 1 else (x * (f f (x + -1)))))
         x
       )
 in (f 10)
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>This program follows a common technique to define fixed points in untyped
 lambda calculus, based on passing a function to itself.</p>
 <p>We may not like to define fixed-points following the approach above, because
@@ -298,14 +298,14 @@ basically to pass it to itself (<code>f f</code> in our case above).  The approa
 isolates the fixed-point aspect of the function in a so-called <em>fixed-point
 combinator</em>, which we call <code>fix</code> below, and then apply it to the function
 defining the body of the factorial, without any changes to it:</p>
-<pre><code>let fix = lambda f . (
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>let fix = lambda f . (
           (lambda x . (f (lambda y . (x x y))))
           (lambda x . (f (lambda y . (x x y))))
         )
 in let f = fix (lambda f . lambda x .
                 (if x &lt;= 1 then 1 else (x * (f (x + -1)))))
    in (f 10)
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>Although the above techniques are interesting and powerful (indeed, untyped
 lambda calculus is in fact Turing complete), programmers will probably not
 like to write programs this way.</p>
@@ -329,9 +329,9 @@ because any possible uses of <span class="katex"><span class="katex-mathml"><mat
 using `letrec` would be captured by the `lambda</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord mathnormal">x</span><span class="mord mathnormal">in</span><span class="mord mathnormal">t</span><span class="mord mathnormal">h</span><span class="mord mathnormal">e</span><span class="mord mathnormal">b</span><span class="mord mathnormal">o</span><span class="mord mathnormal">d</span><span class="mord mathnormal">yo</span><span class="mord mathnormal" style="margin-right:0.10764em;">f</span><span class="mord mathnormal">t</span><span class="mord mathnormal">h</span><span class="mord mathnormal">e</span><span class="mord mathnormal" style="margin-right:0.10764em;">f</span><span class="mord mathnormal">u</span><span class="mord mathnormal">n</span><span class="mord mathnormal">c</span><span class="mord mathnormal">t</span><span class="mord mathnormal">i</span><span class="mord mathnormal">o</span><span class="mord mathnormal">n</span><span class="mord mathnormal">d</span><span class="mord mathnormal">e</span><span class="mord mathnormal" style="margin-right:0.10764em;">f</span><span class="mord mathnormal">in</span><span class="mord mathnormal">e</span><span class="mord mathnormal">d</span><span class="mord mathnormal">u</span><span class="mord mathnormal">s</span><span class="mord mathnormal">in</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord">‘</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">e</span><span class="mord mathnormal">t</span><span class="mord mathnormal">rec</span><span class="mord">‘</span><span class="mord mathnormal" style="margin-right:0.02691em;">w</span><span class="mord mathnormal">o</span><span class="mord mathnormal">u</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">d</span><span class="mord mathnormal">b</span><span class="mord mathnormal">ec</span><span class="mord mathnormal">a</span><span class="mord mathnormal">pt</span><span class="mord mathnormal">u</span><span class="mord mathnormal">re</span><span class="mord mathnormal">d</span><span class="mord mathnormal">b</span><span class="mord mathnormal" style="margin-right:0.03588em;">y</span><span class="mord mathnormal">t</span><span class="mord mathnormal">h</span><span class="mord mathnormal">e</span><span class="mord">‘</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">amb</span><span class="mord mathnormal">d</span><span class="mord mathnormal">a</span></span></span></span>x<code>declaration in the definition of</code>letrec`.</p>
 <p>Using <code>letrec</code>, we can now write the factorial program as elegantly as it can
 be written in a functional language:</p>
-<pre><code>letrec f x = if x &lt;= 1 then 1 else (x * (f (x + -1)))
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>letrec f x = if x &lt;= 1 then 1 else (x * (f (x + -1)))
 in (f 10)
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>In the next lesson we will discuss an alternative definition of <code>letrec</code>, based
 on another binder, <code>mu</code>, specifically designed to define fixed points.</p>
 <p>Go to <a href="../lesson_8/">Lesson 8, LAMBDA: Multiple Binding Constructs</a>.</p>
@@ -379,8 +379,8 @@ on another binder, <code>mu</code>, specifically designed to define fixed points
             /> </picture
         ></a>
         <p class="mt-2 text-md-left copyright">
-          <a href="https://goo.gl/maps/hKLtCjeEd6yqfzwx5" target="_blank"
-            >1807 S Neil Street, Champaign, IL 61820</a
+          <a href="https://goo.gl/maps/TkuJSdoA3oNPpc486" target="_blank"
+            >301 N Neil St. Suite 412, Champaign, IL 61820</a
           >
         </p>
       </div>

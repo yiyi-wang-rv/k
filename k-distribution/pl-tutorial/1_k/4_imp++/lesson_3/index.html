@@ -154,7 +154,7 @@
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/16_collections/">Lesson 1.16: Maps, Semantic Lists, and Sets</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/17_cell_multiplicity/">Lesson 1.17: Cell Multiplicity and Cell Collections</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/18_equality_and_conditionals/">Lesson 1.18: Term Equality and the Ternary Operator</a></div>
-<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB</a></div>
+<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB or LLDB</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/20_backends/">Lesson 1.20: K Backends and the Haskell Backend</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/21_symbolic_execution/">Lesson 1.21: Unification and Symbolic Execution</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/22_proofs/">Lesson 1.22: K Deductive Verification</a></div>
@@ -254,16 +254,16 @@
           class="col-12 col-md-6 col-xl-8 py-md-3 pl-md-5 bd-content"
           role="main"
         >
-          <div class="introduction markdown-preview"><!-- Copyright (c) 2010-2019 K Team. All Rights Reserved. --><html><head></head><body><h1 id="tagging%3B-transition-kompilation-option">Tagging; Transition Kompilation Option</h1>
+          <div class="introduction markdown-preview"><html><head></head><body><h1 id="tagging%3B-transition-kompilation-option">Tagging; Transition Kompilation Option</h1>
 <p>In this lesson we add the semantics of variable increment. In doing so, we
 learn how to tag syntactic constructs and rules and then use such tags to
 instruct the <code>kompile</code> tool to generate the desired language model that is
 amenable for exhaustive analysis.</p>
 <p>The variable increment rule is self-explanatory:</p>
-<pre><code>rule &lt;k&gt; ++X =&gt; I +Int 1 ...&lt;/k&gt;
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>rule &lt;k&gt; ++X =&gt; I +Int 1 ...&lt;/k&gt;
      &lt;env&gt;... X |-&gt; N ...&lt;/env&gt;
      &lt;store&gt;... N |-&gt; (I =&gt; I +Int 1) ...&lt;/store&gt;
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <p>We can now run programs like our <code>div.imp</code> program introduced in Lesson 1.
 Do it.</p>
 <p>The addition of increment makes the evaluation of expressions have side
@@ -275,8 +275,8 @@ assigns <code>1</code> to <code>y</code>'s location, for example, but this progr
 other behaviors, too.</p>
 <p>To see all the (final-state) behaviors that a program can have, you can call
 the <code>krun</code> tool with the option <code>--search</code>. For example:</p>
-<pre><code>krun div.imp --search
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>krun div.imp --search
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>Oops, we see only one solution, the same as when we ran it without search.</p>
 <p>Here is what happens. <code>krun</code> can only explore as much of the transition
 system associated to a program as <code>kompile</code> allowed the generated language
@@ -319,8 +319,8 @@ in this lesson, we do it only to demonstrate that rules can also be tagged.</p>
 <p>The least intrusive way to enforce our current language to explore the
 entire space of behaviors due to the strictness of division is to <code>kompile</code> it
 with the following option:</p>
-<pre><code>kompile imp.k --transition "division"
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>kompile imp.k --transition "division"
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>It is interesting to note that the <code>lookup</code> and <code>increment</code> rules are the only
 two rules which can trigger non-deterministic behaviors for division, because
 no other rule but these two can ever apply while a division operation is
@@ -335,8 +335,8 @@ implementation makes no attempt to automatically detect which operations
 should be tagged as transitions. Instead, it provides the functionality to
 let you decide it.</p>
 <p>Now the command</p>
-<pre><code>krun div.imp --search
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>krun div.imp --search
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>shows us all five behaviors of this program. Interestingly, one
 of the five behaviors yields a division by zero!</p>
 <p>The <code>--transition</code> option can be quite useful when you experiment with your
@@ -348,8 +348,8 @@ you will hopefully not overuse: you can tag elements in your K definition with
 <code>kompile</code> option names, and those elements will be automatically included in
 their corresponding options. For example, if you tag the division production
 with <code>transition</code> then the command</p>
-<pre><code>kompile imp
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>kompile imp
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>is completely equivalent to the previous <code>kompile</code> command.</p>
 <p>Please use this default behavior with caution, or even better, try to avoid
 using it! You may be tempted to add the <code>transition</code> tag to lots of elements
@@ -404,8 +404,8 @@ generate a model of it which behaves like an interactive interpreter!</p>
             /> </picture
         ></a>
         <p class="mt-2 text-md-left copyright">
-          <a href="https://goo.gl/maps/hKLtCjeEd6yqfzwx5" target="_blank"
-            >1807 S Neil Street, Champaign, IL 61820</a
+          <a href="https://goo.gl/maps/TkuJSdoA3oNPpc486" target="_blank"
+            >301 N Neil St. Suite 412, Champaign, IL 61820</a
           >
         </p>
       </div>

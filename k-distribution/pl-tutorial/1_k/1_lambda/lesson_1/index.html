@@ -154,7 +154,7 @@
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/16_collections/">Lesson 1.16: Maps, Semantic Lists, and Sets</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/17_cell_multiplicity/">Lesson 1.17: Cell Multiplicity and Cell Collections</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/18_equality_and_conditionals/">Lesson 1.18: Term Equality and the Ternary Operator</a></div>
-<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB</a></div>
+<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB or LLDB</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/20_backends/">Lesson 1.20: K Backends and the Haskell Backend</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/21_symbolic_execution/">Lesson 1.21: Unification and Symbolic Execution</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/22_proofs/">Lesson 1.22: K Deductive Verification</a></div>
@@ -254,7 +254,7 @@
           class="col-12 col-md-6 col-xl-8 py-md-3 pl-md-5 bd-content"
           role="main"
         >
-          <div class="introduction markdown-preview"><!-- Copyright (c) 2012-2019 K Team. All Rights Reserved. --><html><head></head><body><h1 id="syntax-modules-and-basic-k-commands">Syntax Modules and Basic K Commands</h1>
+          <div class="introduction markdown-preview"><html><head></head><body><h1 id="syntax-modules-and-basic-k-commands">Syntax Modules and Basic K Commands</h1>
 <p>Here we define our first K module, which contains the initial syntax of the
 LAMBDA language, and learn how to use the basic K commands.</p>
 <p>Let us create an empty working folder, and open a terminal window
@@ -281,32 +281,32 @@ However, so far <code>Val</code> is just another non-terminal, just like <code>E
 without any semantic meaning. It will get a semantic meaning later.</p>
 <p>After we are done typing our definition in the file <code>lambda.k</code>, we can kompile
 it with the command:</p>
-<pre><code>kompile lambda.k
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>kompile lambda.k
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>If we get no errors then a parser has been generated. This parser will be
 called from now on by default by the krun tool. To see whether and how the
 parser works, we are going to write some LAMBDA programs and store them in
 files with the extension <code>.lambda</code>.</p>
 <p>Let us create a file <code>identity.lambda</code>, which contains the identity lambda
 abstraction:</p>
-<pre><code>lambda x . x
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>lambda x . x
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>Now let us call <code>krun</code> on <code>identity.lambda</code>:</p>
-<pre><code>krun identity.lambda
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>krun identity.lambda
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>Make sure you call the <code>krun</code> command from the folder containing your language
 definition (otherwise type <code>krun --help</code> to learn how to pass a language
 definition as a parameter to <code>krun</code>). The krun command produces the output:</p>
-<pre><code>&lt;k&gt;
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>&lt;k&gt;
   lambda x . x
 &lt;/k&gt;
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <p>If you see such an output it means that your program has been parsed (and then
 pretty printed) correctly. If you want to see the internal abstract syntax
 tree (AST) representation of the parsed program, which we call the K AST, then
 type <code>kast</code> in the command instead of <code>krun</code>:</p>
-<pre><code>kast identity.lambda
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>kast identity.lambda
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>You should normally never need to see this internal representation in your
 K definitions, so do not get scared (yes, it is ugly for humans, but it is
 very convenient for tools).</p>
@@ -318,19 +318,19 @@ which contains only one cell, the default <code>k</code> cell, which holds the p
 expression which, in order to execute correctly in a substitution-based
 semantics of LAMBDA, the substitution operation needs to avoid
 variable-capture:</p>
-<pre><code>a (((lambda x.lambda y.x) y) z)
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>a (((lambda x.lambda y.x) y) z)
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>Next, file <code>closed-variable-capture.lambda</code> shows an expression which also
 requires a capture-free substitution, but this expression is closed (that is,
 it has no free variables) and all its bound variables are distinct (I believe
 this is the smallest such expression):</p>
-<pre><code>(lambda z.(z z)) (lambda x.lambda y.(x y))
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>(lambda z.(z z)) (lambda x.lambda y.(x y))
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>Finally, the file <code>omega.lambda</code> contains the classic omega combinator
 (or closed expression), which is the smallest expression which loops forever
 (not now, but after we define the semantics of LAMBDA):</p>
-<pre><code>(lambda x.(x x)) (lambda x.(x x))
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>(lambda x.(x x)) (lambda x.(x x))
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>Feel free to define and parse several other LAMBDA programs to get a feel for
 how the parser works. Parse also some incorrect programs, to see how the
 parser generates error messages.</p>
@@ -382,8 +382,8 @@ This way, we obtain our first programming language defined using K.</p>
             /> </picture
         ></a>
         <p class="mt-2 text-md-left copyright">
-          <a href="https://goo.gl/maps/hKLtCjeEd6yqfzwx5" target="_blank"
-            >1807 S Neil Street, Champaign, IL 61820</a
+          <a href="https://goo.gl/maps/TkuJSdoA3oNPpc486" target="_blank"
+            >301 N Neil St. Suite 412, Champaign, IL 61820</a
           >
         </p>
       </div>

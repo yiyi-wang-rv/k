@@ -154,7 +154,7 @@
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/16_collections/">Lesson 1.16: Maps, Semantic Lists, and Sets</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/17_cell_multiplicity/">Lesson 1.17: Cell Multiplicity and Cell Collections</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/18_equality_and_conditionals/">Lesson 1.18: Term Equality and the Ternary Operator</a></div>
-<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB</a></div>
+<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB or LLDB</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/20_backends/">Lesson 1.20: K Backends and the Haskell Backend</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/21_symbolic_execution/">Lesson 1.21: Unification and Symbolic Execution</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/22_proofs/">Lesson 1.22: K Deductive Verification</a></div>
@@ -270,7 +270,7 @@ This support comes in the form of the rule attributes <code>heat</code> and <cod
 well as the specially named function <code>isKResult</code>.</p>
 <p>Consider the following definition, which is equivalent to <code>LESSON-13-C</code>
 (<code>lesson-14-a.k</code>):</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">14</span><span class="token operator">-</span>A<span class="token operator">-</span>SYNTAX
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">14</span><span class="token operator">-</span>A<span class="token operator">-</span>SYNTAX
   <span class="token keyword">imports</span> UNSIGNED<span class="token operator">-</span>INT<span class="token operator">-</span>SYNTAX
   <span class="token keyword">imports</span> BOOL<span class="token operator">-</span>SYNTAX
 
@@ -308,7 +308,7 @@ well as the specially named function <code>isKResult</code>.</p>
   <span class="token keyword">rule</span> isKResult<span class="token punctuation">(</span>_<span class="token punctuation">:</span><span class="token keyword">Bool</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token boolean">true</span>
   <span class="token keyword">rule</span> isKResult<span class="token punctuation">(</span>_<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token boolean">false</span> <span class="token punctuation">[</span>owise<span class="token punctuation">]</span>
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>We have introduced three major changes to this definition. First, we have
 removed the <code>Val</code> sort. We replace it instead with a function <code>isKResult</code>.
 The function in question must have the same signature and attributes as seen in
@@ -342,7 +342,7 @@ begin with the <code>context</code> keyword instead of the <code>rule</code> key
 do not contain a rewrite operator.</p>
 <p>Consider the following definition which is equivalent to <code>LESSON-14-A</code>
 (<code>lesson-14-b.k</code>):</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">14</span><span class="token operator">-</span>B<span class="token operator">-</span>SYNTAX
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">14</span><span class="token operator">-</span>B<span class="token operator">-</span>SYNTAX
   <span class="token keyword">imports</span> UNSIGNED<span class="token operator">-</span>INT<span class="token operator">-</span>SYNTAX
   <span class="token keyword">imports</span> BOOL<span class="token operator">-</span>SYNTAX
 
@@ -372,7 +372,7 @@ do not contain a rewrite operator.</p>
   <span class="token keyword">rule</span> isKResult<span class="token punctuation">(</span>_<span class="token punctuation">:</span><span class="token keyword">Bool</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token boolean">true</span>
   <span class="token keyword">rule</span> isKResult<span class="token punctuation">(</span>_<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token boolean">false</span> <span class="token punctuation">[</span>owise<span class="token punctuation">]</span>
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>In this example, the <code>heat</code> and <code>cool</code> rules have been removed entirely, as
 have been the productions defining the freezers. Don't worry, they still exist
 under the hood; the compiler is just generating them automatically. For each
@@ -389,7 +389,7 @@ simply annotating each expression production with information about how
 it is to be evaluated instead. We can do this with the <code>seqstrict</code> attribute.</p>
 <p>Consider the following definition, once again equivalent to those above
 (<code>lesson-14-c.k</code>):</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">.k .alias</div><code class="k alias"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">14</span><span class="token operator">-</span>C<span class="token operator">-</span>SYNTAX
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">.k .alias</div><code class="k alias"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">14</span><span class="token operator">-</span>C<span class="token operator">-</span>SYNTAX
   <span class="token keyword">imports</span> UNSIGNED<span class="token operator">-</span>INT<span class="token operator">-</span>SYNTAX
   <span class="token keyword">imports</span> BOOL<span class="token operator">-</span>SYNTAX
 
@@ -414,7 +414,7 @@ it is to be evaluated instead. We can do this with the <code>seqstrict</code> at
   <span class="token keyword">rule</span> isKResult<span class="token punctuation">(</span>_<span class="token punctuation">:</span><span class="token keyword">Bool</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token boolean">true</span>
   <span class="token keyword">rule</span> isKResult<span class="token punctuation">(</span>_<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token boolean">false</span> <span class="token punctuation">[</span>owise<span class="token punctuation">]</span>
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>This definition has two important changes from the one above. The first is
 that the individual <code>context</code> sentences have been removed and have been
 replaced with a single <code>context alias</code> sentence. You may notice that this
@@ -454,7 +454,7 @@ and the name from the <code>seqstrict</code> attribute.</p>
 production, it can be omitted from the attribute value.</p>
 <p>Thus, we can finally produce the idiomatic K definition for this example
 (<code>lesson-14-d.k</code>):</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">14</span><span class="token operator">-</span>D<span class="token operator">-</span>SYNTAX
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">14</span><span class="token operator">-</span>D<span class="token operator">-</span>SYNTAX
   <span class="token keyword">imports</span> UNSIGNED<span class="token operator">-</span>INT<span class="token operator">-</span>SYNTAX
   <span class="token keyword">imports</span> BOOL<span class="token operator">-</span>SYNTAX
 
@@ -477,7 +477,7 @@ production, it can be omitted from the attribute value.</p>
   <span class="token keyword">rule</span> isKResult<span class="token punctuation">(</span>_<span class="token punctuation">:</span><span class="token keyword">Bool</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token boolean">true</span>
   <span class="token keyword">rule</span> isKResult<span class="token punctuation">(</span>_<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token boolean">false</span> <span class="token punctuation">[</span>owise<span class="token punctuation">]</span>
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h3 id="exercise-1">Exercise</h3>
 <p>Modify <code>LESSON-14-D</code> to add a production and rule to evaluate integer
 subtraction.</p>
@@ -493,9 +493,9 @@ the above list (with the side condition automatically added) does not take
 place. In other words, if we wrote <code>syntax Exp ::= Exp "+" Exp [strict]</code>
 instead of <code>syntax Exp ::= Exp "+" Exp [seqstrict]</code>, it would generate the
 following two contexts instead of the ones found in <code>LESSON-14-B</code>:</p>
-<pre><code>  context &lt;k&gt; _:Exp + HOLE:Exp ...&lt;/k&gt;
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>  context &lt;k&gt; _:Exp + HOLE:Exp ...&lt;/k&gt;
   context &lt;k&gt; HOLE:Exp + _:Exp ...&lt;/k&gt;
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>As you can see, these contexts will generate heating rules that can both
 apply to the same term. As a result, the choice of which heating rule
 applies first is non-deterministic, and as we saw in Lesson 1.13, we can
@@ -618,8 +618,8 @@ many are there total, and why?</p>
             /> </picture
         ></a>
         <p class="mt-2 text-md-left copyright">
-          <a href="https://goo.gl/maps/hKLtCjeEd6yqfzwx5" target="_blank"
-            >1807 S Neil Street, Champaign, IL 61820</a
+          <a href="https://goo.gl/maps/TkuJSdoA3oNPpc486" target="_blank"
+            >301 N Neil St. Suite 412, Champaign, IL 61820</a
           >
         </p>
       </div>

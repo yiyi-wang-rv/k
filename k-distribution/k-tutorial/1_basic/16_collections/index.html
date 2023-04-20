@@ -154,7 +154,7 @@
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/16_collections/">Lesson 1.16: Maps, Semantic Lists, and Sets</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/17_cell_multiplicity/">Lesson 1.17: Cell Multiplicity and Cell Collections</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/18_equality_and_conditionals/">Lesson 1.18: Term Equality and the Ternary Operator</a></div>
-<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB</a></div>
+<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB or LLDB</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/20_backends/">Lesson 1.20: K Backends and the Haskell Backend</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/21_symbolic_execution/">Lesson 1.21: Unification and Symbolic Execution</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/22_proofs/">Lesson 1.22: K Deductive Verification</a></div>
@@ -291,7 +291,7 @@ to whatever bindings are left over (<code>.Map</code> if there are no bindings l
 <p>Here is an example of a simple definition that implements a very basic
 variable declaration semantics using a <code>Map</code> to store the value of variables
 (<code>lesson-16-a.k</code>):</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">16</span><span class="token operator">-</span>A<span class="token operator">-</span>SYNTAX
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">16</span><span class="token operator">-</span>A<span class="token operator">-</span>SYNTAX
   <span class="token keyword">imports</span> INT<span class="token operator">-</span>SYNTAX
   <span class="token keyword">imports</span> ID<span class="token operator">-</span>SYNTAX
 
@@ -325,7 +325,7 @@ variable declaration semantics using a <code>Map</code> to store the value of va
   <span class="token keyword">rule</span> isKResult<span class="token punctuation">(</span>_<span class="token punctuation">:</span><span class="token keyword">Int</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token boolean">true</span>
   <span class="token keyword">rule</span> isKResult<span class="token punctuation">(</span>_<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token boolean">false</span> <span class="token punctuation">[</span>owise<span class="token punctuation">]</span>
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>There are several new features in this definition. First, note we import
 the module <code>ID-SYNTAX</code>. This module is defined in <code>domains.md</code> and provides a
 basic syntax for identifiers. We are using the <code>Id</code> sort provided by this
@@ -342,12 +342,12 @@ case, the meaning of <code>&lt;state&gt;... Pattern ...&lt;/state&gt;</code>,
 <code>&lt;state&gt;... Pattern &lt;/state&gt;</code>, and <code>&lt;state&gt; Pattern ...&lt;/state&gt;</code> are the same:
 it is equivalent to writing <code>&lt;state&gt; (Pattern) _:Map &lt;/state&gt;</code>.</p>
 <p>Consider the following program (<code>a.decl</code>):</p>
-<pre><code>int x = 0;
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>int x = 0;
 int y = 1;
 int a = x;
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <p>If we run this program with <code>krun</code>, we will get the following result:</p>
-<pre><code>&lt;T&gt;
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>&lt;T&gt;
   &lt;k&gt;
     .
   &lt;/k&gt;
@@ -357,7 +357,7 @@ int a = x;
     y |-&gt; 1
   &lt;/state&gt;
 &lt;/T&gt;
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>Note that <code>krun</code> has automatically sorted the collection for you. This doesn't
 happen at runtime, so you still get the performance of a hash map, but it will
 help make the output more readable.</p>
@@ -404,7 +404,7 @@ multiple variables of sort <code>List</code> are not allowed, it is an error to 
 <code>&lt;cell&gt;... Pattern ...&lt;/cell&gt;</code>.</p>
 <p>Here is an example of a simple definition that implements a very basic
 function-call semantics using a <code>List</code> as a function stack (<code>lesson-16-b.k</code>):</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">16</span><span class="token operator">-</span>B<span class="token operator">-</span>SYNTAX
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">16</span><span class="token operator">-</span>B<span class="token operator">-</span>SYNTAX
   <span class="token keyword">imports</span> INT<span class="token operator">-</span>SYNTAX
   <span class="token keyword">imports</span> ID<span class="token operator">-</span>SYNTAX
 
@@ -448,18 +448,18 @@ function-call semantics using a <code>List</code> as a function stack (<code>les
   <span class="token keyword">rule</span> isKResult<span class="token punctuation">(</span>_<span class="token punctuation">:</span><span class="token keyword">Int</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token boolean">true</span>
   <span class="token keyword">rule</span> isKResult<span class="token punctuation">(</span>_<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token boolean">false</span> <span class="token punctuation">[</span>owise<span class="token punctuation">]</span>
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>Notice that we have declared the production <code>syntax Id ::= "main" [token]</code>.
 Since we use the <code>ID-SYNTAX</code> module, this declaration is necessary in order to
 be able to refer to the <code>main</code> identifier directly in the configuration
 declaration. Our <code>&lt;k&gt;</code> cell now contains a <code>K</code> sequence initially: first we
 process all the declarations in the program, then we call the <code>main</code> function.</p>
 <p>Consider the following program (<code>foo.func</code>):</p>
-<pre><code>fun foo() { return 5; }
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>fun foo() { return 5; }
 fun main() { return foo(); }
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>When we <code>krun</code> this program, we should get the following output:</p>
-<pre><code>&lt;T&gt;
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>&lt;T&gt;
   &lt;k&gt;
     5 ~&gt; .
   &lt;/k&gt;
@@ -471,7 +471,7 @@ fun main() { return foo(); }
     .List
   &lt;/fstack&gt;
 &lt;/T&gt;
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>Note that we have successfully put on the <code>&lt;k&gt;</code> cell the value returned by the
 <code>main</code> function.</p>
 <h3 id="exercise-1">Exercise</h3>
@@ -507,7 +507,7 @@ variable of sort <code>Set</code>.</p>
 to ensure that variables are never declared more than once. In practice, you
 would likely just use the <code>in_keys</code> symbol over maps to test for this, but
 it's still useful as an example of sets in practice:</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">16</span><span class="token operator">-</span>C<span class="token operator">-</span>SYNTAX
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">16</span><span class="token operator">-</span>C<span class="token operator">-</span>SYNTAX
   <span class="token keyword">imports</span> LESSON<span class="token operator">-</span><span class="token number">16</span><span class="token operator">-</span>A<span class="token operator">-</span>SYNTAX
 <span class="token keyword">endmodule</span>
 
@@ -541,7 +541,7 @@ it's still useful as an example of sets in practice:</p>
   <span class="token keyword">rule</span> isKResult<span class="token punctuation">(</span>_<span class="token punctuation">:</span><span class="token keyword">Int</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token boolean">true</span>
   <span class="token keyword">rule</span> isKResult<span class="token punctuation">(</span>_<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token boolean">false</span> <span class="token punctuation">[</span>owise<span class="token punctuation">]</span>
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>Now if we <code>krun</code> a program containing duplicate declarations, it will get
 stuck on the declaration.</p>
 <h2 id="exercises">Exercises</h2>
@@ -653,8 +653,8 @@ resulting interpreter.</li>
             /> </picture
         ></a>
         <p class="mt-2 text-md-left copyright">
-          <a href="https://goo.gl/maps/hKLtCjeEd6yqfzwx5" target="_blank"
-            >1807 S Neil Street, Champaign, IL 61820</a
+          <a href="https://goo.gl/maps/TkuJSdoA3oNPpc486" target="_blank"
+            >301 N Neil St. Suite 412, Champaign, IL 61820</a
           >
         </p>
       </div>

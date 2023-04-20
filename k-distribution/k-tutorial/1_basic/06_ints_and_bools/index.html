@@ -154,7 +154,7 @@
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/16_collections/">Lesson 1.16: Maps, Semantic Lists, and Sets</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/17_cell_multiplicity/">Lesson 1.17: Cell Multiplicity and Cell Collections</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/18_equality_and_conditionals/">Lesson 1.18: Term Equality and the Ternary Operator</a></div>
-<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB</a></div>
+<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB or LLDB</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/20_backends/">Lesson 1.20: K Backends and the Haskell Backend</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/21_symbolic_execution/">Lesson 1.21: Unification and Symbolic Execution</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/22_proofs/">Lesson 1.22: K Deductive Verification</a></div>
@@ -277,7 +277,7 @@ features. However, in the vast majority of cases, we prefer instead to import
 the version of Boolean algebra defined by K itself. Most simply, you can do
 this by importing the module <code>BOOL</code> in your definition. For example
 (<code>lesson-06-a.k</code>):</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">06</span><span class="token operator">-</span>A
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">06</span><span class="token operator">-</span>A
   <span class="token keyword">imports</span> BOOL
 
   <span class="token keyword">syntax</span> Fruit <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> Blueberry<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">|</span> Banana<span class="token punctuation">(</span><span class="token punctuation">)</span>
@@ -286,11 +286,11 @@ this by importing the module <code>BOOL</code> in your definition. For example
   <span class="token keyword">rule</span> isBlue<span class="token punctuation">(</span>Blueberry<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token boolean">true</span>
   <span class="token keyword">rule</span> isBlue<span class="token punctuation">(</span>Banana<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token boolean">false</span>
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>Here we have defined a simple <strong>predicate</strong>, i.e., a function returning a
 Boolean value. We are now able to perform the usual Boolean operations of
 and, or, and not over these values. For example (<code>lesson-06-b.k</code>):"</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">06</span><span class="token operator">-</span>B
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">06</span><span class="token operator">-</span>B
   <span class="token keyword">imports</span> BOOL
 
   <span class="token keyword">syntax</span> Fruit <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> Blueberry<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">|</span> Banana<span class="token punctuation">(</span><span class="token punctuation">)</span>
@@ -307,7 +307,7 @@ and, or, and not over these values. For example (<code>lesson-06-b.k</code>):"</
 
   <span class="token keyword">rule</span> isBlueOrYellow<span class="token punctuation">(</span>F<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> isBlue<span class="token punctuation">(</span>F<span class="token punctuation">)</span> orBool isYellow<span class="token punctuation">(</span>F<span class="token punctuation">)</span>
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>In the above example, Boolean <strong>inclusive or</strong> is performed via the <code>orBool</code>
 function, which is defined in the <code>BOOL</code> module. As a matter of convention,
 many functions over builtin sorts in K are suffixed with the name of the
@@ -341,7 +341,7 @@ syntax defined in the <code>BOOL</code> module.</p>
 to use the <code>Bool</code> sort while maintaining an idiomatic structure of modules
 and imports, for the first time including the rules to calculate the values of
 expressions themselves (<code>lesson-06-c.k</code>):</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">06</span><span class="token operator">-</span>C<span class="token operator">-</span>SYNTAX
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">06</span><span class="token operator">-</span>C<span class="token operator">-</span>SYNTAX
   <span class="token keyword">imports</span> BOOL<span class="token operator">-</span>SYNTAX
 
   <span class="token keyword">syntax</span> <span class="token keyword">Bool</span> <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">"("</span> <span class="token keyword">Bool</span> <span class="token string">")"</span> <span class="token punctuation">[</span><span class="token class-name">bracket</span><span class="token punctuation">]</span>
@@ -361,7 +361,7 @@ expressions themselves (<code>lesson-06-c.k</code>):</p>
   <span class="token keyword">rule</span> A <span class="token operator">^</span> B <span class="token operator">=&gt;</span> A xorBool B
   <span class="token keyword">rule</span> A <span class="token operator">||</span> B <span class="token operator">=&gt;</span> A orBool B
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>Note the encapsulation of syntax: the <code>LESSON-06-C-SYNTAX</code> module contains
 exactly the syntax of our Boolean expressions, and no more, whereas any other
 syntax needed to implement those functions is in the <code>LESSON-06-C</code> module
@@ -519,8 +519,8 @@ expressions changes. Why does this occur?</p>
             /> </picture
         ></a>
         <p class="mt-2 text-md-left copyright">
-          <a href="https://goo.gl/maps/hKLtCjeEd6yqfzwx5" target="_blank"
-            >1807 S Neil Street, Champaign, IL 61820</a
+          <a href="https://goo.gl/maps/TkuJSdoA3oNPpc486" target="_blank"
+            >301 N Neil St. Suite 412, Champaign, IL 61820</a
           >
         </p>
       </div>

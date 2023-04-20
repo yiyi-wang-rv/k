@@ -154,7 +154,7 @@
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/16_collections/">Lesson 1.16: Maps, Semantic Lists, and Sets</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/17_cell_multiplicity/">Lesson 1.17: Cell Multiplicity and Cell Collections</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/18_equality_and_conditionals/">Lesson 1.18: Term Equality and the Ternary Operator</a></div>
-<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB</a></div>
+<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB or LLDB</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/20_backends/">Lesson 1.20: K Backends and the Haskell Backend</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/21_symbolic_execution/">Lesson 1.21: Unification and Symbolic Execution</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/22_proofs/">Lesson 1.22: K Deductive Verification</a></div>
@@ -254,7 +254,7 @@
           class="col-12 col-md-6 col-xl-8 py-md-3 pl-md-5 bd-content"
           role="main"
         >
-          <div class="introduction markdown-preview"><!-- Copyright (c) 2010-2019 K Team. All Rights Reserved. --><html><head></head><body><h1 id="adding%2Fdeleting-cells-dynamically%3B-configuration-abstraction%2C-part-2">Adding/Deleting Cells Dynamically; Configuration Abstraction, Part 2</h1>
+          <div class="introduction markdown-preview"><html><head></head><body><h1 id="adding%2Fdeleting-cells-dynamically%3B-configuration-abstraction%2C-part-2">Adding/Deleting Cells Dynamically; Configuration Abstraction, Part 2</h1>
 <p>In this lesson we add dynamic thread creation and termination to IMP, and
 while doing so we learn how to define and use configurations whose structure
 can evolve dynamically.</p>
@@ -272,11 +272,11 @@ own environment. This can be elegantly achieved if we group the <code>&lt;k/&gt;
 moment during the execution of a program there could be zero, one or more
 instances of such a <code>&lt;thread/&gt;</code> cell in the configuration, it is a good idea
 to declare the <code>&lt;thread/&gt;</code> cell with multiplicity <code>*</code> (i.e., zero, one or more):</p>
-<pre><code>&lt;thread multiplicity="*" color="blue"&gt;
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>&lt;thread multiplicity="*" color="blue"&gt;
   &lt;k color="green"&gt; $PGM:Stmt &lt;/k&gt;
   &lt;env color="LightSkyBlue"&gt; .Map &lt;/env&gt;
 &lt;/thread&gt;
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 <p>This multiplicity declaration is not necessary, but it is a good idea to do
 it for several reasons:</p>
 <ol>
@@ -308,27 +308,27 @@ details. According to the configuration that we declared for our new
 language, there is only one reasonable way to complete rules like the lookup,
 namely to place the <code>&lt;k/&gt;</code> and <code>&lt;/env&gt;</code> cells inside a <code>&lt;thread/&gt;</code> cell,
 inside a <code>&lt;threads/&gt;</code> cell:</p>
-<pre><code>rule &lt;threads&gt;...
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>rule &lt;threads&gt;...
        &lt;thread&gt;...
          &lt;k&gt; X:Id =&gt; I ...&lt;/k&gt;
          &lt;env&gt;... X |-&gt; N ...&lt;/env&gt;
        ...&lt;/thread&gt;
      ...&lt;threads/&gt;
      &lt;store&gt;... N |-&gt; I ...&lt;/store&gt;  [lookup]
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>This is the most direct, compact and local way to complete the configuration
 context of the lookup rule. If for some reason you wanted here to match the
 <code>&lt;k/&gt;</code> cell of one thread and the <code>&lt;env/&gt;</code> cell of another thread, then you
 would need to explicitly tell K so, by mentioning the two thread cells,
 for example:</p>
-<pre><code>rule &lt;thread&gt;...
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>rule &lt;thread&gt;...
          &lt;k&gt; X:Id =&gt; I ...&lt;/k&gt;
      ...&lt;/thread&gt;
      &lt;thread&gt;...
          &lt;env&gt;... X |-&gt; N ...&lt;/env&gt;
      ...&lt;/thread&gt;
      &lt;store&gt;... N |-&gt; I ...&lt;/store&gt;  [lookup]
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>By default, K completes rules in a greedy style. Think this way: what is the
 minimal number of changes to my rule to make it fit the declared
 configuration? That's what the K tool will do.</p>
@@ -340,9 +340,9 @@ having to touch the rules. For example, it allows you to remove the
 <code>&lt;threads/&gt;</code> cell from the configuration, if you don't like it, without
 having to touch any rule.</p>
 <p>We are now ready to give the semantics of <code>spawn</code>:</p>
-<pre><code>rule &lt;k&gt; spawn S =&gt; . ...&lt;/k&gt; &lt;env&gt; Rho &lt;/env&gt;
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>rule &lt;k&gt; spawn S =&gt; . ...&lt;/k&gt; &lt;env&gt; Rho &lt;/env&gt;
      (. =&gt; &lt;thread&gt;... &lt;k&gt; S &lt;/k&gt; &lt;env&gt; Rho &lt;/env&gt; ...&lt;/thread&gt;)
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>Note configuration abstraction at work, again. Taking into account
 the declared configuration, and in particular the multiplicity information
 <code>*</code> in the <code>&lt;thread/&gt;</code> cell, the only reasonable way to complete the rule
@@ -355,9 +355,9 @@ cells within <code>&lt;thread/&gt;</code> as the language evolves, for example a
 or an exception stack, etc.</p>
 <p>In theory, we should be able to write the rule above even more compactly
 and modularly, namely as</p>
-<pre><code>rule &lt;k&gt; spawn S =&gt; . ...&lt;/k&gt; &lt;env&gt; Rho &lt;/env&gt;
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>rule &lt;k&gt; spawn S =&gt; . ...&lt;/k&gt; &lt;env&gt; Rho &lt;/env&gt;
      (. =&gt; &lt;k&gt; S &lt;/k&gt; &lt;env&gt; Rho &lt;/env&gt;)
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>Unfortunately, this currently does not work in the K tool, due to some
 known limitations of our current configuration abstraction algorithm.
 This latter rule would be more modular, because it would not even depend
@@ -366,8 +366,8 @@ on the cell name <code>thread</code>. For example, we may later decide to change
 We hope this current limitation will be eliminated soon.</p>
 <p>Once a thread terminates, its computation cell becomes empty. When that
 happens, we can go ahead and remove the useless <code>thread</code> cell:</p>
-<pre><code>rule &lt;thread&gt;... &lt;k&gt; . &lt;/k&gt; ...&lt;/thread&gt; =&gt; .  [structural]
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>rule &lt;thread&gt;... &lt;k&gt; . &lt;/k&gt; ...&lt;/thread&gt; =&gt; .  [structural]
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>Let's see what we've got. <code>kompile</code> and <code>krun</code> <code>spawn.imp</code>.
 Note the following:</p>
 <ul>
@@ -377,8 +377,8 @@ is not even the one obtained if the threads executed sequentially.</li>
 </ul>
 <p>Therefore, interesting behaviors may happen; we would like to see them all!</p>
 <p>Based on prior experience with <code>krun</code>'s search option, we would hope that</p>
-<pre><code>krun spawn.imp --search
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>krun spawn.imp --search
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>shows all the behaviors. However, the above does not work, for two reasons.</p>
 <p>First, <code>spawn.imp</code> is an interactive program, which reads a number from the
 standard input. When analyzing programs exhaustively using the search option,
@@ -388,8 +388,8 @@ is to pipe some input to <code>krun</code>: <code>krun</code> will flush the sta
 into the cells connected to it when creating the initial configuration (will
 do that no matter whether you run it with or without the <code>--search</code> option).
 For example:</p>
-<pre><code>echo 23 | krun spawn.imp --search
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>echo 23 | krun spawn.imp --search
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>puts <code>23</code> in the standard input buffer, which is then transferred in the
 <code>&lt;in/&gt;</code> cell as a list item, and then the exhaustive search procedure is
 invoked.</p>
@@ -425,8 +425,8 @@ the read rule needs to also be a transition, because it may complete with
 other instances of itself in other threads; assignment needs to also be a
 transition, and so should be the first rule for <code>print</code>.</p>
 <p>Let us now <code>kompile</code> with the transition option set as desired:</p>
-<pre><code>kompile imp --transition "lookup increment assignment read print"
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>kompile imp --transition "lookup increment assignment read print"
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>Now <code>echo 23 | krun spawn.imp --search</code> gives us all 12 behaviors of the
 <code>spawn.imp</code> program.</p>
 <p>Like for non-deterministically strict operations which can be tagged as
@@ -480,8 +480,8 @@ we add a <code>join</code> statement, which allows a thread to wait until anothe
             /> </picture
         ></a>
         <p class="mt-2 text-md-left copyright">
-          <a href="https://goo.gl/maps/hKLtCjeEd6yqfzwx5" target="_blank"
-            >1807 S Neil Street, Champaign, IL 61820</a
+          <a href="https://goo.gl/maps/TkuJSdoA3oNPpc486" target="_blank"
+            >301 N Neil St. Suite 412, Champaign, IL 61820</a
           >
         </p>
       </div>

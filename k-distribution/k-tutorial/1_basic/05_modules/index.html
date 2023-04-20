@@ -154,7 +154,7 @@
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/16_collections/">Lesson 1.16: Maps, Semantic Lists, and Sets</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/17_cell_multiplicity/">Lesson 1.17: Cell Multiplicity and Cell Collections</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/18_equality_and_conditionals/">Lesson 1.18: Term Equality and the Ternary Operator</a></div>
-<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB</a></div>
+<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB or LLDB</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/20_backends/">Lesson 1.20: K Backends and the Haskell Backend</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/21_symbolic_execution/">Lesson 1.21: Unification and Symbolic Execution</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/22_proofs/">Lesson 1.22: K Deductive Verification</a></div>
@@ -277,23 +277,23 @@ underscores, separated by a hyphen. Here are some valid module names: <code>FOO<
 <code>-FOO</code>, <code>BAR-</code>, <code>FOO--BAR</code>. Stylistically, modules names are usually all
 uppercase with hyphens separating words, but this is not strictly enforced.</p>
 <p>Some example modules include an empty module:</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">05</span><span class="token operator">-</span>A
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">05</span><span class="token operator">-</span>A
 
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <p>A module with some attributes:</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">05</span><span class="token operator">-</span>B <span class="token punctuation">[</span>attr1<span class="token punctuation">,</span> attr2<span class="token punctuation">,</span> attr3<span class="token punctuation">(</span>value<span class="token punctuation">)</span><span class="token punctuation">]</span>
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">05</span><span class="token operator">-</span>B <span class="token punctuation">[</span>attr1<span class="token punctuation">,</span> attr2<span class="token punctuation">,</span> attr3<span class="token punctuation">(</span>value<span class="token punctuation">)</span><span class="token punctuation">]</span>
 
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <p>A module with some sentences:</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">05</span><span class="token operator">-</span>C
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">05</span><span class="token operator">-</span>C
   <span class="token keyword">syntax</span> Boolean <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">"true"</span> <span class="token operator">|</span> <span class="token string">"false"</span>
   <span class="token keyword">syntax</span> Boolean <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">"not"</span> Boolean <span class="token punctuation">[</span>function<span class="token punctuation">]</span>
   <span class="token keyword">rule</span> not <span class="token boolean">true</span> <span class="token operator">=&gt;</span> <span class="token boolean">false</span>
   <span class="token keyword">rule</span> not <span class="token boolean">false</span> <span class="token operator">=&gt;</span> <span class="token boolean">true</span>
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h2 id="imports">Imports</h2>
 <p>Thus far we have only discussed definitions containing a single module.
 Definitions can also contain multiple modules, in which one module imports
@@ -301,7 +301,7 @@ others.</p>
 <p>An import in K appears at the top of a module, prior to any sentences. It can
 be specified with the <code>imports</code> keyword, followed by a module name.</p>
 <p>For example, here is a simple definition with two modules (<code>lesson-05-d.k</code>):</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">05</span><span class="token operator">-</span>D<span class="token operator">-</span><span class="token number">1</span>
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">05</span><span class="token operator">-</span>D<span class="token operator">-</span><span class="token number">1</span>
   <span class="token keyword">syntax</span> Boolean <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">"true"</span> <span class="token operator">|</span> <span class="token string">"false"</span>
   <span class="token keyword">syntax</span> Boolean <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">"not"</span> Boolean <span class="token punctuation">[</span>function<span class="token punctuation">]</span>
 <span class="token keyword">endmodule</span>
@@ -312,7 +312,7 @@ be specified with the <code>imports</code> keyword, followed by a module name.</
   <span class="token keyword">rule</span> not <span class="token boolean">true</span> <span class="token operator">=&gt;</span> <span class="token boolean">false</span>
   <span class="token keyword">rule</span> not <span class="token boolean">false</span> <span class="token operator">=&gt;</span> <span class="token boolean">true</span>
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>This K definition is equivalent to the definition expressed by the single module
 <code>LESSON-05-C</code>. Essentially, by importing a module, we include all of the
 sentences in the module being imported into the module that we import from.
@@ -332,7 +332,7 @@ of syntax. When parsing the sentences in a module, we use the syntax
 <strong>of that module</strong>, enriched with the basic syntax of K, in order to parse
 rules in that module. For example, the following definition is a parser error
 (<code>lesson-05-e.k</code>):</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">.k .error</div><code class="k error"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">05</span><span class="token operator">-</span>E<span class="token operator">-</span><span class="token number">1</span>
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">.k .error</div><code class="k error"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">05</span><span class="token operator">-</span>E<span class="token operator">-</span><span class="token number">1</span>
   <span class="token keyword">rule</span> not <span class="token boolean">true</span> <span class="token operator">=&gt;</span> <span class="token boolean">false</span>
   <span class="token keyword">rule</span> not <span class="token boolean">false</span> <span class="token operator">=&gt;</span> <span class="token boolean">true</span>
 <span class="token keyword">endmodule</span>
@@ -341,7 +341,7 @@ rules in that module. For example, the following definition is a parser error
   <span class="token keyword">syntax</span> Boolean <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">"true"</span> <span class="token operator">|</span> <span class="token string">"false"</span>
   <span class="token keyword">syntax</span> Boolean <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">"not"</span> Boolean <span class="token punctuation">[</span>function<span class="token punctuation">]</span>
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>This is because the syntax referenced in module <code>LESSON-05-E-1</code>, namely, <code>not</code>,
 <code>true</code>, and <code>false</code>, is not imported by that module. You can solve this problem
 by simply importing the modules containing the syntax you want to use in your
@@ -382,19 +382,19 @@ which <code>imports</code> statements can refer.</p>
 definition <code>lesson-02-c.k</code> from <a href="../02_basics/">Lesson 1.2</a> into
 multiple files and modules:</p>
 <p><code>colors.k</code>:</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> COLORS
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> COLORS
   <span class="token keyword">syntax</span> Color <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> Yellow<span class="token punctuation">(</span><span class="token punctuation">)</span>
                  <span class="token operator">|</span> Blue<span class="token punctuation">(</span><span class="token punctuation">)</span>
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 <p><code>fruits.k</code>:</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> FRUITS
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> FRUITS
   <span class="token keyword">syntax</span> Fruit <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> Banana<span class="token punctuation">(</span><span class="token punctuation">)</span>
                  <span class="token operator">|</span> Blueberry<span class="token punctuation">(</span><span class="token punctuation">)</span>
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 <p><code>colorOf.k</code>:</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">.k .exclude</div><code class="k exclude"><span class="token keyword">requires</span> <span class="token string">"fruits.k"</span>
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">.k .exclude</div><code class="k exclude"><span class="token keyword">requires</span> <span class="token string">"fruits.k"</span>
 <span class="token keyword">requires</span> <span class="token string">"colors.k"</span>
 
 <span class="token keyword">module</span> COLOROF<span class="token operator">-</span>SYNTAX
@@ -410,7 +410,7 @@ multiple files and modules:</p>
   <span class="token keyword">rule</span> colorOf<span class="token punctuation">(</span>Banana<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> Yellow<span class="token punctuation">(</span><span class="token punctuation">)</span>
   <span class="token keyword">rule</span> colorOf<span class="token punctuation">(</span>Blueberry<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> Blue<span class="token punctuation">(</span><span class="token punctuation">)</span>
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>You would then compile this definition with <code>kompile colorOf.k</code> and use it the
 same way as the original, single-module definition.</p>
 <h3 id="exercise-1">Exercise</h3>
@@ -581,8 +581,8 @@ fix the compiler error by passing <code>-I</code> to kompile.</p>
             /> </picture
         ></a>
         <p class="mt-2 text-md-left copyright">
-          <a href="https://goo.gl/maps/hKLtCjeEd6yqfzwx5" target="_blank"
-            >1807 S Neil Street, Champaign, IL 61820</a
+          <a href="https://goo.gl/maps/TkuJSdoA3oNPpc486" target="_blank"
+            >301 N Neil St. Suite 412, Champaign, IL 61820</a
           >
         </p>
       </div>

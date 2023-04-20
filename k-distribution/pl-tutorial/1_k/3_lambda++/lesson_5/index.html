@@ -154,7 +154,7 @@
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/16_collections/">Lesson 1.16: Maps, Semantic Lists, and Sets</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/17_cell_multiplicity/">Lesson 1.17: Cell Multiplicity and Cell Collections</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/18_equality_and_conditionals/">Lesson 1.18: Term Equality and the Ternary Operator</a></div>
-<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB</a></div>
+<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB or LLDB</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/20_backends/">Lesson 1.20: K Backends and the Haskell Backend</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/21_symbolic_execution/">Lesson 1.21: Unification and Symbolic Execution</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/22_proofs/">Lesson 1.22: K Deductive Verification</a></div>
@@ -254,7 +254,7 @@
           class="col-12 col-md-6 col-xl-8 py-md-3 pl-md-5 bd-content"
           role="main"
         >
-          <div class="introduction markdown-preview"><!-- Copyright (c) 2014-2019 K Team. All Rights Reserved. --><html><head></head><body><h1 id="more-semantic-computation-items">More Semantic Computation Items</h1>
+          <div class="introduction markdown-preview"><html><head></head><body><h1 id="more-semantic-computation-items">More Semantic Computation Items</h1>
 <p>In this lesson we see more examples of semantic (i.e., non-syntactic)
 computational items, and how useful they can be.  Specifically, we fix the
 environment-based definition of <code>callcc</code> and give an environment-based
@@ -265,10 +265,10 @@ environment, when a value was passed to the current continuation.  This is
 quite easy to fix: we modify <code>cc</code> to take both an environment and a
 computation, and its rules to take a snapshot of the current environment with
 it, and to recover it at invocation time:</p>
-<pre><code>syntax Val ::= cc(Map,K)
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>syntax Val ::= cc(Map,K)
 rule &lt;k&gt; (callcc V:Val =&gt; V cc(Rho,K)) ~&gt; K &lt;/k&gt; &lt;env&gt; Rho &lt;/env&gt;
 rule &lt;k&gt; cc(Rho,K) V:Val ~&gt; _ =&gt;  V ~&gt; K &lt;/k&gt; &lt;env&gt; _ =&gt; Rho &lt;/env&gt;
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <p>Let us kompile and make sure it works with the <code>callcc-env2.lambda</code> program,
 which should evaluate to 3, not to 4.</p>
 <p>Note that the <code>cc</code> value, which can be used as a computation item in the <code>&lt;k/&gt;</code>
@@ -276,22 +276,22 @@ cell, is now quite semantic in nature, pretty much the same as the closures.</p>
 <p>Let us next add one more closure-like semantic computational item, for <code>mu</code>.
 But before that, let us reuse the semantics of <code>letrec</code> in terms of <code>mu</code> that
 was defined in Lesson 8 of Part 1 of the tutorial on LAMBDA:</p>
-<pre><code>syntax Exp ::= "letrec" Id Id "=" Exp "in" Exp [macro]
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>syntax Exp ::= "letrec" Id Id "=" Exp "in" Exp [macro]
              | "mu" Id "." Exp                 [latex(\mu{#1}.{#2})]
 rule letrec F:Id X = E in E' =&gt; let F = mu F . lambda X . E in E'
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <p>We removed the <code>binder</code> annotation of <code>mu</code>, because it is not necessary
 anymore (since we do not work with substitutions anymore).</p>
 <p>To save the number of locations needed to evaluate <code>mu X . E</code>, let us replace
 it with a special closure which already binds <code>X</code> to a fresh location holding
 the closure itself:</p>
-<pre><code>syntax Exp ::= muclosure(Map,Exp)
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>syntax Exp ::= muclosure(Map,Exp)
 
 rule &lt;k&gt; mu X . E =&gt; muclosure(Rho[X &lt;- !N], E) ...&lt;/k&gt;
      &lt;env&gt; Rho &lt;/env&gt;
      &lt;store&gt;... .Map =&gt; (!N:Int |-&gt; muclosure(Rho[X &lt;- !N], E)) ...&lt;/store&gt;
   [structural]
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>Since each time <code>mu X . E</code> is encountered during the evaluation it needs to
 evaluate <code>E</code>, we conclude that <code>muclosure</code> cannot be a value.  We can declare
 it as either an expression or as a computation.  Let's go with the former.</p>
@@ -356,8 +356,8 @@ generate its documentation.</p>
             /> </picture
         ></a>
         <p class="mt-2 text-md-left copyright">
-          <a href="https://goo.gl/maps/hKLtCjeEd6yqfzwx5" target="_blank"
-            >1807 S Neil Street, Champaign, IL 61820</a
+          <a href="https://goo.gl/maps/TkuJSdoA3oNPpc486" target="_blank"
+            >301 N Neil St. Suite 412, Champaign, IL 61820</a
           >
         </p>
       </div>

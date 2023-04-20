@@ -154,7 +154,7 @@
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/16_collections/">Lesson 1.16: Maps, Semantic Lists, and Sets</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/17_cell_multiplicity/">Lesson 1.17: Cell Multiplicity and Cell Collections</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/18_equality_and_conditionals/">Lesson 1.18: Term Equality and the Ternary Operator</a></div>
-<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB</a></div>
+<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB or LLDB</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/20_backends/">Lesson 1.20: K Backends and the Haskell Backend</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/21_symbolic_execution/">Lesson 1.21: Unification and Symbolic Execution</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/22_proofs/">Lesson 1.22: K Deductive Verification</a></div>
@@ -267,7 +267,7 @@ evaluate to true in order for the rule to apply.</p>
 <p>Side conditions in K are introduced via the <code>requires</code> keyword immediately
 following the rule body. For example, here is a rule with a side condition
 (<code>lesson-07-a.k</code>):</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">07</span><span class="token operator">-</span>A
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">07</span><span class="token operator">-</span>A
   <span class="token keyword">imports</span> BOOL
   <span class="token keyword">imports</span> INT
 
@@ -280,7 +280,7 @@ following the rule body. For example, here is a rule with a side condition
 
   <span class="token keyword">rule</span> gradeFromPercentile<span class="token punctuation">(</span>I<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> letter<span class="token operator">-</span>A <span class="token keyword">requires</span> I <span class="token operator">&gt;=</span><span class="token keyword">Int</span> <span class="token number">90</span>
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>In this case, the <code>gradeFromPercentile</code> function takes a single integer
 argument. The function evaluates to <code>letter-A</code> if the argument passed is
 greater than 90. Note that the side condition is allowed to refer to variables
@@ -320,7 +320,7 @@ two Boolean comparisons to the rule we wrote to handle <code>letter-B</code> gra
 However, in practice this meant that we compare the percentile to 90 twice. We
 can more efficiently and more idiomatically write the <code>letter-B</code> case for the
 <code>gradeFromPercentile</code> rule using the <code>owise</code> attribute (<code>lesson-07-b.k</code>):</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">07</span><span class="token operator">-</span>B
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">07</span><span class="token operator">-</span>B
   <span class="token keyword">imports</span> BOOL
   <span class="token keyword">imports</span> INT
 
@@ -334,7 +334,7 @@ can more efficiently and more idiomatically write the <code>letter-B</code> case
   <span class="token keyword">rule</span> gradeFromPercentile<span class="token punctuation">(</span>I<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> letter<span class="token operator">-</span>A <span class="token keyword">requires</span> I <span class="token operator">&gt;=</span><span class="token keyword">Int</span> <span class="token number">90</span>
   <span class="token keyword">rule</span> gradeFromPercentile<span class="token punctuation">(</span>I<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> letter<span class="token operator">-</span>B <span class="token keyword">requires</span> I <span class="token operator">&gt;=</span><span class="token keyword">Int</span> <span class="token number">80</span> <span class="token punctuation">[</span>owise<span class="token punctuation">]</span>
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>This rule is saying, "if all the other rules do not apply, then the grade is a
 B if the percentile is greater than or equal to 80." Note here that we use both
 a side condition and an <code>owise</code> attribute on the same rule. This is not
@@ -364,7 +364,7 @@ cause <code>owise</code> rules to be tried after regular rules.</p>
 via the <code>priority</code> attribute. For example, here is an alternative way
 we could express the same two rules in the <code>gradeFromPercentile</code> function
 (<code>lesson-07-c.k</code>):</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">07</span><span class="token operator">-</span>C
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">07</span><span class="token operator">-</span>C
   <span class="token keyword">imports</span> BOOL
   <span class="token keyword">imports</span> INT
 
@@ -378,11 +378,11 @@ we could express the same two rules in the <code>gradeFromPercentile</code> func
   <span class="token keyword">rule</span> gradeFromPercentile<span class="token punctuation">(</span>I<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> letter<span class="token operator">-</span>A <span class="token keyword">requires</span> I <span class="token operator">&gt;=</span><span class="token keyword">Int</span> <span class="token number">90</span> <span class="token punctuation">[</span>priority<span class="token punctuation">(</span><span class="token number">50</span><span class="token punctuation">)</span><span class="token punctuation">]</span>
   <span class="token keyword">rule</span> gradeFromPercentile<span class="token punctuation">(</span>I<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> letter<span class="token operator">-</span>B <span class="token keyword">requires</span> I <span class="token operator">&gt;=</span><span class="token keyword">Int</span> <span class="token number">80</span> <span class="token punctuation">[</span>priority<span class="token punctuation">(</span><span class="token number">200</span><span class="token punctuation">)</span><span class="token punctuation">]</span>
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>We can, of course, assign a priority equal to any non-negative integer. For
 example, here is a more complex example that handles the remaining grades
 (<code>lesson-07-d.k</code>):</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">07</span><span class="token operator">-</span>D
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">07</span><span class="token operator">-</span>D
   <span class="token keyword">imports</span> BOOL
   <span class="token keyword">imports</span> INT
 
@@ -399,7 +399,7 @@ example, here is a more complex example that handles the remaining grades
   <span class="token keyword">rule</span> gradeFromPercentile<span class="token punctuation">(</span>I<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> letter<span class="token operator">-</span>D <span class="token keyword">requires</span> I <span class="token operator">&gt;=</span><span class="token keyword">Int</span> <span class="token number">60</span> <span class="token punctuation">[</span>priority<span class="token punctuation">(</span><span class="token number">53</span><span class="token punctuation">)</span><span class="token punctuation">]</span>
   <span class="token keyword">rule</span> gradeFromPercentile<span class="token punctuation">(</span>_<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> letter<span class="token operator">-</span>F                     <span class="token punctuation">[</span>priority<span class="token punctuation">(</span><span class="token number">54</span><span class="token punctuation">)</span><span class="token punctuation">]</span>
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>Note that we have introduced a new piece of syntax here: <code>_</code>. This is actually
 just a variable. However, as a special case, when a variable is named <code>_</code>, it
 does not bind a value that can be used on the right-hand side of the rule, or
@@ -427,6 +427,11 @@ integer operations.</p>
 by zero will no longer make <code>krun</code> crash with a "Divison by zero" exception.
 Instead, the <code>/</code> function should not match any of its rules if the denominator
 is zero.</p>
+</li>
+<li>
+<p>Write your own implementation of <code>==</code>, <code>&lt;</code>, <code>&lt;=</code>, <code>&gt;</code>, <code>&gt;=</code> for integers and modify your solution from Exercise 2 to use it.
+You can use any arithmetic operations in the <code>INT</code> module, but do not use any built-in boolean functions for comparing integers.</p>
+<p>Hint: Use pattern matching and recursive definitions with rule priorities.</p>
 </li>
 </ol>
 <h2 id="next-lesson">Next lesson</h2>
@@ -527,8 +532,8 @@ is zero.</p>
             /> </picture
         ></a>
         <p class="mt-2 text-md-left copyright">
-          <a href="https://goo.gl/maps/hKLtCjeEd6yqfzwx5" target="_blank"
-            >1807 S Neil Street, Champaign, IL 61820</a
+          <a href="https://goo.gl/maps/TkuJSdoA3oNPpc486" target="_blank"
+            >301 N Neil St. Suite 412, Champaign, IL 61820</a
           >
         </p>
       </div>

@@ -154,7 +154,7 @@
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/16_collections/">Lesson 1.16: Maps, Semantic Lists, and Sets</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/17_cell_multiplicity/">Lesson 1.17: Cell Multiplicity and Cell Collections</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/18_equality_and_conditionals/">Lesson 1.18: Term Equality and the Ternary Operator</a></div>
-<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB</a></div>
+<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB or LLDB</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/20_backends/">Lesson 1.20: K Backends and the Haskell Backend</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/21_symbolic_execution/">Lesson 1.21: Unification and Symbolic Execution</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/22_proofs/">Lesson 1.22: K Deductive Verification</a></div>
@@ -254,7 +254,7 @@
           class="col-12 col-md-6 col-xl-8 py-md-3 pl-md-5 bd-content"
           role="main"
         >
-          <div class="introduction markdown-preview"><!-- Copyright (c) 2012-2019 K Team. All Rights Reserved. --><html><head></head><body><h1 id="semantic-(non-syntactic)-computation-items">Semantic (Non-Syntactic) Computation Items</h1>
+          <div class="introduction markdown-preview"><html><head></head><body><h1 id="semantic-(non-syntactic)-computation-items">Semantic (Non-Syntactic) Computation Items</h1>
 <p>In this lesson we start another semantic definition of LAMBDA++, which
 follows a style based on environments instead of substitution.  In terms of
 K, we will learn how easy it is to add new items to the syntactic category
@@ -266,19 +266,19 @@ available when we evaluate expressions telling where the variables are
 located in the store.  Since LAMBDA++ is a relatively simple language, we
 only need to maintain one global environment.  Following a similar style
 like in IMP, we place all cells into a top cell <code>T</code>:</p>
-<pre><code>configuration &lt;T&gt;
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>configuration &lt;T&gt;
                 &lt;k&gt; $PGM:Exp &lt;/k&gt;
                 &lt;env&gt; .Map &lt;/env&gt;
                 &lt;store&gt; .Map &lt;/store&gt;
               &lt;/T&gt;
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>Recall that <code>$PGM</code> is where the program is placed by <code>krun</code> after parsing.  So
 the program execution starts with an empty environment and an empty store.</p>
 <p>In environment-based definitions of lambda-calculi, lambda abstractions
 evaluate to so-called <em>closures</em>:</p>
-<pre><code>rule &lt;k&gt; lambda X:Id . E =&gt; closure(Rho,X,E) ...&lt;/k&gt;
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>rule &lt;k&gt; lambda X:Id . E =&gt; closure(Rho,X,E) ...&lt;/k&gt;
      &lt;env&gt; Rho &lt;/env&gt;
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>A closure is like a lambda abstraction, but it also holds the environment
 in which it was declared.  This way, when invoked, a closure knows where to
 find in the store the values of all the variables that its body expression
@@ -300,10 +300,10 @@ new, or fresh, binding for the closure's parameter to the value passed to the
 closure, then evaluate the closure's body, and then switch back to the
 caller's environment, which needs to be stored somewhere in the meanwhile.
 We can do all these with one rule:</p>
-<pre><code>rule &lt;k&gt; closure(Rho,X,E) V:Val =&gt; E ~&gt; Rho' ...&lt;/k&gt;
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>rule &lt;k&gt; closure(Rho,X,E) V:Val =&gt; E ~&gt; Rho' ...&lt;/k&gt;
      &lt;env&gt; Rho' =&gt; Rho[X &lt;- !N] &lt;/env&gt;
      &lt;store&gt;... .Map =&gt; (!N:Int |-&gt; V) ...&lt;/store&gt;
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <p>Therefore, we atomically do all the following:</p>
 <ul>
 <li>switch the computation to the closure's body, <code>E</code>, followed by a
@@ -337,10 +337,10 @@ even from execution to execution with the same version.  All you can rely
 on is that each newly generated element is distinct from the previously
 generated elements for the same syntactic category.</p>
 <p>Unlike in the substitution-based definition, we now also need a lookup rule:</p>
-<pre><code>rule &lt;k&gt; X =&gt; V ...&lt;/k&gt;
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>rule &lt;k&gt; X =&gt; V ...&lt;/k&gt;
      &lt;env&gt;... X |-&gt; N ...&lt;/env&gt;
      &lt;store&gt;... N |-&gt; V ...&lt;/store&gt;
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <p>This rule speaks for itself: replace <code>X</code> by the value <code>V</code> located in the store
 at <code>X</code>'s location <code>N</code> in the current environment.</p>
 <p>The only thing left to define is the auxiliary environment-recovery operation:</p>
@@ -351,15 +351,15 @@ and dissolve <code>Rho</code> from the computation.</p>
 <p>Before we kompile, let us make this rule and the lambda evaluation rule
 structural, because we do not want these to count as transitions.</p>
 <p>Let us kompile and ... fail:</p>
-<pre><code>kompile lambda
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>kompile lambda
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>gives a parsing error saying that <code>V:Val</code> does not fit there in the closure
 invocation rule.  That's because <code>Val</code> and <code>Exp</code> are currently completely
 disconnected, so K rightfully complains that we want to apply a value to
 another one, because application was defined to work with expressions, not
 values.  What we forgot here was to state that <code>Exp</code> includes <code>Val</code>:</p>
-<pre><code>syntax Exp ::= Val
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>syntax Exp ::= Val
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>Now everything works, but it is a good time to reflect a bit.</p>
 <p>So we added closures, which are inherently semantic entities, to the syntax
 of expressions.  Does that mean that we can now write LAMBDA programs with
@@ -448,8 +448,8 @@ of the other constructs do not need to change, as seen in the next lesson.</p>
             /> </picture
         ></a>
         <p class="mt-2 text-md-left copyright">
-          <a href="https://goo.gl/maps/hKLtCjeEd6yqfzwx5" target="_blank"
-            >1807 S Neil Street, Champaign, IL 61820</a
+          <a href="https://goo.gl/maps/TkuJSdoA3oNPpc486" target="_blank"
+            >301 N Neil St. Suite 412, Champaign, IL 61820</a
           >
         </p>
       </div>

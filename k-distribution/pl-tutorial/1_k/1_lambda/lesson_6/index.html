@@ -154,7 +154,7 @@
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/16_collections/">Lesson 1.16: Maps, Semantic Lists, and Sets</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/17_cell_multiplicity/">Lesson 1.17: Cell Multiplicity and Cell Collections</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/18_equality_and_conditionals/">Lesson 1.18: Term Equality and the Ternary Operator</a></div>
-<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB</a></div>
+<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB or LLDB</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/20_backends/">Lesson 1.20: K Backends and the Haskell Backend</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/21_symbolic_execution/">Lesson 1.21: Unification and Symbolic Execution</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/22_proofs/">Lesson 1.22: K Deductive Verification</a></div>
@@ -254,7 +254,7 @@
           class="col-12 col-md-6 col-xl-8 py-md-3 pl-md-5 bd-content"
           role="main"
         >
-          <div class="introduction markdown-preview"><!-- Copyright (c) 2012-2019 K Team. All Rights Reserved. --><html><head></head><body><h1 id="selective-strictness%3B-anonymous-variables">Selective Strictness; Anonymous Variables</h1>
+          <div class="introduction markdown-preview"><html><head></head><body><h1 id="selective-strictness%3B-anonymous-variables">Selective Strictness; Anonymous Variables</h1>
 <p>We here show how to define selective strictness of language constructs,
 that is, how to state that certain language constructs are strict only
 in some arguments.  We also show how to use anonymous variables.</p>
@@ -264,14 +264,14 @@ third, depending on whether the first one evaluated to true or to false.</p>
 <p>K allows to define selective strictness using the same <code>strict</code> attribute,
 but passing it a list of numbers.  The numbers correspond to the arguments
 in which we want the defined construct to be strict.  In our case,</p>
-<pre><code>syntax Exp ::= "if" Exp "then" Exp "else" Exp   [strict(1)]
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>syntax Exp ::= "if" Exp "then" Exp "else" Exp   [strict(1)]
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>states that the conditional construct is strict in the first argument.</p>
 <p>We can now assume that its first argument will eventually reduce to a value, so
 we only write the following two semantic rules:</p>
-<pre><code>rule if true  then E else _ =&gt; E
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>rule if true  then E else _ =&gt; E
 rule if false then _ else E =&gt; E
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>Thus, we assume that the first argument evaluates to either <code>true</code> or <code>false</code>.</p>
 <p>Note the use of the anonymous variable <code>_</code>.  We use such variables purely for
 structural reasons, to state that something is there but we don't care what.
@@ -280,8 +280,8 @@ which is unsorted and different from all the other variables in the rule.  If
 you use <code>_</code> multiple times in a rule, they will all be considered distinct.</p>
 <p>Compile <code>lambda.k</code> and write and execute some interesting expressions making
 use of the conditional construct.  For example, the expression</p>
-<pre><code>if 2&lt;=1 then 3/0 else 10
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>if 2&lt;=1 then 3/0 else 10
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>evaluates to <code>10</code> and will never evaluate <code>3/0</code>, thus avoiding an unwanted
 division-by-zero.</p>
 <p>In the next lesson we will introduce two new language constructs, called
@@ -332,8 +332,8 @@ languages, which will allow us to already write interesting LAMBDA programs.</p>
             /> </picture
         ></a>
         <p class="mt-2 text-md-left copyright">
-          <a href="https://goo.gl/maps/hKLtCjeEd6yqfzwx5" target="_blank"
-            >1807 S Neil Street, Champaign, IL 61820</a
+          <a href="https://goo.gl/maps/TkuJSdoA3oNPpc486" target="_blank"
+            >301 N Neil St. Suite 412, Champaign, IL 61820</a
           >
         </p>
       </div>

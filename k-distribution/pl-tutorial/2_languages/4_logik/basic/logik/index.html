@@ -154,7 +154,7 @@
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../../k-distribution/k-tutorial/1_basic/16_collections/">Lesson 1.16: Maps, Semantic Lists, and Sets</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../../k-distribution/k-tutorial/1_basic/17_cell_multiplicity/">Lesson 1.17: Cell Multiplicity and Cell Collections</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../../k-distribution/k-tutorial/1_basic/18_equality_and_conditionals/">Lesson 1.18: Term Equality and the Ternary Operator</a></div>
-<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB</a></div>
+<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB or LLDB</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../../k-distribution/k-tutorial/1_basic/20_backends/">Lesson 1.20: K Backends and the Haskell Backend</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../../k-distribution/k-tutorial/1_basic/21_symbolic_execution/">Lesson 1.21: Unification and Symbolic Execution</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../../k-distribution/k-tutorial/1_basic/22_proofs/">Lesson 1.22: K Deductive Verification</a></div>
@@ -267,11 +267,11 @@ clarity, not on advanced logic programming features or performance.
 Those are covered in the LOGIK++ extension under <code>examples/logik++</code>.</p>
 <p>Specifically, a LOGIK program consists of a sequence of <strong>Horn clauses</strong>
 of the form</p>
-<pre><code>P :- P1, P2, ..., Pn .
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>P :- P1, P2, ..., Pn .
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>followed by a <strong>query</strong> of the form</p>
-<pre><code>?- Q1, Q2, ..., Qm .
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>?- Q1, Q2, ..., Qm .
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>where <code>P</code>, <code>P1</code>, <code>P2</code>, ..., <code>Pn</code>, <code>Q1</code>, <code>Q2</code>,
 ..., <code>Qm</code> are <strong>literals</strong>.  The
 symbol <code>:-</code> is read "if".  A literal has the form
@@ -289,7 +289,7 @@ without <code>:-</code>, that is, <code>P.</code> instead of <code>P :- .</code>
 predicates including an <code>ancestor</code> predicate, and finally a
 query asking for those who both have ancestors and are ancestors
 themselves in the <code>parent</code> relation:</p>
-<pre><code>parent(david,john).
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>parent(david,john).
 parent(jim,david).
 parent(steve,jim).
 parent(nathan,steve).
@@ -309,7 +309,7 @@ parents(A,B):-
 both(X) :- ancestor(A,X), ancestor(X,B).
 
 ?- both(X).
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>Above, we only have constant operation symbols, so these and variables
 are the only terms that can be used in predicates.  As expected, the
 LOGIK program above will give us three solutions for <code>X</code>:
@@ -321,11 +321,11 @@ query with <code>?- ancestor(A,X), ancestor(X,B).</code> then we get
 <code>ancestor(X,B)</code>.</p>
 <p>As another example, the program below defines an <code>append</code>
 predicate followed by a simple goal:</p>
-<pre><code>append(nil,L,L).
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>append(nil,L,L).
 append(cons(H,T),L,cons(H,Z)) :- append(T,L,Z).
 
 ?- append(cons(a,nil), cons(b,nil), V).
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 <p>Besides the predicate symbol <code>append</code>, the program above also
 includes a constant symbol <code>nil</code> and a binary operation symbol
 <code>cons</code>.  Additionally, the query also includes two more
@@ -333,8 +333,8 @@ constants, <code>a</code> and <code>b</code>.  The capitalized identifiers are
 all variables.  As expected, the LOGIK program above yields only one
 solution, namely <code>V = cons(a,cons(b,nil))</code>.  On the other hand,
 if we change the query to:</p>
-<pre><code>?- append(L1, cons(a,L2), cons(a,cons(b,cons(a,nil)))).
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>?- append(L1, cons(a,L2), cons(a,cons(b,cons(a,nil)))).
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>then LOGIK yields two solutions: one where <code>L1</code> is
 <code>cons(a,cons(b,nil))</code> and <code>L2</code> is <code>nil</code>,
 and another where <code>L1</code> is <code>nil</code> and <code>L2</code> is
@@ -342,8 +342,8 @@ and another where <code>L1</code> is <code>nil</code> and <code>L2</code> is
 <p>The programs above all generated <strong>ground solutions</strong>, that is,
 solutions where the query variables are mapped to ground terms (i.e.,
 terms without variables).  Let us now consider the following query:</p>
-<pre><code>?- append(cons(a,nil), Y, Z).
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>?- append(cons(a,nil), Y, Z).
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>There are obviously infinitely many ground solutions for the query
 above, e.g.,<br>
 <code>Y = nil</code> and <code>Z = cons(a,nil)</code>,<br>
@@ -372,8 +372,8 @@ Specifically, to find all the solutions of a LOGIK program, we have to
 use <code>krun</code> with the option <code>--search</code>.  However, note
 that some programs have infinitely many solutions which cannot relate
 to each other by the "more general" relation.  For example, the query</p>
-<pre><code>?- append(L1, cons(a,L2), L3) .
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>?- append(L1, cons(a,L2), L3) .
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>To address such cases and terminate, logic programming languages allow
 the user to choose how many solutions to be computed and displayed.
 In LOGIK, we can use the <code>--bound</code> option of <code>krun</code> for
@@ -381,26 +381,26 @@ this purpose.</p>
 <p>Finally, note that some queries have no solution.  In some cases that
 is easy to detect by exhaustive analysis, such as for the following
 query:</p>
-<pre><code>?- append(cons(a,L1), L2, cons(b,L3)).
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>?- append(cons(a,L1), L2, cons(b,L3)).
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>Logic programming languages, including LOGIK, terminate in such cases
 and report a no solution answer.  However, there are cases where
 exhaustive analysis is not sufficient, such as for the query:</p>
-<pre><code>?- append(cons(a,L), nil, L).
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>?- append(cons(a,L), nil, L).
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>In such cases, logic programming languages do not terminate.  While
 one may devise techniques to detect non-termination in some cases,
 one cannot do it in general (same like for all Turing-complete
 languages).</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">require</span> <span class="token string">"unification.k"</span>
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">require</span> <span class="token string">"unification.k"</span>
 
 <span class="token keyword">module</span> LOGIK<span class="token operator">-</span>COMMON
   <span class="token keyword">imports</span> DOMAINS<span class="token operator">-</span>SYNTAX
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 <h2 id="syntax">Syntax</h2>
 <p>The syntax of LOGIK is straightforward: a program is a sequence of
 Horn clauses followed by a query:</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k">  <span class="token keyword">syntax</span> Literal
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k">  <span class="token keyword">syntax</span> Literal
   <span class="token keyword">syntax</span> Term <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> Literal <span class="token operator">|</span> Literal <span class="token string">"("</span> Terms <span class="token string">")"</span>
   <span class="token keyword">syntax</span> Terms <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> List<span class="token punctuation">{</span>Term<span class="token punctuation">,</span><span class="token string">","</span><span class="token punctuation">}</span>
   <span class="token keyword">syntax</span> Clause <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> Term <span class="token string">":-"</span> Terms <span class="token string">"."</span> <span class="token operator">|</span> Term <span class="token string">"."</span>
@@ -411,11 +411,11 @@ Horn clauses followed by a query:</p>
 <span class="token keyword">module</span> LOGIK<span class="token operator">-</span>SYNTAX
   <span class="token keyword">imports</span> LOGIK<span class="token operator">-</span>COMMON
   <span class="token keyword">imports</span> BUILTIN<span class="token operator">-</span>ID<span class="token operator">-</span>TOKENS
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>Variables and literals are defined as tokens following the conventions
 used in Prolog (variables start with _ or capital letter, while literals
 start with lower case letters):</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k">  <span class="token keyword">syntax</span> #KVariable <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> r<span class="token string">"[A-Z_][A-Za-z0-9_]*"</span>   <span class="token punctuation">[</span><span class="token class-name">token</span><span class="token punctuation">,</span> prec<span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">]</span>
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k">  <span class="token keyword">syntax</span> #KVariable <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> r<span class="token string">"[A-Z_][A-Za-z0-9_]*"</span>   <span class="token punctuation">[</span><span class="token class-name">token</span><span class="token punctuation">,</span> prec<span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">]</span>
                       <span class="token operator">|</span> #UpperId                 <span class="token punctuation">[</span><span class="token class-name">token</span><span class="token punctuation">]</span>
   <span class="token keyword">syntax</span> Term <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> #KVariable <span class="token punctuation">[</span><span class="token class-name">klabel</span><span class="token punctuation">(</span>#SemanticCastToTerm<span class="token punctuation">)</span><span class="token punctuation">]</span>
   <span class="token keyword">syntax</span> Literal <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> r<span class="token string">"[a-z][a-zA-Z0-9_]*"</span>                 <span class="token punctuation">[</span><span class="token class-name">token</span><span class="token punctuation">]</span>
@@ -426,7 +426,7 @@ start with lower case letters):</p>
   <span class="token keyword">imports</span> LOGIK<span class="token operator">-</span>COMMON
   <span class="token keyword">imports</span> DOMAINS
   <span class="token keyword">imports</span> UNIFICATION
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>Unification is at the core of logic programming.  Here we are
 going to use the predefined unification procedure (the same one we
 used in the type inferencers in Tutorial 5).</p>
@@ -440,7 +440,7 @@ second top-level cell, <code>solution</code>.  Both top cells are
 optional.  Indeed, we start with the main top cell and, when a
 solution is found, we move it into the <code>solution</code> cell and
 discard the main cell.</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k">  <span class="token keyword">configuration</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>T</span> <span class="token attr-name">color</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>yellow<span class="token punctuation">"</span></span> <span class="token attr-name">multiplicity</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>?<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k">  <span class="token keyword">configuration</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>T</span> <span class="token attr-name">color</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>yellow<span class="token punctuation">"</span></span> <span class="token attr-name">multiplicity</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>?<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
                   <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span> <span class="token attr-name">color</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>green<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span> $PGM<span class="token punctuation">:</span>Pgm <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>
                   <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>fresh</span> <span class="token attr-name">color</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>orange<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span> <span class="token punctuation">.</span>K <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>fresh</span><span class="token punctuation">&gt;</span></span>
                   <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>clauses</span> <span class="token attr-name">color</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>red<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
@@ -449,7 +449,7 @@ discard the main cell.</p>
                   <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>mgu</span><span class="token punctuation">&gt;</span></span> <span class="token punctuation">.</span>K <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>mgu</span><span class="token punctuation">&gt;</span></span>
                 <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>T</span><span class="token punctuation">&gt;</span></span>
                 <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>solution</span> <span class="token attr-name">multiplicity</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>?<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span> <span class="token punctuation">.</span>K <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>solution</span><span class="token punctuation">&gt;</span></span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h2 id="pre--and-post-processing">Pre- and post-processing</h2>
 <p>Before we launch the semantics, we first scan the given program and
 place each clause in its own cell, and then place the query in the
@@ -466,34 +466,34 @@ clause is similar to how we created fresh instances of type schemas in
 the higher-order type inferencer discussed in Tutorial 5.  Indeed, we
 can safely regard clauses as "clause schemas" comprising infinitely
 many instances, one for each context.</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k">  <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> C<span class="token punctuation">:</span>Clause Pgm <span class="token operator">=&gt;</span> Pgm <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k">  <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> C<span class="token punctuation">:</span>Clause Pgm <span class="token operator">=&gt;</span> Pgm <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>
        <span class="token punctuation">(</span><span class="token punctuation">.</span>Bag <span class="token operator">=&gt;</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>clause</span><span class="token punctuation">&gt;</span></span> #renameVariables<span class="token punctuation">(</span>C<span class="token punctuation">)</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>clause</span><span class="token punctuation">&gt;</span></span><span class="token punctuation">)</span>
 
   <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> <span class="token operator">?</span><span class="token operator">-</span> Ls<span class="token punctuation">:</span>Terms<span class="token punctuation">.</span> <span class="token operator">=&gt;</span> Ls <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>
        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>mgu</span><span class="token punctuation">&gt;</span></span> _ <span class="token operator">=&gt;</span> #variablesMap<span class="token punctuation">(</span>#variables<span class="token punctuation">(</span>Ls<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>mgu</span><span class="token punctuation">&gt;</span></span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>We also sequentialize the goals for easier processing:</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k">  <span class="token keyword">rule</span> L<span class="token punctuation">:</span>Term<span class="token punctuation">,</span> Ls<span class="token punctuation">:</span>Terms <span class="token operator">=&gt;</span> L <span class="token operator">~&gt;</span> Ls
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k">  <span class="token keyword">rule</span> L<span class="token punctuation">:</span>Term<span class="token punctuation">,</span> Ls<span class="token punctuation">:</span>Terms <span class="token operator">=&gt;</span> L <span class="token operator">~&gt;</span> Ls
   <span class="token keyword">rule</span> <span class="token punctuation">.</span>Terms <span class="token operator">=&gt;</span> <span class="token punctuation">.</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>When all the goals are solved, indicated by the empty <code>k</code>
 cell, the calculated most general unifier (mgu) is in the <code>mgu</code>
 cell.  In that case, to ease reading of the final solution we move the
 mgu in the <code>solution</code> cell and delete the rest of the
 configuration:</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>T</span><span class="token punctuation">&gt;</span></span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> <span class="token punctuation">.</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>mgu</span><span class="token punctuation">&gt;</span></span> Theta <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>mgu</span><span class="token punctuation">&gt;</span></span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>T</span><span class="token punctuation">&gt;</span></span>
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>T</span><span class="token punctuation">&gt;</span></span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> <span class="token punctuation">.</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>mgu</span><span class="token punctuation">&gt;</span></span> Theta <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>mgu</span><span class="token punctuation">&gt;</span></span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>T</span><span class="token punctuation">&gt;</span></span>
   <span class="token operator">=&gt;</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>solution</span><span class="token punctuation">&gt;</span></span> Theta <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>solution</span><span class="token punctuation">&gt;</span></span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>Since we are not interested in seeing the failed attempts to solve
 the query, we collapse all the error configurations into an empty
 configuration (recall that both top-level cells in the configuration
 were declared optional).  This way, if we see an empty configuration
 when we search for all solutions, we know that some attempts failed
 (but we do not know which ones).</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token comment">// this would be nice, but we need feedback from the external unifier</span>
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token comment">// this would be nice, but we need feedback from the external unifier</span>
 <span class="token comment">// for this.</span>
 <span class="token comment">//  rule &lt;T&gt;... &lt;mgu&gt; _:MguError &lt;/mgu&gt; ...&lt;/T&gt; =&gt; .</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <h2 id="semantics">Semantics</h2>
 <p>Once all the infrastructure is in place, the actual semantics of LOGIK
 is quite simple.  All we have to do is to pick some (fresh instance of
@@ -513,7 +513,7 @@ which unifies with the first goal item, then add its conditions as new
 goals.</p>
 <p>Pick a clause and generate a fresh instance of it when the
 <code>fresh</code> cell is empty:</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k">  <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>fresh</span><span class="token punctuation">&gt;</span></span> <span class="token punctuation">.</span> <span class="token operator">=&gt;</span> #renameVariables<span class="token punctuation">(</span>C<span class="token punctuation">)</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>fresh</span><span class="token punctuation">&gt;</span></span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>clause</span><span class="token punctuation">&gt;</span></span> C <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>clause</span><span class="token punctuation">&gt;</span></span>
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k">  <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>fresh</span><span class="token punctuation">&gt;</span></span> <span class="token punctuation">.</span> <span class="token operator">=&gt;</span> #renameVariables<span class="token punctuation">(</span>C<span class="token punctuation">)</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>fresh</span><span class="token punctuation">&gt;</span></span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>clause</span><span class="token punctuation">&gt;</span></span> C <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>clause</span><span class="token punctuation">&gt;</span></span>
        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> T<span class="token punctuation">:</span>Term <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>
   <span class="token keyword">requires</span> #unifiable<span class="token punctuation">(</span>T<span class="token punctuation">,</span>head<span class="token punctuation">(</span>C<span class="token punctuation">)</span><span class="token punctuation">)</span>
     <span class="token punctuation">[</span>transition<span class="token punctuation">]</span>
@@ -521,16 +521,16 @@ goals.</p>
   <span class="token keyword">syntax</span> Term <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> head<span class="token punctuation">(</span>Clause<span class="token punctuation">)</span> <span class="token punctuation">[</span>function<span class="token punctuation">]</span>
   <span class="token keyword">rule</span> head<span class="token punctuation">(</span>L<span class="token punctuation">.</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> L
   <span class="token keyword">rule</span> head<span class="token punctuation">(</span>L<span class="token punctuation">:</span><span class="token operator">-</span>_<span class="token punctuation">.</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> L
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>If the goal is unifiable with the fresh clause's head, replace the goal
 with the clause body, and empty the <code>fresh</code> cell (so that
 another clause can be chosen using the rule above):</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k">  <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> L<span class="token punctuation">:</span>Term <span class="token operator">=&gt;</span> <span class="token punctuation">.</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k">  <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> L<span class="token punctuation">:</span>Term <span class="token operator">=&gt;</span> <span class="token punctuation">.</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>
        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>fresh</span><span class="token punctuation">&gt;</span></span>  L<span class="token punctuation">:</span>Term <span class="token punctuation">.</span> <span class="token operator">=&gt;</span> <span class="token punctuation">.</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>fresh</span><span class="token punctuation">&gt;</span></span>
 
   <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> L<span class="token punctuation">:</span>Term <span class="token punctuation">:</span>KItem <span class="token operator">=&gt;</span> Ls <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span>
        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>fresh</span><span class="token punctuation">&gt;</span></span>  L<span class="token punctuation">:</span>Term <span class="token punctuation">:</span><span class="token operator">-</span> Ls<span class="token punctuation">:</span>Terms<span class="token punctuation">.</span> <span class="token operator">=&gt;</span> <span class="token punctuation">.</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>fresh</span><span class="token punctuation">&gt;</span></span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>Note that there is no problem if a clause is chosen whose
 conclusion literal does not unify with the first goal literal.
 The search
@@ -541,8 +541,8 @@ objective here was to present a simple and mathematically clean
 solution.  We encourage the interested reader to consult the LOGIK++
 language definition for a more efficient definition of a richer logic
 programming language.</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">endmodule</span>
-</code></pre>
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">endmodule</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 </body></html></div>
         </main>
 
@@ -622,8 +622,8 @@ programming language.</p>
             /> </picture
         ></a>
         <p class="mt-2 text-md-left copyright">
-          <a href="https://goo.gl/maps/hKLtCjeEd6yqfzwx5" target="_blank"
-            >1807 S Neil Street, Champaign, IL 61820</a
+          <a href="https://goo.gl/maps/TkuJSdoA3oNPpc486" target="_blank"
+            >301 N Neil St. Suite 412, Champaign, IL 61820</a
           >
         </p>
       </div>

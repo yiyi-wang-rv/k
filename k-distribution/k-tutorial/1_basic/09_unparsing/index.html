@@ -154,7 +154,7 @@
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/16_collections/">Lesson 1.16: Maps, Semantic Lists, and Sets</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/17_cell_multiplicity/">Lesson 1.17: Cell Multiplicity and Cell Collections</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/18_equality_and_conditionals/">Lesson 1.18: Term Equality and the Ternary Operator</a></div>
-<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB</a></div>
+<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB or LLDB</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/20_backends/">Lesson 1.20: K Backends and the Haskell Backend</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/21_symbolic_execution/">Lesson 1.21: Unification and Symbolic Execution</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/22_proofs/">Lesson 1.22: K Deductive Verification</a></div>
@@ -288,7 +288,7 @@ pretty-printed configuration loses information of relevance, which is why K
 allows you to obtain the original AST on request.</p>
 <p>As an example of all of this, consider the following K definition
 (<code>lesson-09-a.k</code>):</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">09</span><span class="token operator">-</span>A
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">09</span><span class="token operator">-</span>A
   <span class="token keyword">imports</span> BOOL
 
   <span class="token keyword">syntax</span> Exp <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">"("</span> Exp <span class="token string">")"</span> <span class="token punctuation">[</span><span class="token class-name">bracket</span><span class="token punctuation">]</span>
@@ -302,34 +302,34 @@ allows you to obtain the original AST on request.</p>
   <span class="token keyword">syntax</span> Exp <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> id<span class="token punctuation">(</span>Exp<span class="token punctuation">)</span> <span class="token punctuation">[</span>function<span class="token punctuation">]</span>
   <span class="token keyword">rule</span> id<span class="token punctuation">(</span>E<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> E
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>This is similar to the grammar we defined in <code>LESSON-06-C</code>, with the difference
 that the Boolean expressions are now constructors of sort <code>Exp</code> and we define a
 trivial function over expressions that returns its argument unchanged.</p>
 <p>We can now parse a simple program in this definition and use it to unparse some
 Boolean expressions. For example (<code>exp.bool</code>):</p>
-<pre><code>id(true&amp;&amp;false&amp;&amp;!true^(false||true))
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>id(true&amp;&amp;false&amp;&amp;!true^(false||true))
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>Here is a program that is not particularly legible at first glance, because all
 extraneous whitespace has been removed. However, if we run <code>krun exp.bool</code>, we
 see that the result of the unparser will pretty-print this expression rather
 nicely:</p>
-<pre><code>&lt;k&gt;
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>&lt;k&gt;
   true &amp;&amp; false &amp;&amp; ! true ^ ( false || true ) ~&gt; .
 &lt;/k&gt;
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <p>Notably, not only does K insert whitespace where appropriate, it is also smart
 enough to insert parentheses where necessary in order to ensure the correct
 parse. For example, without those parentheses, the expression above would parse
 equivalent to the following one:</p>
-<pre><code>(((true &amp;&amp; false) &amp;&amp; ! true) ^ false) || true
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>(((true &amp;&amp; false) &amp;&amp; ! true) ^ false) || true
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>Indeed, you can confirm this by passing that exact expression to the <code>id</code>
 function and evaluating it, then looking at the result of the unparser:</p>
-<pre><code>&lt;k&gt;
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>&lt;k&gt;
   true &amp;&amp; false &amp;&amp; ! true ^ false || true ~&gt; .
 &lt;/k&gt;
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <p>Here, because the meaning of the AST is the same both with and without
 parentheses, K does not insert any parentheses when unparsing.</p>
 <h3 id="exercise">Exercise</h3>
@@ -343,7 +343,7 @@ into the non-terminal positions of the production, then printing the production
 with a space between each terminal or non-terminal. It is easy to see why this
 might not be desirable in some cases. Consider the following K definition
 (<code>lesson-09-b.k</code>):</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">09</span><span class="token operator">-</span>B
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">09</span><span class="token operator">-</span>B
   <span class="token keyword">imports</span> BOOL
 
   <span class="token keyword">syntax</span> Stmt <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">"{"</span> Stmt <span class="token string">"}"</span> <span class="token operator">|</span> <span class="token string">"{"</span> <span class="token string">"}"</span>
@@ -352,11 +352,11 @@ might not be desirable in some cases. Consider the following K definition
                 <span class="token operator">|</span> <span class="token string">"if"</span> <span class="token string">"("</span> <span class="token keyword">Bool</span> <span class="token string">")"</span> Stmt
                 <span class="token operator">|</span> <span class="token string">"if"</span> <span class="token string">"("</span> <span class="token keyword">Bool</span> <span class="token string">")"</span> Stmt <span class="token string">"else"</span> Stmt <span class="token punctuation">[</span><span class="token class-name">avoid</span><span class="token punctuation">]</span>
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>This is a statement grammar, simplified to the point of meaninglessness, but
 still useful as an object lesson in unparsing. Consider the following program
 in this grammar (<code>if.stmt</code>):</p>
-<pre><code>if (true) {
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>if (true) {
   if (true) {}
   if (false) {}
   if (true) {
@@ -365,10 +365,10 @@ in this grammar (<code>if.stmt</code>):</p>
     if (false) {}
   }
 }
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>This is how that term would be unparsed if it appeared in the output of krun:</p>
-<pre><code>if ( true ) { if ( true ) { } if ( false ) { } if ( true ) { if ( false ) { } else { } } else { if ( false ) { } } }
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>if ( true ) { if ( true ) { } if ( false ) { } if ( true ) { if ( false ) { } else { } } else { if ( false ) { } } }
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>This is clearly much less legible than we started with! What are we to do?
 Well, K provides an attribute, <code>format</code>, that can be applied to any production,
 which controls how that production gets unparsed. You've seen how it gets
@@ -379,7 +379,7 @@ even desirable. But in most cases, what you are interested in is controlling
 the line breaking, indentation, and spacing of the production.</p>
 <p>Here is an example of how you might choose to apply the <code>format</code> attribute
 to improve how the above term is unparsed (<code>lesson-09-c.k</code>):</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">09</span><span class="token operator">-</span>C
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">09</span><span class="token operator">-</span>C
   <span class="token keyword">imports</span> BOOL
 
   <span class="token keyword">syntax</span> Stmt <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">"{"</span> Stmt <span class="token string">"}"</span> <span class="token punctuation">[</span><span class="token class-name">format</span><span class="token punctuation">(</span><span class="token operator">%</span><span class="token number">1</span><span class="token operator">%</span>i<span class="token operator">%</span>n<span class="token operator">%</span><span class="token number">2</span><span class="token operator">%</span>d<span class="token operator">%</span>n<span class="token operator">%</span><span class="token number">3</span><span class="token punctuation">)</span><span class="token punctuation">]</span> <span class="token operator">|</span> <span class="token string">"{"</span> <span class="token string">"}"</span> <span class="token punctuation">[</span><span class="token class-name">format</span><span class="token punctuation">(</span><span class="token operator">%</span><span class="token number">1</span><span class="token operator">%</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">]</span>
@@ -388,10 +388,10 @@ to improve how the above term is unparsed (<code>lesson-09-c.k</code>):</p>
                 <span class="token operator">|</span> <span class="token string">"if"</span> <span class="token string">"("</span> <span class="token keyword">Bool</span> <span class="token string">")"</span> Stmt <span class="token punctuation">[</span><span class="token class-name">format</span><span class="token punctuation">(</span><span class="token operator">%</span><span class="token number">1</span> <span class="token operator">%</span><span class="token number">2</span><span class="token operator">%</span><span class="token number">3</span><span class="token operator">%</span><span class="token number">4</span> <span class="token operator">%</span><span class="token number">5</span><span class="token punctuation">)</span><span class="token punctuation">]</span>
                 <span class="token operator">|</span> <span class="token string">"if"</span> <span class="token string">"("</span> <span class="token keyword">Bool</span> <span class="token string">")"</span> Stmt <span class="token string">"else"</span> Stmt <span class="token punctuation">[</span><span class="token class-name">avoid</span><span class="token punctuation">,</span> <span class="token class-name">format</span><span class="token punctuation">(</span><span class="token operator">%</span><span class="token number">1</span> <span class="token operator">%</span><span class="token number">2</span><span class="token operator">%</span><span class="token number">3</span><span class="token operator">%</span><span class="token number">4</span> <span class="token operator">%</span><span class="token number">5</span> <span class="token operator">%</span><span class="token number">6</span> <span class="token operator">%</span><span class="token number">7</span><span class="token punctuation">)</span><span class="token punctuation">]</span>
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>If we compile this new definition and unparse the same term, this is the
 result we get:</p>
-<pre><code>if (true) {
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>if (true) {
   if (true) {}
   if (false) {}
   if (true) {
@@ -400,7 +400,7 @@ result we get:</p>
     if (false) {}
   }
 }
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>This is the exact same text we started with! By adding the <code>format</code> attributes,
 we were able to indent the body of code blocks, adjust the spacing of if
 statements, and put each statement on a new line.</p>
@@ -450,7 +450,7 @@ codes, followed by their meaning:</p>
 <h3 id="exercise-1">Exercise</h3>
 <p>Change the format attributes for <code>LESSON-09-C</code> so that <code>if.stmt</code> will unparse
 as follows:</p>
-<pre><code>if (true)
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>if (true)
 {
   if (true)
   {
@@ -474,7 +474,7 @@ as follows:</p>
     }
   }
 }
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h2 id="output-coloring">Output coloring</h2>
 <p>When the output of unparsing is displayed on a terminal supporting colors, K
 is capable of coloring the output, similar to what is possible with a syntax
@@ -499,7 +499,7 @@ position in the list of colors at all, so the next <code>%c</code> will advance 
 following color.</p>
 <p>As a complete example, here is a variant of LESSON-09-A which colors the
 various boolean operators:</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">09</span><span class="token operator">-</span>D
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">09</span><span class="token operator">-</span>D
   <span class="token keyword">imports</span> BOOL
 
   <span class="token keyword">syntax</span> Exp <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">"("</span> Exp <span class="token string">")"</span> <span class="token punctuation">[</span><span class="token class-name">bracket</span><span class="token punctuation">]</span>
@@ -513,7 +513,7 @@ various boolean operators:</p>
   <span class="token keyword">syntax</span> Exp <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> id<span class="token punctuation">(</span>Exp<span class="token punctuation">)</span> <span class="token punctuation">[</span>function<span class="token punctuation">]</span>
   <span class="token keyword">rule</span> id<span class="token punctuation">(</span>E<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> E
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>For a complete list of allowed colors, see
 <a href="https://github.com/kframework/llvm-backend/blob/master/lib/ast/AST.cpp#L440" target="_blank" rel="noreferrer noopener">here</a>.</p>
 <h2 id="exercises">Exercises</h2>
@@ -629,8 +629,8 @@ function by means of the command <code>kparse &lt;file&gt; | kore-print -</code>
             /> </picture
         ></a>
         <p class="mt-2 text-md-left copyright">
-          <a href="https://goo.gl/maps/hKLtCjeEd6yqfzwx5" target="_blank"
-            >1807 S Neil Street, Champaign, IL 61820</a
+          <a href="https://goo.gl/maps/TkuJSdoA3oNPpc486" target="_blank"
+            >301 N Neil St. Suite 412, Champaign, IL 61820</a
           >
         </p>
       </div>

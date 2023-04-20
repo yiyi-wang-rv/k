@@ -154,7 +154,7 @@
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/16_collections/">Lesson 1.16: Maps, Semantic Lists, and Sets</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/17_cell_multiplicity/">Lesson 1.17: Cell Multiplicity and Cell Collections</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/18_equality_and_conditionals/">Lesson 1.18: Term Equality and the Ternary Operator</a></div>
-<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB</a></div>
+<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB or LLDB</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/20_backends/">Lesson 1.20: K Backends and the Haskell Backend</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/21_symbolic_execution/">Lesson 1.21: Unification and Symbolic Execution</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/22_proofs/">Lesson 1.22: K Deductive Verification</a></div>
@@ -254,7 +254,7 @@
           class="col-12 col-md-6 col-xl-8 py-md-3 pl-md-5 bd-content"
           role="main"
         >
-          <div class="introduction markdown-preview"><!-- Copyright (c) 2010-2019 K Team. All Rights Reserved. --><html><head></head><body><h1 id="defining-a-more-complex-syntax">Defining a More Complex Syntax</h1>
+          <div class="introduction markdown-preview"><html><head></head><body><h1 id="defining-a-more-complex-syntax">Defining a More Complex Syntax</h1>
 <p>Here we learn how to define a more complex language syntax than LAMBDA's,
 namely the C-like syntax of IMP. Also, we will learn how to define languages
 using multiple modules, because we are going to separate IMP's syntax from
@@ -318,8 +318,8 @@ which can be used anywhere in the program, not only at the top level.</p>
 <p>Note how we defined the comma-separated list of identifiers using
 <code>List{Id,","}</code>. The K tool provides builtin support for generic syntactic
 lists. In general,</p>
-<pre><code>syntax B ::= List{A,T}
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>syntax B ::= List{A,T}
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>declares a new non-terminal, <code>B</code>, corresponding to <code>T</code>-separated sequences of
 elements of <code>A</code>, where <code>A</code> is a non-terminal and <code>T</code> is a terminal. These
 lists can also be empty, that is, IMP programs declaring no variable are also
@@ -336,18 +336,18 @@ Since IMP is a fragment of C, you may want to select the C mode in your
 editor when writing these programs. This will also give your the feel that
 you are writing programs in a real programming language.</p>
 <p>For example, here is <code>sum.imp</code>, which sums in <code>sum</code> all numbers up to <code>n</code>:</p>
-<pre><code>int n, sum;
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>int n, sum;
 n = 100;
 sum=0;
 while (!(n &lt;= 0)) {
   sum = sum + n;
   n = n + -1;
 }
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>Now krun it and see how it looks parsed in the default <code>k</code> cell.</p>
 <p>The program <code>collatz.imp</code> tests the Collatz conjecture for all numbers up to
 <code>m</code> and accumulates the total number of steps in <code>s</code>:</p>
-<pre><code>int m, n, q, r, s;
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>int m, n, q, r, s;
 m = 10;
 while (!(m&lt;=2)) {
   n = m;
@@ -361,9 +361,9 @@ while (!(m&lt;=2)) {
     } else {n=q;}          //        of   n/2 if even
   }
 }
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>Finally, program <code>primes.imp</code> counts in <code>s</code> all the prime numbers up to <code>m</code>:</p>
-<pre><code>int i, m, n, q, r, s, t, x, y, z;
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>int i, m, n, q, r, s, t, x, y, z;
 m = 10;  n = 2;
 while (n &lt;= m) {
   // checking primality of n and writing t to 1 or 0
@@ -385,7 +385,7 @@ while (n &lt;= m) {
   if (1 &lt;= t) { s = s+1; } else {}
   n = n+1;
 }
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>All the programs above will run once we define the semantics of IMP. If you
 want to execute them now, wrap them in a <code>main(){...}</code> function and compile
 them and run them with your favorite C compiler.</p>
@@ -452,8 +452,8 @@ will learn how to define a K custom configuration.</p>
             /> </picture
         ></a>
         <p class="mt-2 text-md-left copyright">
-          <a href="https://goo.gl/maps/hKLtCjeEd6yqfzwx5" target="_blank"
-            >1807 S Neil Street, Champaign, IL 61820</a
+          <a href="https://goo.gl/maps/TkuJSdoA3oNPpc486" target="_blank"
+            >301 N Neil St. Suite 412, Champaign, IL 61820</a
           >
         </p>
       </div>

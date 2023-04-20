@@ -154,7 +154,7 @@
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/16_collections/">Lesson 1.16: Maps, Semantic Lists, and Sets</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/17_cell_multiplicity/">Lesson 1.17: Cell Multiplicity and Cell Collections</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/18_equality_and_conditionals/">Lesson 1.18: Term Equality and the Ternary Operator</a></div>
-<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB</a></div>
+<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB or LLDB</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/20_backends/">Lesson 1.20: K Backends and the Haskell Backend</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/21_symbolic_execution/">Lesson 1.21: Unification and Symbolic Execution</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/22_proofs/">Lesson 1.22: K Deductive Verification</a></div>
@@ -254,7 +254,7 @@
           class="col-12 col-md-6 col-xl-8 py-md-3 pl-md-5 bd-content"
           role="main"
         >
-          <div class="introduction markdown-preview"><!-- Copyright (c) 2012-2019 K Team. All Rights Reserved. --><html><head></head><body><h1 id="adding-builtins%3B-side-conditions">Adding Builtins; Side Conditions</h1>
+          <div class="introduction markdown-preview"><html><head></head><body><h1 id="adding-builtins%3B-side-conditions">Adding Builtins; Side Conditions</h1>
 <p>We have already added the builtin identifiers (sort <code>Id</code>) to LAMBDA expressions,
 but those had no operations on them.  In this lesson we add integers and
 Booleans to LAMBDA, and extend the builtin operations on them into
@@ -269,8 +269,8 @@ own builtins in case the provided ones are not suitable for your language
 precision).</p>
 <p>For example, to add integers and Booleans as values to our LAMBDA, we have to
 add the productions</p>
-<pre><code>syntax Val ::= Int | Bool
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>syntax Val ::= Int | Bool
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p><code>Int</code> and <code>Bool</code> are the nonterminals that correspond to these builtins.</p>
 <p>To make use of these builtins, we have to add some arithmetic operation
 constructs to our language.  We prefer to use the conventional infix notation
@@ -287,8 +287,8 @@ name as a suffix to all the operations over builtins.  For example, the
 addition over integers is an infix operation named <code>+Int</code>.</p>
 <p>Compile the new <code>lambda.k</code> definition and evaluate some simple arithmetic
 expressions.  For example, if <code>arithmetic.lambda</code> is <code>(1+2*3)/4 &lt;= 1</code>, then</p>
-<pre><code>krun arithmetic.lambda
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>krun arithmetic.lambda
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>yields, as expected, <code>true</code>.  Note that the parser took the desired operation
 precedence into account.</p>
 <p>Let us now try to evaluate an expression which performs a wrong computation,
@@ -376,8 +376,8 @@ which will allow us to write nicer programs.</p>
             /> </picture
         ></a>
         <p class="mt-2 text-md-left copyright">
-          <a href="https://goo.gl/maps/hKLtCjeEd6yqfzwx5" target="_blank"
-            >1807 S Neil Street, Champaign, IL 61820</a
+          <a href="https://goo.gl/maps/TkuJSdoA3oNPpc486" target="_blank"
+            >301 N Neil St. Suite 412, Champaign, IL 61820</a
           >
         </p>
       </div>

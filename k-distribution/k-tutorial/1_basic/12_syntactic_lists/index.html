@@ -154,7 +154,7 @@
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/16_collections/">Lesson 1.16: Maps, Semantic Lists, and Sets</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/17_cell_multiplicity/">Lesson 1.17: Cell Multiplicity and Cell Collections</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/18_equality_and_conditionals/">Lesson 1.18: Term Equality and the Ternary Operator</a></div>
-<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB</a></div>
+<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB or LLDB</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/20_backends/">Lesson 1.20: K Backends and the Haskell Backend</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/21_symbolic_execution/">Lesson 1.21: Unification and Symbolic Execution</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/22_proofs/">Lesson 1.22: K Deductive Verification</a></div>
@@ -267,7 +267,7 @@ productions using ordinary constructors, but it can be tricky to get the syntax
 exactly right in K without a lot of tedious glue code.</p>
 <p>For this reason, K provides a way of specifying that a non-terminal represents
 a syntactic list (<code>lesson-12-a.k</code>):</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">12</span><span class="token operator">-</span>A<span class="token operator">-</span>SYNTAX
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">12</span><span class="token operator">-</span>A<span class="token operator">-</span>SYNTAX
   <span class="token keyword">imports</span> INT<span class="token operator">-</span>SYNTAX
 
   <span class="token keyword">syntax</span> Ints <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> List<span class="token punctuation">{</span><span class="token keyword">Int</span><span class="token punctuation">,</span><span class="token string">","</span><span class="token punctuation">}</span>
@@ -276,7 +276,7 @@ a syntactic list (<code>lesson-12-a.k</code>):</p>
 <span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">12</span><span class="token operator">-</span>A
   <span class="token keyword">imports</span> LESSON<span class="token operator">-</span><span class="token number">12</span><span class="token operator">-</span>A<span class="token operator">-</span>SYNTAX
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>Note that instead of a sequence of terminals and non-terminals, the right hand
 side of the <code>Ints</code> production contains the symbol <code>List</code> followed by two items
 in curly braces. The first item is the non-terminal which is the element type
@@ -285,7 +285,7 @@ the list. As a special case, lists which are separated only by whitespace can
 be specified with a separator of <code>""</code>.</p>
 <p>This <code>List{}</code> construct is roughly equivalent to the following definition
 (<code>lesson-12-b.k</code>):</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">12</span><span class="token operator">-</span>B<span class="token operator">-</span>SYNTAX
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">12</span><span class="token operator">-</span>B<span class="token operator">-</span>SYNTAX
   <span class="token keyword">imports</span> INT<span class="token operator">-</span>SYNTAX
 
   <span class="token keyword">syntax</span> Ints <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token keyword">Int</span> <span class="token string">","</span> Ints <span class="token operator">|</span> <span class="token string">".Ints"</span>
@@ -294,7 +294,7 @@ be specified with a separator of <code>""</code>.</p>
 <span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">12</span><span class="token operator">-</span>B
   <span class="token keyword">imports</span> LESSON<span class="token operator">-</span><span class="token number">12</span><span class="token operator">-</span>B<span class="token operator">-</span>SYNTAX
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>As you can see, the <code>List{}</code> construct represents a cons-list with an element
 at the head and another list at the tail. The empty list is represented by
 a <code>.</code> followed by the sort of the list.</p>
@@ -302,7 +302,7 @@ a <code>.</code> followed by the sort of the list.</p>
 over the above definition. First of all, when writing a list in a rule,
 explicitly writing the terminator is not always required. For example, consider
 the following additional module (<code>lesson-12-c.k</code>):</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">12</span><span class="token operator">-</span>C
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">12</span><span class="token operator">-</span>C
   <span class="token keyword">imports</span> LESSON<span class="token operator">-</span><span class="token number">12</span><span class="token operator">-</span>A
   <span class="token keyword">imports</span> INT
 
@@ -310,28 +310,25 @@ the following additional module (<code>lesson-12-c.k</code>):</p>
   <span class="token keyword">rule</span> sum<span class="token punctuation">(</span>I<span class="token punctuation">:</span><span class="token keyword">Int</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> I
   <span class="token keyword">rule</span> sum<span class="token punctuation">(</span>I1<span class="token punctuation">:</span><span class="token keyword">Int</span><span class="token punctuation">,</span> I2<span class="token punctuation">:</span><span class="token keyword">Int</span><span class="token punctuation">,</span> Is<span class="token punctuation">:</span>Ints<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> sum<span class="token punctuation">(</span>I1 <span class="token operator">+</span><span class="token keyword">Int</span> I2<span class="token punctuation">,</span> Is<span class="token punctuation">)</span>
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>Here we see a function that sums together a non-empty list of integers. Note in
 particular the first rule. We do not explicitly mention <code>.Ints</code>, but in fact,
 the rule in question is equivalent to the following rule:</p>
-<pre><code>  rule sum(I:Int, .Ints) =&gt; I
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>  rule sum(I:Int, .Ints) =&gt; I
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>The reason for this is that K will automatically insert a list terminator
 anywhere a syntactic list is expected, but an element of that list appears
 instead. This works even with lists of more than one element:</p>
-<pre><code>  rule sum(I1:Int, I2:Int) =&gt; I1 +Int I2
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>  rule sum(I1:Int, I2:Int) =&gt; I1 +Int I2
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>This rule is redundant, but here we explicitly match a list of exactly two
 elements, because the <code>.Ints</code> is implicitly added after <code>I2</code>.</p>
-<h3 id="exercise">Exercise</h3>
-<p>Write a function <code>concat</code> which takes a list of <code>String</code> and concatenates them
-all together. Do not worry if the function is O(n^2).</p>
 <h2 id="parsing-syntactic-lists-in-programs">Parsing Syntactic Lists in Programs</h2>
 <p>An additional syntactic convenience takes place when you want to express a
 syntactic list in the input to <code>krun</code>. In this case, K will automatically
 transform the grammar in <code>LESSON-12-B-SYNTAX</code> into the following
 (<code>lesson-12-d.k</code>):</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">12</span><span class="token operator">-</span>D
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">12</span><span class="token operator">-</span>D
   <span class="token keyword">imports</span> INT<span class="token operator">-</span>SYNTAX
 
   <span class="token keyword">syntax</span> Ints <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> #NonEmptyInts <span class="token operator">|</span> #IntsTerminator
@@ -339,19 +336,22 @@ transform the grammar in <code>LESSON-12-B-SYNTAX</code> into the following
                          <span class="token operator">|</span> <span class="token keyword">Int</span> #IntsTerminator
   <span class="token keyword">syntax</span> #IntsTerminator <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">""</span>
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>This allows you to express the usual comma-separated list of arguments where
 an empty list is represented by the empty string, and you don't have to
 explicitly terminate the list. Because of this, we can write the syntax
 of function calls in C very easily (<code>lesson-12-e.k</code>):</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">12</span><span class="token operator">-</span>E
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">12</span><span class="token operator">-</span>E
   <span class="token keyword">syntax</span> <span class="token keyword">Id</span> <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> r<span class="token string">"[a-zA-Z_][a-zA-Z0-9_]*"</span> <span class="token punctuation">[</span><span class="token class-name">token</span><span class="token punctuation">]</span>
   <span class="token keyword">syntax</span> Exp <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token keyword">Id</span> <span class="token operator">|</span> Exp <span class="token string">"("</span> Exps <span class="token string">")"</span>
   <span class="token keyword">syntax</span> Exps <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> List<span class="token punctuation">{</span>Exp<span class="token punctuation">,</span><span class="token string">","</span><span class="token punctuation">}</span>
 <span class="token keyword">endmodule</span>
-</code></pre>
-<h3 id="exercise-1">Exercise</h3>
-<p>Write some function call expressions using identifiers in C and verify with
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="exercise">Exercise</h3>
+<p>Write a function <code>concat</code> which takes a list of <code>String</code> and concatenates them
+all together. Do not worry if the function is O(n^2).
+Test your implementation using the syntactic sugar for lists added by the parser.</p>
+<p>Then write some function call expressions using identifiers in C and verify with
 <code>kast</code> that the above grammar captures the intended syntax. Make sure to test
 with function calls with zero, one, and two or more arguments.</p>
 <h2 id="the-nelist%7B%7D-construct">The <code>NeList{}</code> construct</h2>
@@ -361,14 +361,14 @@ desirable in a number of cases, it is sometimes not what the grammar expects.</p
 <p>For example, in C, it is not allowable for an <code>enum</code> definition to have zero
 members. In other words, if we were to write the grammar for enumerations like
 so (<code>lesson-12-f.k</code>):</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">12</span><span class="token operator">-</span>F
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">12</span><span class="token operator">-</span>F
   <span class="token keyword">syntax</span> <span class="token keyword">Id</span> <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> r<span class="token string">"[a-zA-Z_][a-zA-Z0-9_]*"</span> <span class="token punctuation">[</span><span class="token class-name">token</span><span class="token punctuation">]</span>
   <span class="token keyword">syntax</span> Exp <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token keyword">Id</span>
 
   <span class="token keyword">syntax</span> EnumSpecifier <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">"enum"</span> <span class="token keyword">Id</span> <span class="token string">"{"</span> Ids <span class="token string">"}"</span>
   <span class="token keyword">syntax</span> Ids <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> List<span class="token punctuation">{</span><span class="token keyword">Id</span><span class="token punctuation">,</span><span class="token string">","</span><span class="token punctuation">}</span>
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>Then we would be syntactically allowed to write <code>enum X {}</code>, which instead,
 ought to be a syntax error.</p>
 <p>For this reason, we introduce the additional <code>NeList{}</code> construct. The syntax
@@ -377,14 +377,14 @@ curly braces. When parsing rules, it behaves identically to the <code>List{}</co
 construct. However, when parsing inputs to <code>krun</code>, the above grammar, if we
 replaced <code>syntax Ids ::= List{Id,","}</code> with <code>syntax Ids ::= NeList{Id,","}</code>,
 would become equivalent to the following (<code>lesson-12-g.k</code>):</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">12</span><span class="token operator">-</span>G
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">12</span><span class="token operator">-</span>G
   <span class="token keyword">syntax</span> <span class="token keyword">Id</span> <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> r<span class="token string">"[a-zA-Z_][a-zA-Z0-9_]*"</span> <span class="token punctuation">[</span><span class="token class-name">token</span><span class="token punctuation">]</span>
   <span class="token keyword">syntax</span> Exp <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token keyword">Id</span>
 
   <span class="token keyword">syntax</span> EnumSpecifier <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">"enum"</span> <span class="token keyword">Id</span> <span class="token string">"{"</span> Ids <span class="token string">"}"</span>
   <span class="token keyword">syntax</span> Ids <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token keyword">Id</span> <span class="token operator">|</span> <span class="token keyword">Id</span> <span class="token string">","</span> Ids
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>In other words, only non-empty lists of <code>Id</code> would be allowed.</p>
 <h2 id="exercises">Exercises</h2>
 <ol>
@@ -413,29 +413,21 @@ up an empty list of arguments. In such a case, the sum ought to be 0.</p>
               <a href="#lesson-1.12%3A-syntactic-lists" class="bd-toc-link">Lesson 1.12: Syntactic Lists</a>
               </summary>
             <div>
-              <details style="padding:0.25rem 0;;padding-left: 8px;" open>
-            <summary class="bd-toc-link-wrapper">
-              <a href="#the-list%7B%7D-construct" class="bd-toc-link">The <code>List{}</code> construct</a>
-              </summary>
-            <div>
               <div class="bd-toc-link-wrapper" style="padding:0.25rem 0;">
               <a
-                href="#exercise"
+                href="#the-list%7B%7D-construct"
                 class="bd-toc-link"
-                style="padding-left: 16px;;"
+                style="padding-left: 8px;;"
               >
-                Exercise
-              </a></div>
-            </div>
-          </details>
-        <details style="padding:0.25rem 0;;padding-left: 8px;" open>
+                The <code>List{}</code> construct
+              </a></div><details style="padding:0.25rem 0;;padding-left: 8px;" open>
             <summary class="bd-toc-link-wrapper">
               <a href="#parsing-syntactic-lists-in-programs" class="bd-toc-link">Parsing Syntactic Lists in Programs</a>
               </summary>
             <div>
               <div class="bd-toc-link-wrapper" style="padding:0.25rem 0;">
               <a
-                href="#exercise-1"
+                href="#exercise"
                 class="bd-toc-link"
                 style="padding-left: 16px;;"
               >
@@ -496,8 +488,8 @@ up an empty list of arguments. In such a case, the sum ought to be 0.</p>
             /> </picture
         ></a>
         <p class="mt-2 text-md-left copyright">
-          <a href="https://goo.gl/maps/hKLtCjeEd6yqfzwx5" target="_blank"
-            >1807 S Neil Street, Champaign, IL 61820</a
+          <a href="https://goo.gl/maps/TkuJSdoA3oNPpc486" target="_blank"
+            >301 N Neil St. Suite 412, Champaign, IL 61820</a
           >
         </p>
       </div>

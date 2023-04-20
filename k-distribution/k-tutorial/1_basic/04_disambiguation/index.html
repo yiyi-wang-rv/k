@@ -154,7 +154,7 @@
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/16_collections/">Lesson 1.16: Maps, Semantic Lists, and Sets</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/17_cell_multiplicity/">Lesson 1.17: Cell Multiplicity and Cell Collections</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/18_equality_and_conditionals/">Lesson 1.18: Term Equality and the Ternary Operator</a></div>
-<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB</a></div>
+<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB or LLDB</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/20_backends/">Lesson 1.20: K Backends and the Haskell Backend</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/21_symbolic_execution/">Lesson 1.21: Unification and Symbolic Execution</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/22_proofs/">Lesson 1.22: K Deductive Verification</a></div>
@@ -277,7 +277,7 @@ the expression <code>true &amp;&amp; false || false</code> has only one valid AS
 <code>(true &amp;&amp; false) || false</code>.</p>
 <p>Consider, then, the third iteration on the grammar of this definition
 (<code>lesson-04-a.k</code>):</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">04</span><span class="token operator">-</span>A
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">04</span><span class="token operator">-</span>A
 
   <span class="token keyword">syntax</span> Boolean <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">"true"</span> <span class="token operator">|</span> <span class="token string">"false"</span>
                    <span class="token operator">|</span> <span class="token string">"("</span> Boolean <span class="token string">")"</span> <span class="token punctuation">[</span><span class="token class-name">bracket</span><span class="token punctuation">]</span>
@@ -287,11 +287,11 @@ the expression <code>true &amp;&amp; false || false</code> has only one valid AS
                    &gt; Boolean <span class="token string">"||"</span> Boolean <span class="token punctuation">[</span>function<span class="token punctuation">]</span>
 
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>In this example, some of the <code>|</code> symbols separating productions in a single
 block have been replaced with <code>&gt;</code>. This serves to describe the
-<strong>priority groups</strong> associated with this block of productions.</p>
-<p>In this example, the first priority group consists of the atoms of the
+<strong>priority groups</strong> associated with this block of productions.
+The first priority group consists of the atoms of the
 language: <code>true</code>, <code>false</code>, and the bracket operator. In general, a priority
 group starts either at the <code>::=</code> or <code>&gt;</code> operator and extends until either the
 next <code>&gt;</code> operator or the end of the production block. Thus, we can see that the
@@ -343,8 +343,8 @@ will get the alternative parse.</p>
 <p>Even having broken the expression grammar into priority blocks, the resulting
 grammar is still ambiguous. We can see this if we try to parse the following
 program (<code>assoc.bool</code>):</p>
-<pre><code>true &amp;&amp; false &amp;&amp; false
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>true &amp;&amp; false &amp;&amp; false
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>Priority blocks will not help us here: the problem comes between two parses
 where both possible parses have a direct parent and child which is within a
 single priority block (in this case, <code>&amp;&amp;</code> is in the same block as itself).</p>
@@ -363,7 +363,7 @@ child of a symbol with equal priority.</li>
 because <code>&amp;&amp;</code> cannot appear as the rightmost child of itself.</p>
 <p>Consider, then, the fourth iteration on the grammar of this definition
 (<code>lesson-04-b.k</code>):</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">04</span><span class="token operator">-</span>B
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">04</span><span class="token operator">-</span>B
 
   <span class="token keyword">syntax</span> Boolean <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">"true"</span> <span class="token operator">|</span> <span class="token string">"false"</span>
                    <span class="token operator">|</span> <span class="token string">"("</span> Boolean <span class="token string">")"</span> <span class="token punctuation">[</span><span class="token class-name">bracket</span><span class="token punctuation">]</span>
@@ -373,7 +373,7 @@ because <code>&amp;&amp;</code> cannot appear as the rightmost child of itself.<
                    &gt; <span class="token class-name">left</span><span class="token punctuation">:</span> Boolean <span class="token string">"||"</span> Boolean <span class="token punctuation">[</span>function<span class="token punctuation">]</span>
 
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>Here each priority group, immediately after the <code>::=</code> or <code>&gt;</code> operator, can
 be followed by a symbol representing the associativity of that priority group:
 either <code>left:</code> for left associativity, <code>right:</code> for right associativity, or
@@ -381,7 +381,7 @@ either <code>left:</code> for left associativity, <code>right:</code> for right 
 apply associativity to has only a single production, but we could equally well
 write a priority block with multiple productions and an associativity.</p>
 <p>For example, consider the following, different grammar (<code>lesson-04-c.k</code>):</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">04</span><span class="token operator">-</span>C
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">04</span><span class="token operator">-</span>C
 
   <span class="token keyword">syntax</span> Boolean <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">"true"</span> <span class="token operator">|</span> <span class="token string">"false"</span>
                    <span class="token operator">|</span> <span class="token string">"("</span> Boolean <span class="token string">")"</span> <span class="token punctuation">[</span><span class="token class-name">bracket</span><span class="token punctuation">]</span>
@@ -392,7 +392,7 @@ write a priority block with multiple productions and an associativity.</p>
                    <span class="token operator">|</span> Boolean <span class="token string">"||"</span> Boolean <span class="token punctuation">[</span>function<span class="token punctuation">]</span>
 
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>In this example, unlike the one above, <code>&amp;&amp;</code>, <code>^</code>, and <code>||</code> have the same
 priority. However, viewed as a group, the entire group is left associative.
 This means that none of <code>&amp;&amp;</code>, <code>^</code>, and <code>||</code> can appear as the right child of
@@ -413,7 +413,7 @@ multiple modules.</p>
 associativity relations.</p>
 <p>Consider the following grammar, which we will name <code>lesson-04-d.k</code> and which
 will express the exact same grammar as <code>lesson-04-b.k</code></p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">04</span><span class="token operator">-</span>D
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">04</span><span class="token operator">-</span>D
 
   <span class="token keyword">syntax</span> Boolean <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">"true"</span> <span class="token punctuation">[</span>literal<span class="token punctuation">]</span> <span class="token operator">|</span> <span class="token string">"false"</span> <span class="token punctuation">[</span>literal<span class="token punctuation">]</span>
                    <span class="token operator">|</span> <span class="token string">"("</span> Boolean <span class="token string">")"</span> <span class="token punctuation">[</span>atom<span class="token punctuation">,</span> <span class="token class-name">bracket</span><span class="token punctuation">]</span>
@@ -427,7 +427,7 @@ will express the exact same grammar as <code>lesson-04-b.k</code></p>
   <span class="token keyword">syntax left</span> xor
   <span class="token keyword">syntax left</span> or
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>This introduces a couple of new features of K. First of all, we see a bunch of
 attributes we don't already recognize. These are actually not built-in
 attributes, but rather user-defined attributes that are used to group
@@ -442,12 +442,12 @@ the productions with at least one of the attributes in that group, and each
 associativity relation connecting all the productions with one of the target
 attributes together into a left-, right-, or non-associative grouping.
 Specifically, this means that:</p>
-<pre><code>syntax left a b
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>syntax left a b
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>is <em>different</em> to:</p>
-<pre><code>syntax left a
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>syntax left a
 syntax left b
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>As a consequence of this, <code>syntax [left|right|non-assoc]</code> should not be used to
 group together labels with different priority.</p>
 <h2 id="prefer%2Favoid">Prefer/avoid</h2>
@@ -457,17 +457,17 @@ two ambiguous parses directly while still not rejecting any parses if the term
 parsed is unambiguous. A good example of this is the famous "dangling else"
 problem in imperative C-like languages.</p>
 <p>Consider the following definition (<code>lesson-04-E.k</code>):</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">04</span><span class="token operator">-</span>E
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">04</span><span class="token operator">-</span>E
 
   <span class="token keyword">syntax</span> Exp <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">"true"</span> <span class="token operator">|</span> <span class="token string">"false"</span>
   <span class="token keyword">syntax</span> Stmt <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">"if"</span> <span class="token string">"("</span> Exp <span class="token string">")"</span> Stmt
                 <span class="token operator">|</span> <span class="token string">"if"</span> <span class="token string">"("</span> Exp <span class="token string">")"</span> Stmt <span class="token string">"else"</span> Stmt
                 <span class="token operator">|</span> <span class="token string">"{"</span> <span class="token string">"}"</span>
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>We can write the following program (<code>dangling-else.if</code>):</p>
-<pre><code>if (true) if (false) {} else {}
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>if (true) if (false) {} else {}
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>This is ambiguous because it is unclear whether the <code>else</code> clause is part of
 the outer <code>if</code> or the inner <code>if</code>. At first we might try to resolve this with
 priorities, saying that the <code>if</code> without an <code>else</code> cannot appear as a child of
@@ -476,7 +476,7 @@ is both preceded and followed by a terminal, this will not work.</p>
 <p>Instead, we can resolve the ambiguity directly by telling the parser to
 "prefer" or "avoid" certain productions when ambiguities arise. For example,
 when we parse this program, we see the following ambiguity as an error message:</p>
-<pre><code>[Error] Inner Parser: Parsing ambiguity.
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>[Error] Inner Parser: Parsing ambiguity.
 1: syntax Stmt ::= "if" "(" Exp ")" Stmt
 
 `if(_)__LESSON-04-E_Stmt_Exp_Stmt`(`true_LESSON-04-E_Exp`(.KList),`if(_)_else__LESSON-04-E_Stmt_Exp_Stmt_Stmt`(`false_LESSON-04-E_Exp`(.KList),`;_LESSON-04-E_Stmt`(.KList),`;_LESSON-04-E_Stmt`(.KList)))
@@ -485,19 +485,19 @@ when we parse this program, we see the following ambiguity as an error message:<
 `if(_)_else__LESSON-04-E_Stmt_Exp_Stmt_Stmt`(`true_LESSON-04-E_Exp`(.KList),`if(_)__LESSON-04-E_Stmt_Exp_Stmt`(`false_LESSON-04-E_Exp`(.KList),`;_LESSON-04-E_Stmt`(.KList)),`;_LESSON-04-E_Stmt`(.KList))
         Source(./dangling-else.if)
         Location(1,1,1,30)
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>Roughly, we see that the ambiguity is between an <code>if</code> with an <code>else</code> or an <code>if</code>
 without an <code>else</code>. Since we want to pick the first parse, we can tell K to
 "avoid" the second parse with the <code>avoid</code> attribute. Consider the following
 modified definition (<code>lesson-04-f.k</code>):</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">04</span><span class="token operator">-</span>F
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">04</span><span class="token operator">-</span>F
 
   <span class="token keyword">syntax</span> Exp <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">"true"</span> <span class="token operator">|</span> <span class="token string">"false"</span>
   <span class="token keyword">syntax</span> Stmt <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">"if"</span> <span class="token string">"("</span> Exp <span class="token string">")"</span> Stmt
                 <span class="token operator">|</span> <span class="token string">"if"</span> <span class="token string">"("</span> Exp <span class="token string">")"</span> Stmt <span class="token string">"else"</span> Stmt <span class="token punctuation">[</span><span class="token class-name">avoid</span><span class="token punctuation">]</span>
                 <span class="token operator">|</span> <span class="token string">"{"</span> <span class="token string">"}"</span>
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>Here we have added the <code>avoid</code> attribute to the <code>else</code> production. As a result,
 when an ambiguity occurs and one or more of the possible parses has that symbol
 at the top of the ambiguous part of the parse, we remove those parses from
@@ -515,14 +515,26 @@ modify the definition so that you will get the alternative parse.</p>
 <p>Modify your solution from Lesson 1.3, Exercise 2 so that unary negation should
 bind tighter than multiplication and division, which should bind tighter than
 addition and subtraction, and each binary operator should be left associative.
-Write these priority and associativity declarations both inline and explicitly.</p>
+Write these priority and associativity declarations explicitly, and then
+try to write them inline.</p>
 </li>
 <li>
 <p>Write a simple grammar containing at least one ambiguity that cannot be
 resolved via priority or associativity, and then use the <code>prefer</code> attribute to
 resolve that ambiguity.</p>
 </li>
+<li>
+<p>Explain why the following grammar is not labeled ambiguous by the K parser when parsing <code>abb</code>, then make the parser realize the ambiguity.</p>
+</li>
 </ol>
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> EXERCISE4
+
+<span class="token keyword">syntax</span> Expr <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">"a"</span> Expr <span class="token string">"b"</span>
+              <span class="token operator">|</span> <span class="token string">"abb"</span>
+              <span class="token operator">|</span> <span class="token string">"b"</span>
+
+<span class="token keyword">endmodule</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h2 id="next-lesson">Next lesson</h2>
 <p>Once you have completed the above exercises, you can continue to
 <a href="../05_modules/">Lesson 1.5: Modules, Imports, and Requires</a>.</p>
@@ -628,8 +640,8 @@ resolve that ambiguity.</p>
             /> </picture
         ></a>
         <p class="mt-2 text-md-left copyright">
-          <a href="https://goo.gl/maps/hKLtCjeEd6yqfzwx5" target="_blank"
-            >1807 S Neil Street, Champaign, IL 61820</a
+          <a href="https://goo.gl/maps/TkuJSdoA3oNPpc486" target="_blank"
+            >301 N Neil St. Suite 412, Champaign, IL 61820</a
           >
         </p>
       </div>

@@ -154,7 +154,7 @@
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/16_collections/">Lesson 1.16: Maps, Semantic Lists, and Sets</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/17_cell_multiplicity/">Lesson 1.17: Cell Multiplicity and Cell Collections</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/18_equality_and_conditionals/">Lesson 1.18: Term Equality and the Ternary Operator</a></div>
-<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB</a></div>
+<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB or LLDB</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/20_backends/">Lesson 1.20: K Backends and the Haskell Backend</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/21_symbolic_execution/">Lesson 1.21: Unification and Symbolic Execution</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/22_proofs/">Lesson 1.22: K Deductive Verification</a></div>
@@ -303,8 +303,8 @@ not exist on the left-hand side of the rule.</p>
 <p>In order to prevent users from writing such rules by accident, K requires
 that such variables begin with the <code>?</code> prefix. For example, here is a rule
 that rewrites a constructor <code>foo</code> to a symbolic integer:</p>
-<pre><code>rule &lt;k&gt; foo =&gt; ?X:Int ...&lt;/k&gt;
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>rule &lt;k&gt; foo =&gt; ?X:Int ...&lt;/k&gt;
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>When this rule applies, a fresh variable is introduced to the configuration, which
 then is unified against the rules that might apply in order to symbolically
 execute that configuration.</p>
@@ -317,23 +317,23 @@ introduce constraints that might apply to the variable that was introduced by
 that rule. For example, we could write the rule above with the additional
 constraint that the symbolic integer that was introduced must be less than
 five, by means of the following rule:</p>
-<pre><code>rule &lt;k&gt; foo =&gt; ?X:Int ...&lt;/k&gt; ensures ?X &lt;Int 5
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>rule &lt;k&gt; foo =&gt; ?X:Int ...&lt;/k&gt; ensures ?X &lt;Int 5
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <h2 id="putting-it-all-together">Putting it all together</h2>
 <p>Putting all these pieces together, it is possible to use the Haskell Backend
 to perform symbolic reasoning about a particular K module, determining all the
 possible states that can be reached by a symbolic configuration.</p>
 <p>For example, consider the following K definition (<code>lesson-21.k</code>):</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">21</span>
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">21</span>
     <span class="token keyword">imports</span> INT
 
     <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> <span class="token number">0</span> <span class="token operator">=&gt;</span> <span class="token operator">?</span>X<span class="token punctuation">:</span><span class="token keyword">Int</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span> ensures <span class="token operator">?</span>X <span class="token operator">=</span><span class="token operator">/</span><span class="token operator">=</span><span class="token keyword">Int</span> <span class="token number">0</span>
     <span class="token keyword">rule</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>k</span><span class="token punctuation">&gt;</span></span> X<span class="token punctuation">:</span><span class="token keyword">Int</span> <span class="token operator">=&gt;</span> <span class="token number">5</span>  <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>k</span><span class="token punctuation">&gt;</span></span> <span class="token keyword">requires</span> X <span class="token operator">&gt;=</span><span class="token keyword">Int</span> <span class="token number">10</span>
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>When we symbolically execute the program <code>0</code>, we get the following output
 from the Haskell Backend:</p>
-<pre style="position: relative; padding-top: 32px;" class="line-numbers language-line-numbers"><div class="code-block-selectors">.numberLines</div><code class="numberLines">    &lt;k&gt;
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>    &lt;k&gt;
       5 ~&gt; .
     &lt;/k&gt;
   #And
@@ -494,8 +494,8 @@ rule. Then run the program and see whether your prediction is correct.</li>
             /> </picture
         ></a>
         <p class="mt-2 text-md-left copyright">
-          <a href="https://goo.gl/maps/hKLtCjeEd6yqfzwx5" target="_blank"
-            >1807 S Neil Street, Champaign, IL 61820</a
+          <a href="https://goo.gl/maps/TkuJSdoA3oNPpc486" target="_blank"
+            >301 N Neil St. Suite 412, Champaign, IL 61820</a
           >
         </p>
       </div>

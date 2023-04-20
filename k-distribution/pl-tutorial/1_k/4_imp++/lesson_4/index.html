@@ -154,7 +154,7 @@
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/16_collections/">Lesson 1.16: Maps, Semantic Lists, and Sets</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/17_cell_multiplicity/">Lesson 1.17: Cell Multiplicity and Cell Collections</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/18_equality_and_conditionals/">Lesson 1.18: Term Equality and the Ternary Operator</a></div>
-<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB</a></div>
+<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB or LLDB</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/20_backends/">Lesson 1.20: K Backends and the Haskell Backend</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/21_symbolic_execution/">Lesson 1.21: Unification and Symbolic Execution</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/22_proofs/">Lesson 1.22: K Deductive Verification</a></div>
@@ -254,15 +254,15 @@
           class="col-12 col-md-6 col-xl-8 py-md-3 pl-md-5 bd-content"
           role="main"
         >
-          <div class="introduction markdown-preview"><!-- Copyright (c) 2010-2019 K Team. All Rights Reserved. --><html><head></head><body><h1 id="semantic-lists%3B-input%2Foutput-streaming">Semantic Lists; Input/Output Streaming</h1>
+          <div class="introduction markdown-preview"><html><head></head><body><h1 id="semantic-lists%3B-input%2Foutput-streaming">Semantic Lists; Input/Output Streaming</h1>
 <p>In this lesson we add semantics to the <code>read</code> and <code>print</code> IMP++ constructs.
 In doing so, we also learn how to use semantic lists and how to connect
 cells holding semantic lists to the standard input and standard output.
 This allows us to turn the K semantics into an interactive interpreter.</p>
 <p>We start by adding two new cells to the configuration,</p>
-<pre><code>&lt;in color="magenta"&gt; .List &lt;/in&gt;
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>&lt;in color="magenta"&gt; .List &lt;/in&gt;
 &lt;out color="Orchid"&gt; .List &lt;/out&gt;
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>each holding a semantic list, initially empty. Semantic lists are
 space-separated sequences of items, each item being a term of the form
 <code>ListItem(t)</code>, where <code>t</code> is a term of sort <code>K</code>. Recall that the semantic maps,
@@ -297,16 +297,16 @@ no rules for evaluating <code>AExps</code> terms. If we make the list construct 
 evaluates all its arguments and then outputs them. The correct way to
 tell K that <code>print</code> should evaluate only its first argument is by using a
 context declaration:</p>
-<pre><code>context print(HOLE:AExp, _);
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>context print(HOLE:AExp, _);
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>Note the <code>HOLE</code> of sort <code>AExp</code> above. Contexts allow us to define finer-grain
 evaluation strategies than the strictness attributes, involving potentially
 more than one language construct, like above. The <code>HOLE</code> indicates the
 argument which is requested to be evaluated. For example, the <code>strict</code>
 attribute of division corresponds to two contexts:</p>
-<pre><code>context HOLE / _
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>context HOLE / _
 context _ / HOLE
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>In their full generality, contexts can be any terms with precisely one
 occurrence of a <code>HOLE</code>, and with arbitrary side conditions on any variables
 occurring in the context term as well as on the <code>HOLE</code>. See Part 6 of the
@@ -319,8 +319,8 @@ syntactic category, <code>Printable</code>, which is the union of integers and s
 expected, it gets stuck with a read construct on top of the computation and
 with an empty <code>&lt;in/&gt;</code> cell. To run it, we need to provide some items in the
 <code>&lt;in/&gt;</code> cell, so that the rule of read can match. Let us add</p>
-<pre><code>&lt;in&gt; ListItem(3) ListItem(5) ListItem(7) &lt;/in&gt;
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>&lt;in&gt; ListItem(3) ListItem(5) ListItem(7) &lt;/in&gt;
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>Now, if we <code>krun</code> <code>io.imp</code>, we can see that its execution completes normally
 (the <code>&lt;k/&gt;</code> cell is empty), that the first two items have been removed by the
 two read constructs from the <code>&lt;in/&gt;</code> cell, and that the desired strings and
@@ -339,12 +339,12 @@ waits for your input numbers. Type in two numbers, then press <code>&lt;Enter&gt
 A message with their sum is then printed, followed by the final configuration.
 If you do not want to see the final configuration, and thus obtain a realistic
 interpreter for our language, then call <code>krun</code> with the option <code>--output none</code>:</p>
-<pre><code>krun io.imp --output none
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>krun io.imp --output none
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>Let us now <code>krun</code> our interactive sum program, which continuously reads numbers
 from the console and prints the sum of numbers up to them:</p>
-<pre><code>krun sum-io.imp
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>krun sum-io.imp
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>Try a few numbers, then <code>0</code>. Note that the program terminated, but with junk
 in the <code>&lt;k/&gt;</code> cell, essentially with a <code>halt</code> statement on its top. Of course,
 because <code>halt</code> has been reached and it has no semantics yet.</p>
@@ -395,8 +395,8 @@ of blocks with local variable declarations.</p>
             /> </picture
         ></a>
         <p class="mt-2 text-md-left copyright">
-          <a href="https://goo.gl/maps/hKLtCjeEd6yqfzwx5" target="_blank"
-            >1807 S Neil Street, Champaign, IL 61820</a
+          <a href="https://goo.gl/maps/TkuJSdoA3oNPpc486" target="_blank"
+            >301 N Neil St. Suite 412, Champaign, IL 61820</a
           >
         </p>
       </div>

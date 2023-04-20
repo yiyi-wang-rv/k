@@ -154,7 +154,7 @@
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/16_collections/">Lesson 1.16: Maps, Semantic Lists, and Sets</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/17_cell_multiplicity/">Lesson 1.17: Cell Multiplicity and Cell Collections</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/18_equality_and_conditionals/">Lesson 1.18: Term Equality and the Ternary Operator</a></div>
-<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB</a></div>
+<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB or LLDB</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/20_backends/">Lesson 1.20: K Backends and the Haskell Backend</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/21_symbolic_execution/">Lesson 1.21: Unification and Symbolic Execution</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/22_proofs/">Lesson 1.22: K Deductive Verification</a></div>
@@ -260,7 +260,7 @@ module is not precisely the syntax of JSON (utilizing K's syntax for strings,
 integers, and floating point numbers rather than the syntax used by JSON),
 you can still convert directly to/from the actual syntax of JSON using
 the <code>JSON2String</code> and <code>String2JSON</code> hooks.</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> JSON<span class="token operator">-</span>SYNTAX
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> JSON<span class="token operator">-</span>SYNTAX
     <span class="token keyword">imports</span> INT<span class="token operator">-</span>SYNTAX
     <span class="token keyword">imports</span> STRING<span class="token operator">-</span>SYNTAX
     <span class="token keyword">imports</span> BOOL<span class="token operator">-</span>SYNTAX
@@ -274,20 +274,20 @@ the <code>JSON2String</code> and <code>String2JSON</code> hooks.</p>
                      <span class="token operator">|</span> <span class="token string">"{"</span> JSONs <span class="token string">"}"</span>       <span class="token punctuation">[</span><span class="token class-name">klabel</span><span class="token punctuation">(</span>JSONObject<span class="token punctuation">)</span> <span class="token punctuation">,</span> <span class="token class-name">symbol</span><span class="token punctuation">]</span>
                      <span class="token operator">|</span> <span class="token string">"["</span> JSONs <span class="token string">"]"</span>       <span class="token punctuation">[</span><span class="token class-name">klabel</span><span class="token punctuation">(</span>JSONList<span class="token punctuation">)</span>   <span class="token punctuation">,</span> <span class="token class-name">symbol</span><span class="token punctuation">]</span>
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h2 id="conversion-between-json-and-string">Conversion between <code>JSON</code> and <code>String</code></h2>
 <p>Given a string written in valid JSON, you can convert it to the <code>JSON</code>
 sort with the <code>String2JSON</code> function. Assuming the user has not extended
 the syntax of the <code>JSON</code> sort with their own constructors, any term of sort
 <code>JSON</code> can also be converted to a <code>String</code> using the <code>JSON2String</code> function.</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> JSON
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> JSON
     <span class="token keyword">imports</span> JSON<span class="token operator">-</span>SYNTAX
 
     <span class="token keyword">syntax</span> <span class="token keyword">String</span> <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> JSON2String<span class="token punctuation">(</span>JSON<span class="token punctuation">)</span> <span class="token punctuation">[</span>function<span class="token punctuation">,</span> hook<span class="token punctuation">(</span>JSON<span class="token punctuation">.</span>json2string<span class="token punctuation">)</span><span class="token punctuation">]</span>
 
     <span class="token keyword">syntax</span> JSON <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> String2JSON<span class="token punctuation">(</span><span class="token keyword">String</span><span class="token punctuation">)</span> <span class="token punctuation">[</span>function<span class="token punctuation">,</span> hook<span class="token punctuation">(</span>JSON<span class="token punctuation">.</span>string2json<span class="token punctuation">)</span><span class="token punctuation">]</span>
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 </body></html></div>
         </main>
 
@@ -339,8 +339,8 @@ the syntax of the <code>JSON</code> sort with their own constructors, any term o
             /> </picture
         ></a>
         <p class="mt-2 text-md-left copyright">
-          <a href="https://goo.gl/maps/hKLtCjeEd6yqfzwx5" target="_blank"
-            >1807 S Neil Street, Champaign, IL 61820</a
+          <a href="https://goo.gl/maps/TkuJSdoA3oNPpc486" target="_blank"
+            >301 N Neil St. Suite 412, Champaign, IL 61820</a
           >
         </p>
       </div>

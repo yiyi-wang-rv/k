@@ -154,7 +154,7 @@
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/16_collections/">Lesson 1.16: Maps, Semantic Lists, and Sets</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/17_cell_multiplicity/">Lesson 1.17: Cell Multiplicity and Cell Collections</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/18_equality_and_conditionals/">Lesson 1.18: Term Equality and the Ternary Operator</a></div>
-<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB</a></div>
+<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB or LLDB</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/20_backends/">Lesson 1.20: K Backends and the Haskell Backend</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/21_symbolic_execution/">Lesson 1.21: Unification and Symbolic Execution</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/22_proofs/">Lesson 1.22: K Deductive Verification</a></div>
@@ -254,24 +254,24 @@
           class="col-12 col-md-6 col-xl-8 py-md-3 pl-md-5 bd-content"
           role="main"
         >
-          <div class="introduction markdown-preview"><!-- Copyright (c) 2014-2019 K Team. All Rights Reserved. --><html><head></head><body><h1 id="do-not-reuse-blindly!">Do Not Reuse Blindly!</h1>
+          <div class="introduction markdown-preview"><html><head></head><body><h1 id="do-not-reuse-blindly!">Do Not Reuse Blindly!</h1>
 <p>It may be tempting to base your decision to reuse an existing semantics of
 a language feature solely on syntactic considerations; for example, to reuse
 whenever the parser does not complain.  As seen in this lesson, this could
 be quite risky.</p>
 <p>Let's try (and fail) to reuse the definition of <code>callcc</code> from Lesson 1:</p>
-<pre><code>syntax Exp ::= "callcc" Exp  [strict]
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>syntax Exp ::= "callcc" Exp  [strict]
 syntax Val ::= cc(K)
 rule &lt;k&gt; (callcc V:Val =&gt; V cc(K)) ~&gt; K &lt;/k&gt;
 rule &lt;k&gt; cc(K) V ~&gt; _ =&gt;  V ~&gt; K &lt;/k&gt;
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 <p>The <code>callcc</code> examples that we tried in Lesson 1 work, so it may look it works.</p>
 <p>However, the problem is that <code>cc(K)</code> should also include an environment,
 and that environment should also be restored when <code>cc(K)</code> is invoked.
 Let's try to illustrate this bug with <code>callcc-env1.lambda</code></p>
-<pre><code>let x = 1 in
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>let x = 1 in
   ((callcc lambda k . (let x = 2 in (k x))) + x)
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>where the second argument of <code>+</code>, <code>x</code>, should be bound to the top <code>x</code>, which
 is 1.  However, since <code>callcc</code> does not restore the environment, that <code>x</code>
 should be looked up in the wrong, callcc-inner environment, so we should see
@@ -300,11 +300,11 @@ fixed the problem for the particular example above, but not in general.
 Another conventional approach to enforce the desired evaluation order is to
 modify the program to enforce the left-to-right evaluation order using let
 binders, as we do in <code>callcc-env2.lambda</code>:</p>
-<pre><code>let x = 1 in
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>let x = 1 in
   let a = callcc lambda k . (let x = 2 in (k x)) in
     let b = x in
       (a + b)
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 <p>With your installation of K you may get the "expected" result 4 when you
 execute this program, so it may look like our non-deterministic problem is
 fixed.  Unfortunately, it is not.  Using the K tool to search for all the
@@ -314,12 +314,12 @@ of whether <code>+</code> is declared to be <code>seqstrict</code> or just <code
 possible?  The problem is now the non-deterministic evaluation strategy of
 the function application construct.  Indeed, recall that the semantics of
 the let-in construct is defined by desugaring to lambda application:</p>
-<pre><code>rule let X = E in E' =&gt; (lambda X . E') E
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>rule let X = E in E' =&gt; (lambda X . E') E
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>With this, the program above eventually reduces to</p>
-<pre><code>(lambda a . ((lambda b . a + b) x))
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>(lambda a . ((lambda b . a + b) x))
 (callcc lambda k . (let x = 2 in (k x)))
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>in an environment where <code>x</code> is 1.  If the first expression evaluates first,
 then it does so to a closure in which <code>x</code> is bound to a location holding 1,
 so when applied later on to the <code>x</code> inside the argument of <code>callcc</code> (which is
@@ -380,8 +380,8 @@ combinators.</p>
             /> </picture
         ></a>
         <p class="mt-2 text-md-left copyright">
-          <a href="https://goo.gl/maps/hKLtCjeEd6yqfzwx5" target="_blank"
-            >1807 S Neil Street, Champaign, IL 61820</a
+          <a href="https://goo.gl/maps/TkuJSdoA3oNPpc486" target="_blank"
+            >301 N Neil St. Suite 412, Champaign, IL 61820</a
           >
         </p>
       </div>

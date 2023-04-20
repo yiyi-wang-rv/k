@@ -154,7 +154,7 @@
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/16_collections/">Lesson 1.16: Maps, Semantic Lists, and Sets</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/17_cell_multiplicity/">Lesson 1.17: Cell Multiplicity and Cell Collections</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/18_equality_and_conditionals/">Lesson 1.18: Term Equality and the Ternary Operator</a></div>
-<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB</a></div>
+<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB or LLDB</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/20_backends/">Lesson 1.20: K Backends and the Haskell Backend</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/21_symbolic_execution/">Lesson 1.21: Unification and Symbolic Execution</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/22_proofs/">Lesson 1.22: K Deductive Verification</a></div>
@@ -275,7 +275,7 @@ syntax.</p>
 <p>A <code>KVar</code> is simply an identifier with special meaning during substitution.
 <code>KVar</code>s must begin with a letter or underscore,
 and can be followed by zero or more letters, numbers, or underscores.</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> KVAR<span class="token operator">-</span>SYNTAX<span class="token operator">-</span>PROGRAM<span class="token operator">-</span>PARSING
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> KVAR<span class="token operator">-</span>SYNTAX<span class="token operator">-</span>PROGRAM<span class="token operator">-</span>PARSING
   <span class="token keyword">imports</span> BUILTIN<span class="token operator">-</span>ID<span class="token operator">-</span>TOKENS
 
   <span class="token keyword">syntax</span> KVar <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> r<span class="token string">"(?&lt;![A-Za-z0-9\\_])[A-Za-z\\_][A-Za-z0-9\\_]*"</span>     <span class="token punctuation">[</span>prec<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token class-name">token</span><span class="token punctuation">]</span>
@@ -297,19 +297,10 @@ and can be followed by zero or more letters, numbers, or underscores.</p>
   <span class="token keyword">rule</span> freshKVar<span class="token punctuation">(</span>I<span class="token punctuation">:</span><span class="token keyword">Int</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> String2KVar<span class="token punctuation">(</span><span class="token string">"_"</span> <span class="token operator">+</span><span class="token keyword">String</span> Int2String<span class="token punctuation">(</span>I<span class="token punctuation">)</span><span class="token punctuation">)</span>
 <span class="token keyword">endmodule</span>
 
-<span class="token keyword">module</span> KVAR<span class="token operator">-</span>SYMBOLIC <span class="token punctuation">[</span>symbolic<span class="token punctuation">,</span> kast<span class="token punctuation">]</span>
-  <span class="token keyword">imports</span> KVAR<span class="token operator">-</span>COMMON
-  <span class="token keyword">imports</span> private STRING
-
-  <span class="token keyword">syntax</span> KItem  <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">"#parseToken"</span>  <span class="token string">"("</span> <span class="token keyword">String</span> <span class="token string">","</span> <span class="token keyword">String</span> <span class="token string">")"</span>  <span class="token punctuation">[</span>function<span class="token punctuation">,</span> <span class="token class-name">klabel</span><span class="token punctuation">(</span>#parseKVar<span class="token punctuation">)</span><span class="token punctuation">,</span> hook<span class="token punctuation">(</span>STRING<span class="token punctuation">.</span>parseToken<span class="token punctuation">)</span><span class="token punctuation">]</span>
-  <span class="token keyword">rule</span> String2KVar<span class="token punctuation">(</span>S<span class="token punctuation">:</span><span class="token keyword">String</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>#parseToken<span class="token punctuation">(</span><span class="token string">"KVar"</span><span class="token punctuation">,</span> S<span class="token punctuation">)</span><span class="token punctuation">}</span><span class="token punctuation">:</span>&gt;KVar
-<span class="token keyword">endmodule</span>
-
 <span class="token keyword">module</span> KVAR
   <span class="token keyword">imports</span> KVAR<span class="token operator">-</span>COMMON
-  <span class="token keyword">imports</span> KVAR<span class="token operator">-</span>SYMBOLIC
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h2 id="the-binder-attribute">The <code>binder</code> Attribute</h2>
 <p>A production can be given the attribute <code>binder</code>. Such a production must have
 at least two nonterminals. The first nonterminal from left to right must be of
@@ -331,14 +322,14 @@ with the original name of the variable and be followed by a unique integer
 suffix. However, the names assigned after rewriting finishes might be different
 from the names that would be assigned if rewriting were to halt prematurely,
 for example due to <code>krun --depth</code>.</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> SUBSTITUTION
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> SUBSTITUTION
   <span class="token keyword">imports</span> private MAP
   <span class="token keyword">imports</span> KVAR
 
   <span class="token keyword">syntax</span> <span class="token punctuation">{</span>Sort<span class="token punctuation">}</span> Sort <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> Sort <span class="token string">"["</span> KItem <span class="token string">"/"</span> KItem <span class="token string">"]"</span>  <span class="token punctuation">[</span>function<span class="token punctuation">,</span> hook<span class="token punctuation">(</span>SUBSTITUTION<span class="token punctuation">.</span>substOne<span class="token punctuation">)</span><span class="token punctuation">,</span> impure<span class="token punctuation">]</span>
   <span class="token keyword">syntax</span> <span class="token punctuation">{</span>Sort<span class="token punctuation">}</span> Sort <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> Sort <span class="token string">"["</span> Map <span class="token string">"]"</span>      <span class="token punctuation">[</span>function<span class="token punctuation">,</span> hook<span class="token punctuation">(</span>SUBSTITUTION<span class="token punctuation">.</span>substMany<span class="token punctuation">)</span><span class="token punctuation">,</span> impure<span class="token punctuation">]</span>
 <span class="token keyword">endmodule</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 </body></html></div>
         </main>
 
@@ -404,8 +395,8 @@ for example due to <code>krun --depth</code>.</p>
             /> </picture
         ></a>
         <p class="mt-2 text-md-left copyright">
-          <a href="https://goo.gl/maps/hKLtCjeEd6yqfzwx5" target="_blank"
-            >1807 S Neil Street, Champaign, IL 61820</a
+          <a href="https://goo.gl/maps/TkuJSdoA3oNPpc486" target="_blank"
+            >301 N Neil St. Suite 412, Champaign, IL 61820</a
           >
         </p>
       </div>

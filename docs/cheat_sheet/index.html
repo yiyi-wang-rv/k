@@ -154,7 +154,7 @@
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../k-distribution/k-tutorial/1_basic/16_collections/">Lesson 1.16: Maps, Semantic Lists, and Sets</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../k-distribution/k-tutorial/1_basic/17_cell_multiplicity/">Lesson 1.17: Cell Multiplicity and Cell Collections</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../k-distribution/k-tutorial/1_basic/18_equality_and_conditionals/">Lesson 1.18: Term Equality and the Ternary Operator</a></div>
-<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB</a></div>
+<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB or LLDB</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../k-distribution/k-tutorial/1_basic/20_backends/">Lesson 1.20: K Backends and the Haskell Backend</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../k-distribution/k-tutorial/1_basic/21_symbolic_execution/">Lesson 1.21: Unification and Symbolic Execution</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../k-distribution/k-tutorial/1_basic/22_proofs/">Lesson 1.22: K Deductive Verification</a></div>
@@ -256,7 +256,7 @@
         >
           <div class="markdown-preview"><html><head></head><body><h1 id="k-cheat-sheet">K Cheat Sheet</h1>
 <p>This is a quick reference of the most commonly used K tools.</p>
-<pre><code>kompile (--gen-bison-parser)? {file}                : generate parser, optionally with ahead of time
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>kompile (--gen-bison-parser)? {file}                : generate parser, optionally with ahead of time
 krun {file}                                         : interpret file
 krun -cPGM='{string}'                               : interpret string
 kast --output (kore | kast) (-e|{file})             : parse expression or file
@@ -265,14 +265,15 @@ krun (--search-all)? {file}                         : interpret file, evaluating
 foo-kompiled/parser_PGM {file}                      : ahead of time parse
 kompile (--main-module)? (--syntax-module)? {file}  : generate parser for {file}.k {file}-syntax.k, explicitly state main modules
 kparse &lt;file&gt; | kore-print -                        : parse and unparse a file
-kompile {file} -ccopt -g -ccopt -O1                 : generate debuggable output for {file}.k
+kompile {file} --enable-llvm-debug                  : generate debuggable output for {file}.k
 krun {file} --debugger                              : debug K code
 kprove {file}                                       : Verify specs in {file}
-</code></pre>
-<p>Durring GDB debugging session:</p>
-<pre><code>break {file}:{linenum}                              : add a breakpoint to {file}'s {linenum} numbered line
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>During GDB debugging session (see <a href="https://lldb.llvm.org/use/map.html" target="_blank" rel="noreferrer noopener">here</a> for
+LLDB breakpoint syntax):</p>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>break {file}:{linenum}                              : add a breakpoint to {file}'s {linenum} numbered line
 k match {module}.{label} subject                    : investigate matching
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 </body></html></div>
         </main>
 
@@ -316,8 +317,8 @@ k match {module}.{label} subject                    : investigate matching
             /> </picture
         ></a>
         <p class="mt-2 text-md-left copyright">
-          <a href="https://goo.gl/maps/hKLtCjeEd6yqfzwx5" target="_blank"
-            >1807 S Neil Street, Champaign, IL 61820</a
+          <a href="https://goo.gl/maps/TkuJSdoA3oNPpc486" target="_blank"
+            >301 N Neil St. Suite 412, Champaign, IL 61820</a
           >
         </p>
       </div>

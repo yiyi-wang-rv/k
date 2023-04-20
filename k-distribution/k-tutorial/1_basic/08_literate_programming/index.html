@@ -154,7 +154,7 @@
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/16_collections/">Lesson 1.16: Maps, Semantic Lists, and Sets</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/17_cell_multiplicity/">Lesson 1.17: Cell Multiplicity and Cell Collections</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/18_equality_and_conditionals/">Lesson 1.18: Term Equality and the Ternary Operator</a></div>
-<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB</a></div>
+<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB or LLDB</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/20_backends/">Lesson 1.20: K Backends and the Haskell Backend</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/21_symbolic_execution/">Lesson 1.21: Unification and Symbolic Execution</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/22_proofs/">Lesson 1.22: K Deductive Verification</a></div>
@@ -281,9 +281,9 @@ that K code into pure K, and then compile it as if it were a <code>.k</code> fil
 and ends when it encounters another <code>```</code> keyword.</p>
 <p>For example, if you view the markdown source of this document, this is a K
 code block:</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">08</span>
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">08</span>
   <span class="token keyword">imports</span> INT
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>Only the code inside K code blocks will actually be sent to the compiler. The
 rest, while it may appear in the document when rendered by a markdown viewer,
 is essentially a form of code comment.</p>
@@ -291,9 +291,9 @@ is essentially a form of code comment.</p>
 together into a single file before passing it off to the outer parser.</p>
 <p>For example, the following code block contains sentences that are part of the
 <code>LESSON-08</code> module that we declared the beginning of above:</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k">  <span class="token keyword">syntax</span> <span class="token keyword">Int</span> <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token keyword">Int</span> <span class="token string">"+"</span> <span class="token keyword">Int</span> <span class="token punctuation">[</span>function<span class="token punctuation">]</span>
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k">  <span class="token keyword">syntax</span> <span class="token keyword">Int</span> <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token keyword">Int</span> <span class="token string">"+"</span> <span class="token keyword">Int</span> <span class="token punctuation">[</span>function<span class="token punctuation">]</span>
   <span class="token keyword">rule</span> I1 <span class="token operator">+</span> I2 <span class="token operator">=&gt;</span> I1 <span class="token operator">+</span><span class="token keyword">Int</span> I2
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <h3 id="exercise">Exercise</h3>
 <p><a href="https://raw.githubusercontent.com/runtimeverification/k/master/k-distribution/k-tutorial/1_basic/08_literate_programming/README.md" target="_blank" rel="noreferrer noopener">Compile this file</a> with <code>kompile README.md --main-module LESSON-08</code>. Confirm
 that you can use the resulting compiled definition to evaluate the <code>+</code>
@@ -315,15 +315,15 @@ selector consists of a sequence of characters containing letters, numbers, and
 underscores. A code block can be designated with a single selector by appending
 the selector immediately following the backticks that open the code block.</p>
 <p>For example, here is a code block with the <code>foo</code> selector:</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">foo</div><code class="language-foo">foo bar
-</code></pre>
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">foo</div><code class="language-foo">foo bar
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>Note that this is not K code. By convention, K code should have the <code>k</code>
 selector on it. You can express multiple selectors on a code block by putting
 them between curly braces and prepending each with the <code>.</code> character. For
 example, here is a code block with the <code>foo</code> and <code>k</code> selectors:</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">.k .foo</div><code class="k foo">  <span class="token keyword">syntax</span> <span class="token keyword">Int</span> <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> foo<span class="token punctuation">(</span><span class="token keyword">Int</span><span class="token punctuation">)</span> <span class="token punctuation">[</span>function<span class="token punctuation">]</span>
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">.k .foo</div><code class="k foo">  <span class="token keyword">syntax</span> <span class="token keyword">Int</span> <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> foo<span class="token punctuation">(</span><span class="token keyword">Int</span><span class="token punctuation">)</span> <span class="token punctuation">[</span>function<span class="token punctuation">]</span>
   <span class="token keyword">rule</span> foo<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token number">0</span>
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>Because this code block contains the <code>k</code> Markdown selector, by default it is
 included as part of the K definition being compiled.</p>
 <h3 id="exercise-1">Exercise</h3>
@@ -339,7 +339,7 @@ Each selector becomes an atom, and you can combine these atoms via the <code>&am
 <code>|</code>, <code>!</code>, and <code>()</code> operators.</p>
 <p>Here is a grammar, written in K, of the language of Markdown selector
 expressions:</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">.k .selector</div><code class="k selector">  <span class="token keyword">syntax</span> Selector <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> r<span class="token string">"[0-9a-zA-Z_]+"</span> <span class="token punctuation">[</span><span class="token class-name">token</span><span class="token punctuation">]</span>
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">.k .selector</div><code class="k selector">  <span class="token keyword">syntax</span> Selector <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> r<span class="token string">"[0-9a-zA-Z_]+"</span> <span class="token punctuation">[</span><span class="token class-name">token</span><span class="token punctuation">]</span>
   <span class="token keyword">syntax</span> SelectorExp <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> Selector
                        <span class="token operator">|</span> <span class="token string">"("</span> SelectorExp <span class="token string">")"</span> <span class="token punctuation">[</span><span class="token class-name">bracket</span><span class="token punctuation">]</span>
                        &gt; <span class="token class-name">right</span><span class="token punctuation">:</span>
@@ -348,16 +348,16 @@ expressions:</p>
                          SelectorExp <span class="token string">"&amp;"</span> SelectorExp
                        &gt; <span class="token class-name">right</span><span class="token punctuation">:</span>
                          SelectorExp <span class="token string">"|"</span> SelectorExp
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>Here is a selector expression that selects all the K code blocks in this
 definition except the one immediately above:</p>
-<pre><code>k &amp; (! selector)
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>k &amp; (! selector)
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <h2 id="addendum">Addendum</h2>
 <p>This code block exists in order to make the above lesson a syntactically valid
 K definition. Consider why it is necessary.</p>
-<pre style="position: relative; padding-top: 32px;"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">endmodule</span>
-</code></pre>
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">endmodule</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <h3 id="exercises">Exercises</h3>
 <ol>
 <li>
@@ -366,9 +366,9 @@ that you get a parser error if you try to evaluate the <code>foo</code> function
 resulting definition.</p>
 </li>
 <li>
-<p>Compile <a href="../03_parsing/">Lesson 1.3</a> as a K definition. Identify
-why it fails to compile. Then pass an appropriate <code>--md-selector</code> to the
-compiler in order to make it compile.</p>
+<p>Compile <a href="https://raw.githubusercontent.com/runtimeverification/k/master/k-distribution/k-tutorial/1_basic/03_parsing/README.md" target="_blank" rel="noreferrer noopener">Lesson 1.3</a>
+as a K definition. Identify why it fails to compile. Then pass an appropriate
+<code>--md-selector</code> to the compiler in order to make it compile.</p>
 </li>
 <li>
 <p>Modify your calculator application from Lesson 1.7, Exercise 2, to be written
@@ -482,8 +482,8 @@ resulting markdown file into documentation for your calculator.</p>
             /> </picture
         ></a>
         <p class="mt-2 text-md-left copyright">
-          <a href="https://goo.gl/maps/hKLtCjeEd6yqfzwx5" target="_blank"
-            >1807 S Neil Street, Champaign, IL 61820</a
+          <a href="https://goo.gl/maps/TkuJSdoA3oNPpc486" target="_blank"
+            >301 N Neil St. Suite 412, Champaign, IL 61820</a
           >
         </p>
       </div>

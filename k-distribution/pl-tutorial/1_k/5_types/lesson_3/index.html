@@ -154,7 +154,7 @@
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/16_collections/">Lesson 1.16: Maps, Semantic Lists, and Sets</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/17_cell_multiplicity/">Lesson 1.17: Cell Multiplicity and Cell Collections</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/18_equality_and_conditionals/">Lesson 1.18: Term Equality and the Ternary Operator</a></div>
-<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB</a></div>
+<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB or LLDB</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/20_backends/">Lesson 1.20: K Backends and the Haskell Backend</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/21_symbolic_execution/">Lesson 1.21: Unification and Symbolic Execution</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/22_proofs/">Lesson 1.22: K Deductive Verification</a></div>
@@ -254,7 +254,7 @@
           class="col-12 col-md-6 col-xl-8 py-md-3 pl-md-5 bd-content"
           role="main"
         >
-          <div class="introduction markdown-preview"><!-- Copyright (c) 2012-2019 K Team. All Rights Reserved. --><html><head></head><body><h1 id="environment-based-higher-order-type-systems">Environment-Based Higher-Order Type Systems</h1>
+          <div class="introduction markdown-preview"><html><head></head><body><h1 id="environment-based-higher-order-type-systems">Environment-Based Higher-Order Type Systems</h1>
 <p>In this lesson you learn how to define an environment-based type system for
 a higher-order language, namely the LAMBDA language defined in Part 1 of the
 tutorial.</p>
@@ -272,12 +272,12 @@ environment.</p>
 <p>In an environment-based definition, unlike in a substitution-based one, we
 need to lookup variables in the environment. So let us start with the
 type lookup rule:</p>
-<pre><code>rule &lt;k&gt; X:Id =&gt; T ...&lt;/k&gt; &lt;tenv&gt;... X |-&gt; T ...&lt;/k&gt;
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>rule &lt;k&gt; X:Id =&gt; T ...&lt;/k&gt; &lt;tenv&gt;... X |-&gt; T ...&lt;/k&gt;
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>The type environment is populated by the semantic rule of <code>lambda</code>:</p>
-<pre><code>rule &lt;k&gt; lambda X : T . E =&gt; (T -&gt; E) ~&gt; Rho ...&lt;/k&gt;
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>rule &lt;k&gt; lambda X : T . E =&gt; (T -&gt; E) ~&gt; Rho ...&lt;/k&gt;
      &lt;tenv&gt; Rho =&gt; Rho[X &lt;- T] &lt;/tenv&gt;
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>So <code>X</code> is bound to its type <code>T</code> in the type environment, and then <code>T -&gt; E</code>
 is scheduled for processing. Recall that the arrow type construct has been
 extended into a strict expression construct, so <code>E</code> will be eventually reduced
@@ -286,8 +286,8 @@ sure that we recover the type environment after the computation in the scope
 of the declared variable terminates.</p>
 <p>The typing rule of application does not change, so it stays as elegant as it
 was in the substitution-based definition:</p>
-<pre><code>rule (T1 -&gt; T2) T1 =&gt; T2
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>rule (T1 -&gt; T2) T1 =&gt; T2
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>So do the rules for arithmetic and Boolean constructs, and those for the
 <code>if</code>, and <code>let</code>, and <code>letrec</code>.</p>
 <p>The <code>mu</code> rule needs to change, because it was previously defined using
@@ -345,8 +345,8 @@ an appropriate type environment update/recovery.</p>
             /> </picture
         ></a>
         <p class="mt-2 text-md-left copyright">
-          <a href="https://goo.gl/maps/hKLtCjeEd6yqfzwx5" target="_blank"
-            >1807 S Neil Street, Champaign, IL 61820</a
+          <a href="https://goo.gl/maps/TkuJSdoA3oNPpc486" target="_blank"
+            >301 N Neil St. Suite 412, Champaign, IL 61820</a
           >
         </p>
       </div>

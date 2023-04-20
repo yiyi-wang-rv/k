@@ -154,7 +154,7 @@
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/16_collections/">Lesson 1.16: Maps, Semantic Lists, and Sets</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/17_cell_multiplicity/">Lesson 1.17: Cell Multiplicity and Cell Collections</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/18_equality_and_conditionals/">Lesson 1.18: Term Equality and the Ternary Operator</a></div>
-<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB</a></div>
+<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB or LLDB</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/20_backends/">Lesson 1.20: K Backends and the Haskell Backend</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/21_symbolic_execution/">Lesson 1.21: Unification and Symbolic Execution</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../k-distribution/k-tutorial/1_basic/22_proofs/">Lesson 1.22: K Deductive Verification</a></div>
@@ -255,6 +255,132 @@
           role="main"
         >
           <div class="introduction markdown-preview"><html><head></head><body><h1 id="lesson-2.1%3A-macros%2C-aliases%2C-and-anywhere-rules">Lesson 2.1: Macros, Aliases, and Anywhere Rules</h1>
+<p>The purpose of this lesson is to explain the behavior of the <code>macro</code>,
+<code>macro-rec</code>, <code>alias</code>, and <code>alias-rec</code> production attributes, as well as the
+<code>anywhere</code> rule attribute. These attributes control the meaning of how rules
+associated with them are applied.</p>
+<h2 id="macros">Macros</h2>
+<p>Thus far in the K tutorial, we have described three different types of rules:</p>
+<ol>
+<li>Top-level rewrite rules, which rewrite a configuration composed of cells to
+another configuration;</li>
+<li>Function rules, which define the behavior of a function written over
+arbitrary input and output types; and</li>
+<li>Simplification rules, which describe ways in which the symbolic execution
+engine ought to simplify terms containing symbolic values.</li>
+</ol>
+<p>This lesson introduces three more types of rules, the first of which are
+<strong>macros</strong>. A production is a macro if it has the <code>macro</code> attribute, and all
+rules whose top symbol on the left hand side is a macro are <strong>macro rules</strong>
+which define the behavior of the macro. Like function rules and simplification
+rules, macro rules do not participate in cell completion. However, unlike
+function rules and simplification rules, macro rules are applied <strong>statically</strong>
+before rewriting begins, and the macro symbol is expected to no longer appear
+in the initial configuration for rewriting once all macros in that
+configuration are rewritten.</p>
+<p>The rationale behind macros is they allow you to define one piece of syntax
+in terms of another piece of syntax without any runtime overhead associated
+with the cost of rewriting one to the other. This process is a common one in
+programming language design and specification and is referred to as
+<strong>desugaring</strong>; The syntax that is transformed is typically also referred to as
+<strong>syntactic sugar</strong> for another type of syntax. For example, in a language with
+<code>if</code> statements and curly braces, you could write the following fragment
+(<code>lesson-01.k</code>):</p>
+<pre style="position: relative; padding-top: 32px; counter-reset: linenumber 0;" class="line-numbers language-line-numbers" data-start="1"><div class="code-block-selectors">k</div><code class="language-k"><span class="token keyword">module</span> LESSON<span class="token operator">-</span><span class="token number">01</span>
+  <span class="token keyword">imports</span> BOOL
+
+  <span class="token keyword">syntax</span> Stmt <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token string">"if"</span> <span class="token string">"("</span> Exp <span class="token string">")"</span> Stmt             <span class="token punctuation">[</span><span class="token class-name">macro</span><span class="token punctuation">]</span>
+                <span class="token operator">|</span> <span class="token string">"if"</span> <span class="token string">"("</span> Exp <span class="token string">")"</span> Stmt <span class="token string">"else"</span> Stmt
+                <span class="token operator">|</span> <span class="token string">"{"</span> Stmts <span class="token string">"}"</span>
+  <span class="token keyword">syntax</span> Stmts <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> List<span class="token punctuation">{</span>Stmt<span class="token punctuation">,</span><span class="token string">""</span><span class="token punctuation">}</span>
+  <span class="token keyword">syntax</span> Exp <span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">=</span> <span class="token keyword">Bool</span>
+
+  <span class="token keyword">rule</span> if <span class="token punctuation">(</span> E <span class="token punctuation">)</span> S <span class="token operator">=&gt;</span> if <span class="token punctuation">(</span> E <span class="token punctuation">)</span> S else <span class="token punctuation">{</span> <span class="token punctuation">.</span>Stmts <span class="token punctuation">}</span>
+<span class="token keyword">endmodule</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>In this example, we see that an if statement without an <code>else</code> clause is
+defined in terms of one with an <code>else</code> clause. As a result, we would only
+need to give a single rule for how to rewrite <code>if</code> statements, rather than
+two separate rules for two types of <code>if</code> statements. This is a common pattern
+for dealing with program syntax that contains an optional component to it.</p>
+<p>It is worth noting that by default, macros are not applied recursively. To be
+more precise, by default a macro that arises as a result of the expansion of
+the same macro is not rewritten further. This is primarily to simplify the
+macro expansion process and reduce the risk that improperly defined macros will
+lead to non-terminating behavior.</p>
+<p>It is possible, however, to tell K to expand a macro recursively. To do this,
+simply replace the <code>macro</code> attribute with the <code>macro-rec</code> attribute. Note that
+K does not do any kind of checking to ensure termination here, so it is
+important that rules be defined correctly to always terminate, otherwise the
+macro expansion phase will run forever. Fortunately, in practice it is very
+simple to ensure this property for most of the types of macros that are
+typically used in real-world semantics.</p>
+<h3 id="exercise">Exercise</h3>
+<p>Using a <code>Nat</code> sort containing the constructors <code>0</code> and <code>S</code> (i.e., a
+<a href="https://en.wikipedia.org/wiki/Peano_axioms" target="_blank" rel="noreferrer noopener">Peano-style</a> axiomatization of the
+natural numbers where <code>S(N) = N + 1</code>, <code>S(S(N)) = N + 2</code>, etc), write a macro
+that will compute the sum of two numbers.</p>
+<h2 id="aliases">Aliases</h2>
+<p><strong>NOTE</strong>: This lesson introduces the concept of "aliases", which are a variant
+of macros. While similar, this is different from the concept of "aliases" in
+matching logic, which is introduced in Lesson 2.16.</p>
+<p>Macros can be very useful in helping you define a programming language.
+However, they can be disruptive while pretty printing a configuration. For
+example, you might write a set of macros that transforms the code the user
+wrote into equivalent code that is slightly harder to read. This can make it
+more difficult to understand the code when it is pretty printed as part of the
+output of rewriting.</p>
+<p>K defines a relatively straightforward but novel solution to this problem,
+which is known as a K <strong>alias</strong>. An alias in K is very similar to a macro,
+with the exception that the rewrite rule will also be applied <strong>backwards</strong>
+during the pretty-printing process.</p>
+<p>It is very simple to make a production be an alias instead of a macro: simply
+use the <code>alias</code> or <code>alias-rec</code> attributes instead of the <code>macro</code> or <code>macro-rec</code>
+attributes. For example, if the example involving <code>if</code> statements above was
+declared using an alias instead of a macro, the <code>Stmt</code> term <code>if (E) {} else {}</code>
+would be pretty-printed as <code>if (E) {}</code>. This is because during pretty-printing,
+the term participates in another macro-expansion pass. However, this macro
+expansion step will only apply rules with the <code>alias</code> or <code>alias-rec</code> attribute,
+and, critically, it will reverse the rule by treating the left-hand side as if
+it were the right-hand side, and vice versa.</p>
+<p>This can be very useful to allow you to define one construct in terms of
+another while still being able to pretty-print the result as if it were
+the original term in question. This can be especially useful for applications
+of K where we are taking the output of rewriting and attempting to use it as
+a code fragment that we then execute, such as with test generation.</p>
+<h3 id="exercise-1">Exercise</h3>
+<p>Modify <code>LESSON-01</code> above to use an alias instead of a macro and experiment
+with how various terms are pretty-printed by invoking <code>krun</code> on them.</p>
+<h2 id="anywhere-rules"><code>anywhere</code> rules</h2>
+<p>The last type of rule introduced in this lesson is the <strong>anywhere rule</strong>. An
+anywhere rule is specified by adding the <code>anywhere</code> attribute to a rule. Such a
+rule is similar to a function rule in that it does not participate in cell
+completion, and will apply anywhere that the left-hand-side matches in the
+configuration, but distinct in that the symbol in question can still be matched
+against in the left-hand side of other rules, even during concrete rewriting.
+The reasoning behind this is that instead of the symbol in question being a
+constructor, it is a constructor <em>modulo</em> the axioms defined with the
+<code>anywhere</code> attribute. Essentially, the rules with the <code>anywhere</code> attribute will
+apply as soon as they appear in the right-hand side of a rule being applied,
+but the symbol in question will still be treated as a symbol that can be
+matched on if it is not completely removed by those rules.</p>
+<p>This can be useful in certain cases to allow you to define transformations over
+particular pieces of syntax while still generally giving those pieces of syntax
+another meaning when the anywhere rule does not apply. For example, the ISO C
+standard defines the semantics of <code>*&amp;x</code> as exactly equal to <code>x</code>, with no
+reading or writing of memory taking place, and the K semantics of C implements
+this functionality using an anywhere rule that is applied at compilation time.</p>
+<p><strong>NOTE</strong>: the <code>anywhere</code> attribute is only implemented on the LLVM backend
+currently. Attempting to use it in a semantics that is compiled with the
+Haskell backend will result in an error being reported by the compiler. This
+should be remembered when using this attribute, as it may not be suitable for
+a segment of a semantics which is intended to be symbolically executed.</p>
+<h2 id="exercises">Exercises</h2>
+<ol>
+<li>Write a version of the calculator from Lesson 1.14 Exercise 1, which uses
+the same syntax for evaluating expressions, but defines its arithmetic logic
+using <code>anywhere</code> rules rather than top-level rewrite rules.</li>
+</ol>
 <h2 id="return-to-top">Return to Top</h2>
 <p><a href="../">Click here</a> to return to the Table of Contents for Section 2.</p>
 </body></html></div>
@@ -269,7 +395,51 @@
               <a href="#lesson-2.1%3A-macros%2C-aliases%2C-and-anywhere-rules" class="bd-toc-link">Lesson 2.1: Macros, Aliases, and Anywhere Rules</a>
               </summary>
             <div>
+              <details style="padding:0.25rem 0;;padding-left: 8px;" open>
+            <summary class="bd-toc-link-wrapper">
+              <a href="#macros" class="bd-toc-link">Macros</a>
+              </summary>
+            <div>
               <div class="bd-toc-link-wrapper" style="padding:0.25rem 0;">
+              <a
+                href="#exercise"
+                class="bd-toc-link"
+                style="padding-left: 16px;;"
+              >
+                Exercise
+              </a></div>
+            </div>
+          </details>
+        <details style="padding:0.25rem 0;;padding-left: 8px;" open>
+            <summary class="bd-toc-link-wrapper">
+              <a href="#aliases" class="bd-toc-link">Aliases</a>
+              </summary>
+            <div>
+              <div class="bd-toc-link-wrapper" style="padding:0.25rem 0;">
+              <a
+                href="#exercise-1"
+                class="bd-toc-link"
+                style="padding-left: 16px;;"
+              >
+                Exercise
+              </a></div>
+            </div>
+          </details>
+        <div class="bd-toc-link-wrapper" style="padding:0.25rem 0;">
+              <a
+                href="#anywhere-rules"
+                class="bd-toc-link"
+                style="padding-left: 8px;;"
+              >
+                <code>anywhere</code> rules
+              </a></div><div class="bd-toc-link-wrapper" style="padding:0.25rem 0;">
+              <a
+                href="#exercises"
+                class="bd-toc-link"
+                style="padding-left: 8px;;"
+              >
+                Exercises
+              </a></div><div class="bd-toc-link-wrapper" style="padding:0.25rem 0;">
               <a
                 href="#return-to-top"
                 class="bd-toc-link"
@@ -308,8 +478,8 @@
             /> </picture
         ></a>
         <p class="mt-2 text-md-left copyright">
-          <a href="https://goo.gl/maps/hKLtCjeEd6yqfzwx5" target="_blank"
-            >1807 S Neil Street, Champaign, IL 61820</a
+          <a href="https://goo.gl/maps/TkuJSdoA3oNPpc486" target="_blank"
+            >301 N Neil St. Suite 412, Champaign, IL 61820</a
           >
         </p>
       </div>

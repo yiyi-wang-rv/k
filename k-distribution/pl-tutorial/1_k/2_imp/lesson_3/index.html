@@ -154,7 +154,7 @@
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/16_collections/">Lesson 1.16: Maps, Semantic Lists, and Sets</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/17_cell_multiplicity/">Lesson 1.17: Cell Multiplicity and Cell Collections</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/18_equality_and_conditionals/">Lesson 1.18: Term Equality and the Ternary Operator</a></div>
-<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB</a></div>
+<div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/19_debugging/">Lesson 1.19: Debugging with GDB or LLDB</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/20_backends/">Lesson 1.20: K Backends and the Haskell Backend</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/21_symbolic_execution/">Lesson 1.21: Unification and Symbolic Execution</a></div>
 <div style="padding:0.25rem 0;;padding-left: 24px;"><a href="../../../../../k-distribution/k-tutorial/1_basic/22_proofs/">Lesson 1.22: K Deductive Verification</a></div>
@@ -254,7 +254,7 @@
           class="col-12 col-md-6 col-xl-8 py-md-3 pl-md-5 bd-content"
           role="main"
         >
-          <div class="introduction markdown-preview"><!-- Copyright (c) 2010-2019 K Team. All Rights Reserved. --><html><head></head><body><h1 id="computations%2C-results%2C-strictness%3B-rules-involving-cells">Computations, Results, Strictness; Rules Involving Cells</h1>
+          <div class="introduction markdown-preview"><html><head></head><body><h1 id="computations%2C-results%2C-strictness%3B-rules-involving-cells">Computations, Results, Strictness; Rules Involving Cells</h1>
 <p>In this lesson we will learn about the syntactic category <code>K</code> of computations,
 about how strictness attributes are in fact syntactic sugar for rewrite rules
 over computations, and why it is important to tell the tool which
@@ -268,8 +268,8 @@ abstract syntax of your language into computations is done automatically by
 the K tool when you declare constructs using the <code>syntax</code> keyword, so the K
 semantic rules can uniformly operate only on terms of sort <code>K</code>. The intuition
 for computation structures of the form</p>
-<pre><code>t1 ~&gt; t2 ~&gt; ... ~&gt; tn
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>t1 ~&gt; t2 ~&gt; ... ~&gt; tn
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>is that the listed tasks are to be processed in order. The initial
 computation typically contains the original program as its sole task, but
 rules can then modify it into task sequences, as seen shortly.</p>
@@ -278,9 +278,9 @@ rules can then modify it into task sequences, as seen shortly.</p>
 actually correspond to rules over computations. For example, the
 <code>strict(2)</code> attribute of the assignment statement corresponds to the
 following two opposite rules (<code>X</code> ranges over <code>Id</code> and <code>A</code> over <code>AExp</code>):</p>
-<pre><code>X=A; =&gt; A ~&gt; X=[];
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>X=A; =&gt; A ~&gt; X=[];
 A ~&gt; X=[]; =&gt; X=A;
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>The first rule pulls <code>A</code> from the syntactic context <code>X=A;</code> and schedules it
 for processing. The second rule plugs <code>A</code> back into its context.
 Inspired from the chemical abstract machine, we call rules of the first
@@ -298,11 +298,11 @@ in the argument of the <code>strict</code> attribute, e.g., <code>strict(2)</cod
 <code>strict(2 3)</code> for an operation strict in its second and third arguments, etc.
 If an operation is simply declared <code>strict</code> then it means that it is strict
 in all its arguments. For example, the strictness of addition yields:</p>
-<pre><code>A1+A2 =&gt; A1 ~&gt; []+A2
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>A1+A2 =&gt; A1 ~&gt; []+A2
 A1 ~&gt; []+A2 =&gt; A1+A2
 A1+A2 =&gt; A2 ~&gt; A1+[]
 A2 ~&gt; A1+[] =&gt; A1+A2
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 <p>It can be seen that such heating/cooling rules can easily lead to
 non-determinism, since the same term may be heated many different ways;
 these different evaluation orders may lead to different behaviors in some
@@ -315,11 +315,11 @@ specified order; if no arguments are given, then they are assumed by default
 to be evaluated from left-to-right. For example, the default heating/cooling
 rules associated to the sequentially strict <code>&lt;=</code> construct above are
 (<code>A1</code>, <code>A2</code> range over <code>AExp</code> and <code>I1</code> over <code>Int</code>):</p>
-<pre><code>A1&lt;=A2 =&gt; A1 ~&gt; []&lt;=A2
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>A1&lt;=A2 =&gt; A1 ~&gt; []&lt;=A2
 A1 ~&gt; []&lt;=A2 =&gt; A1&lt;=A2
 I1&lt;=A2 =&gt; A2 ~&gt; I1&lt;=[]
 A2 ~&gt; I1&lt;=[] =&gt; I1&lt;=A2
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 <p>In other words, <code>A2</code> is only heated/cooled after <code>A1</code> is already evaluated.</p>
 <p>While the heating/cooling rules give us a nice and uniform means to define
 all the various allowable ways in which a program can evaluate, all based
@@ -345,9 +345,9 @@ executable model of the language (which is the default compilation mode of
 fragment is not a result, and the corresponding cooling only when the
 to-be-plugged fragment is a result. In this case, e.g., the heating/cooling
 rules for assignment are modified as follows:</p>
-<pre><code>X=A; =&gt; A ~&gt; X=[];  requires notBool isKResult(A)
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>X=A; =&gt; A ~&gt; X=[];  requires notBool isKResult(A)
 A ~&gt; X=[]; =&gt; X=A;  requires isKResult(A)
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>Note that non-termination of heating/cooling is avoided now. The only thing
 lost is the number of possible behaviors that a program can manifest, but
 this is irrelevant when all we want is one behavior.</p>
@@ -377,12 +377,12 @@ defining results (that's because in theory semantic rules apply <em>modulo</em> 
 reversible heating/cooling rules, so results are not necessary).</p>
 <h2 id="a-k-rule-involving-cells">A K Rule Involving Cells</h2>
 <p>All our K rules so far in the tutorial were of the form</p>
-<pre><code>rule left =&gt; right requires condition
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>rule left =&gt; right requires condition
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>where <code>left</code> and <code>right</code> were syntactic, or more generally computation, terms.</p>
 <p>Here is our first K rule explicitly involving cells:</p>
-<pre><code>rule &lt;k&gt; X:Id =&gt; I ...&lt;/k&gt; &lt;state&gt;... X |-&gt; I ...&lt;/state&gt;
-</code></pre>
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>rule &lt;k&gt; X:Id =&gt; I ...&lt;/k&gt; &lt;state&gt;... X |-&gt; I ...&lt;/state&gt;
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>Recall that the <code>k</code> cell holds computations, which are sequences of tasks
 separated by <code>~&gt;</code>. Also, the <code>state</code> cell holds a map, which is a set of
 bindings, each binding being a pair of computations (currently, the
@@ -400,9 +400,9 @@ to <code>I</code> <em>locally</em> in the <code>k</code> cell. Therefore, IMP va
 declared when looked up.</p>
 <p>Of course, the K rule above can be translated into an ordinary rewrite rule
 of the form</p>
-<pre><code>rule &lt;k&gt; X ~&gt; Rest &lt;/k&gt; &lt;state&gt; Before (X |-&gt; I) After &lt;/state&gt;
+<pre class="line-numbers language-line-numbers" data-start="1" style="counter-reset: linenumber 0;"><code>rule &lt;k&gt; X ~&gt; Rest &lt;/k&gt; &lt;state&gt; Before (X |-&gt; I) After &lt;/state&gt;
   =&gt; &lt;k&gt; I ~&gt; Rest &lt;/k&gt; &lt;state&gt; Before (X |-&gt; I) After &lt;/state&gt;
-</code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>Besides being more verbose and thus tedious to write, this ordinary rule
 is also more error-prone; for example, we may forget the <code>Rest</code> variable
 in the right-hand-side, etc. Moreover, the concurrent semantics of K
@@ -502,8 +502,8 @@ run the programs we parsed in the first lesson.</p>
             /> </picture
         ></a>
         <p class="mt-2 text-md-left copyright">
-          <a href="https://goo.gl/maps/hKLtCjeEd6yqfzwx5" target="_blank"
-            >1807 S Neil Street, Champaign, IL 61820</a
+          <a href="https://goo.gl/maps/TkuJSdoA3oNPpc486" target="_blank"
+            >301 N Neil St. Suite 412, Champaign, IL 61820</a
           >
         </p>
       </div>
